@@ -1,5 +1,6 @@
 using Carter;
 using PatientManagement;
+using PatientManagement.Infrastructure.MessageBus;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,5 +22,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
+
+Task.Run(() => Consumer.Consume());
 
 app.Run();

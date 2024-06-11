@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using PatientManagement.Common.Annotations;
+using PatientManagement.Infrastructure.MessageBus;
 using PatientManagement.Infrastructure.Persistence;
 using System.Text.Json;
 
@@ -20,8 +21,13 @@ namespace PatientManagement.Features.Patient.RegisterPatient
 
             if (result)
             {
-                //var newEvent = new PatientRegisteredEvent();
-                // Do something
+                var newEvent = new PatientRegisteredEvent(
+                    request.FirstName,
+                    request.LastName,
+                    request.DateOfBirth,
+                    request.Address);
+
+                Producer.Produce(newEvent.ToString());
             }
         }
     }

@@ -31,8 +31,6 @@ namespace PatientManagement.Infrastructure.Persistence
                     //events.Add(eventValue);
                 }
 
-                await connection.CloseAsync();
-
                 return events;
             }
             catch (Exception)
@@ -56,8 +54,6 @@ namespace PatientManagement.Infrastructure.Persistence
                 command.Parameters.AddWithValue("@EventValue", eventValue);
 
                 await command.ExecuteNonQueryAsync(cancellationToken);
-
-                await connection.CloseAsync();
 
                 return true;
             }
