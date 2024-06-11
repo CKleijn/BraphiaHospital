@@ -1,16 +1,9 @@
 ﻿namespace Consultancy.Models
 {
-    public class Consult
+    public class Consult(string id, string appointmentId, string surveyId)
     {
-        public int Id { get; set; }
-        public int AppointmentId { get; set; }
-        public int SurveyId { get; set; }
-
-        public Consult(int id, int appointmentId, int surveyId)
-        {
-            Id = id;
-            AppointmentId = appointmentId;
-            SurveyId = surveyId;
-        }
+        public string Id { get; set; } = id;
+        public string AppointmentId { get; set; } = appointmentId;
+        public string SurveyId { get; set; } = surveyId;
     }
 }

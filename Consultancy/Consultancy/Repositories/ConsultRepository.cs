@@ -1,10 +1,12 @@
 ﻿using Consultancy.Models;
+using Consultancy.Utils;
+using System.Text.Json;
 
 namespace Consultancy.Repositories
 {
-    public class ConsultRepository
+    public class ConsultRepository : IConsultRepository
     {
-        public Consult Get()
+        public List<Consult> Get()
         {
             // TODO: Retrieve all consults
             return null;
@@ -28,10 +30,11 @@ namespace Consultancy.Repositories
             return null;
         }
 
-        public Consult Create()
+        public Consult Create(Consult consult)
         {
-            // TODO: Create consult
-            return null;
+            string consultJson = JsonSerializer.Serialize(consult);
+            DatabaseEventOperations.AddEvent("Create: " + consultJson);
+            return consult;
         }
     }
 }

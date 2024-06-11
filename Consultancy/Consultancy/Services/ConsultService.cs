@@ -1,10 +1,19 @@
 ﻿using Consultancy.Models;
+using Consultancy.Repositories;
+using System.Text.Json;
 
 namespace Consultancy.Services
 {
-    public class ConsultService
+    public class ConsultService : IConsultService
     {
-        public Consult Get()
+        private readonly IConsultRepository _consultRepository;
+
+        public ConsultService(IConsultRepository consultRepository)
+        {
+            _consultRepository = consultRepository;
+        }
+
+        public List<Consult> Get()
         {
             // TODO: Retrieve all consults
             return null;
@@ -28,10 +37,9 @@ namespace Consultancy.Services
             return null;
         }
 
-        public Consult Create()
+        public Consult Create(Consult consult)
         {
-            // TODO: Create consult
-            return null;
+            return _consultRepository.Create(consult);
         }
     }
 }

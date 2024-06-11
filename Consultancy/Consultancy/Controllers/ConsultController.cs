@@ -1,4 +1,5 @@
 ﻿using Consultancy.Models;
+using Consultancy.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Consultancy.Controllers
@@ -7,8 +8,15 @@ namespace Consultancy.Controllers
     [Route("/[controller]")]
     public class ConsultController
     {
+        private readonly IConsultService _consultService;
+
+        public ConsultController(IConsultService consultService)
+        {
+            _consultService = consultService;
+        }
+
         [HttpGet]
-        public ActionResult<Consult> Get()
+        public ActionResult<List<Consult>> Get()
         {
             // TODO: Retrieve all consults
             return null;
@@ -36,10 +44,9 @@ namespace Consultancy.Controllers
         }
 
         [HttpPost]
-        public ActionResult<Consult> Create()
+        public ActionResult<Consult> Create([FromBody] Consult consult)
         {
-            // TODO: Create consult
-            return null;
+            return _consultService.Create(consult);
         }
     }
 }
