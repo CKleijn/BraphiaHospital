@@ -3,14 +3,14 @@
     public class Consult
     {
         public int Id { get; set; }
-        public Survey Survey { get; set; }
-        public Appointment Appointment { get; set; }
+        public int AppointmentId { get; set; }
+        public int SurveyId { get; set; }
 
-        public Consult(int id, Survey survey, Appointment appointment)
+        public Consult(int id, int appointmentId, int surveyId)
         {
             Id = id;
-            Survey = survey;
-            Appointment = appointment;
+            AppointmentId = appointmentId;
+            SurveyId = surveyId;
         }
     }
 }
