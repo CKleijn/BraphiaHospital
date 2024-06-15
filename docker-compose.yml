@@ -17,7 +17,7 @@ services:
     ports:
       - "14331:1433"
     volumes:
-      - "./_Server/Development/MySQL/Database/appointment:/var/opt/mssql/data"
+      - "./_Server/Development/MySQL/Database/AppointmentManagement:/var/opt/mssql/data"
     environment:
       - ACCEPT_EULA=Y
       - MSSQL_SA_PASSWORD=k@Ps6W^!cxLMFun^&#
@@ -28,7 +28,7 @@ services:
     ports:
       - "14332:1433"
     volumes:
-      - "./_Server/Development/MySQL/EventStore/:/var/opt/mssql/data"
+      - "./_Server/Development/MySQL/EventStore/AppointmentManagement:/var/opt/mssql/data"
     environment:
       - ACCEPT_EULA=Y
       - MSSQL_SA_PASSWORD=NBudfVC*unvcvX^3NF
