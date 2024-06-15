@@ -1,0 +1,43 @@
+version: '3.4'
+
+services:
+  appointment.api:
+    container_name: appointment-api  
+    image: ${DOCKER_REGISTRY-}appointmentapi
+    build:
+      context: "."
+      dockerfile: AppointmentManagement\Dockerfile
+    ports:
+      - "5000:5000"
+      - "5001:5001"
+
+  appointment.database:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: appointment-db
+    ports:
+      - "14331:1433"
+    volumes:
+      - "./_Server/Development/MySQL/Database/appointment:/var/opt/mssql/data"
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=k@Ps6W^!cxLMFun^&#
+
+  appointment.eventstore:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: appointment-eventstore-db
+    ports:
+      - "14332:1433"
+    volumes:
+      - "./_Server/Development/MySQL/EventStore/:/var/opt/mssql/data"
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=NBudfVC*unvcvX^3NF
+
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: rabbitmq
+    ports:
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
