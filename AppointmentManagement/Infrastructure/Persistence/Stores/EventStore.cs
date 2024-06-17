@@ -2,7 +2,7 @@
 using MediatR;
 using System.Data.SqlClient;
 
-namespace AppointmentManagement.Infrastructure.Persistence
+namespace AppointmentManagement.Infrastructure.Persistence.Stores
 {
     public class EventStore
         : IEventStore

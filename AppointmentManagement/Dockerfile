@@ -2,16 +2,16 @@
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 USER app
 WORKDIR /app
-EXPOSE 5000
-EXPOSE 5001
+EXPOSE 5002
+EXPOSE 5003
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["AppointmentManagement/AppointmentManagement.csproj", "AppointmentManagement/"]
-RUN dotnet restore "./AppointmentManagement/./AppointmentManagement.csproj"
+COPY ["AppointmentManagement.csproj", "."]
+RUN dotnet restore "./AppointmentManagement.csproj"
 COPY . .
-WORKDIR "/src/AppointmentManagement"
+WORKDIR "/src/."
 RUN dotnet build "./AppointmentManagement.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish

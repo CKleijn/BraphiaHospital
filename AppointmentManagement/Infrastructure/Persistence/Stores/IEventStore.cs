@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace AppointmentManagement.Infrastructure.Persistence
+namespace AppointmentManagement.Infrastructure.Persistence.Stores
 {
     public interface IEventStore
     {
