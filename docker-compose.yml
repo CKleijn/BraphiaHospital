@@ -1,0 +1,53 @@
+version: '3.4'
+
+services:
+  patient.management:
+    image: ${DOCKER_REGISTRY-}patientmanagement
+    container_name: patient.management
+    build:
+      context: PatientManagement
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+      - "5001:5001"
+
+  patient.database:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: patient.database
+    ports:
+      - "14331:1433"
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=YourStrong!Passw0rd
+    volumes:
+      - patient-db-data:/var/lib/mssql
+
+  patient.eventstore:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: patient.eventstore
+    ports:
+      - "14332:1433"
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=YourStrong!Passw0rd
+    volumes:
+      - patient-es-data:/var/lib/mssql
+
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: rabbitmq
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    depends_on:
+      - patient.eventstore
+      - patient.database
+
+volumes:
+  patient-db-data:
+    driver: local
+  patient-es-data:
+    driver: local  

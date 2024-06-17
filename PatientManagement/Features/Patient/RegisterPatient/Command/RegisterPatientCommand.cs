@@ -1,11 +1,12 @@
 ﻿using MediatR;
 
-namespace PatientManagement.Features.Patient.RegisterPatient
+namespace PatientManagement.Features.Patient.RegisterPatient.Command
 {
     public sealed record RegisterPatientCommand(
         string FirstName,
         string LastName,
-        DateOnly DateOfBirth,
-        string Address) 
+        DateTime DateOfBirth,
+        string BSN,
+        string Address)
         : IRequest;
 }

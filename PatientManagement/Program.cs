@@ -1,6 +1,5 @@
 using Carter;
 using PatientManagement;
-using PatientManagement.Infrastructure.MessageBus;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,11 +17,13 @@ if (app.Environment.IsDevelopment())
     app.UseDeveloperExceptionPage();
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.ApplyDatabaseMigrations();
+    app.ApplyEventStoreMigrations();
 }
 
 app.UseHttpsRedirection();
 app.UseRouting();
 
-Task.Run(() => Consumer.Consume());
+app.RunConsumer();
 
 app.Run();

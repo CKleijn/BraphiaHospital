@@ -1,6 +1,8 @@
 ﻿using Carter;
+using FluentValidation;
 using MediatR;
 using PatientManagement.Common.Annotations;
+using PatientManagement.Features.Patient.RegisterPatient.Command;
 
 namespace PatientManagement.Features.Patient.RegisterPatient
 {
