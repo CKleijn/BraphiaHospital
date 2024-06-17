@@ -367,3 +367,5 @@ FodyWeavers.xsd
 /bin
 */obj
 */bin
+
+_Server/*
