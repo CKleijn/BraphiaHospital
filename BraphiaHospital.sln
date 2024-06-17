@@ -7,6 +7,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PatientManagement", "Patien
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{A844555C-4CB2-4483-9CD4-1CA4CFA13716}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AppointmentManagement", "AppointmentManagement\AppointmentManagement.csproj", "{219F8B47-85C0-4991-B902-4ED08B4B604A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Consultancy", "Consultancy\Consultancy\Consultancy.csproj", "{AF5E7252-823E-48AD-BAF0-807B3E2A7D3A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{A844555C-4CB2-4483-9CD4-1CA4CFA13716}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A844555C-4CB2-4483-9CD4-1CA4CFA13716}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A844555C-4CB2-4483-9CD4-1CA4CFA13716}.Release|Any CPU.Build.0 = Release|Any CPU
+		{219F8B47-85C0-4991-B902-4ED08B4B604A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{219F8B47-85C0-4991-B902-4ED08B4B604A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{219F8B47-85C0-4991-B902-4ED08B4B604A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{219F8B47-85C0-4991-B902-4ED08B4B604A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AF5E7252-823E-48AD-BAF0-807B3E2A7D3A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF5E7252-823E-48AD-BAF0-807B3E2A7D3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF5E7252-823E-48AD-BAF0-807B3E2A7D3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF5E7252-823E-48AD-BAF0-807B3E2A7D3A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
