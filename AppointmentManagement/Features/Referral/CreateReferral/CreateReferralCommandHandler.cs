@@ -1,5 +1,5 @@
 ﻿using AppointmentManagement.Common.Annotations;
-using AppointmentManagement.Infrastructure.Persistence;
+using AppointmentManagement.Infrastructure.Persistence.Stores;
 using MediatR;
 using System.Text.Json;
 
@@ -14,7 +14,7 @@ namespace AppointmentManagement.Features.Referral.CreateReferral
         {
             var result = await eventStore
                 .AddEvent(
-                EventKeys.REGISTER_KEY(Tags.APPOINTMENT_TAG),
+                typeof(ReferralCreatedEvent).Name,
                 JsonSerializer.Serialize(request),
                 cancellationToken);
 

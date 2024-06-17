@@ -1,8 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
-using PatientManagement.Infrastructure.Persistence.Contexts;
-using System.Data.SqlClient;
+﻿using System.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using AppointmentManagement.Infrastructure.Persistence.Contexts;
 
-namespace PatientManagement
+namespace AppointmentManagement
 {
     public static class MigrationExtensions
     {
@@ -14,7 +14,7 @@ namespace PatientManagement
 
             bool databaseExists = dbContext.Database.CanConnect();
 
-            if (!databaseExists)
+            if(!databaseExists)
                 dbContext.Database.Migrate();
         }
 
@@ -25,13 +25,13 @@ namespace PatientManagement
             connection.Open();
 
             string createDatabaseScript = @"
-                IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = 'BraphiaHospitalPatientManagementEventStore')
+                IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = 'BraphiaHospitalAppointmentManagementEventStore')
                 BEGIN
-                    CREATE DATABASE BraphiaHospitalPatientManagementEventStore;
+                    CREATE DATABASE BraphiaHospitalAppointmentManagementEventStore;
                 END;";
             ExecuteSqlCommand(connection, createDatabaseScript);
 
-            string useDatabaseScript = "USE BraphiaHospitalPatientManagementEventStore;";
+            string useDatabaseScript = "USE BraphiaHospitalAppointmentManagementEventStore;";
             ExecuteSqlCommand(connection, useDatabaseScript);
 
             string createTableScript = @"
@@ -49,7 +49,7 @@ namespace PatientManagement
         }
 
         private static void ExecuteSqlCommand(
-            SqlConnection connection, 
+            SqlConnection connection,
             string query)
         {
             using SqlCommand command = new(query, connection);
