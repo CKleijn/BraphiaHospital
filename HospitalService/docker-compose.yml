@@ -1,0 +1,54 @@
+version: '3.9'
+services:
+  webapp:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    environment:
+      NODE_ENV: development
+      USER_RMC: ${USER_RMC}
+      PWD_RMC: ${PWD_RMC}
+      HOST_RMC: ${HOST_RMC}
+      PORT_RMC: ${PORT_RMC}
+      VHOST_RMC: ${VHOST_RMC}
+      USER_DB: ${USER_DB}
+      PWD_DB: ${PWD_DB}
+      WRITE_DB: ${WRITE_DB}
+      READ_DB: ${READ_DB}
+      WRITE_DB_HOST: write-db
+      READ_DB_HOST: read-db
+    depends_on:
+      - write-db
+      - read-db
+      - rabbitmq
+    ports:
+      - "3001:3001"
+    volumes:
+      - .:/express-docker
+
+  write-db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: ${USER_DB}
+      POSTGRES_PASSWORD: ${PWD_DB}
+      POSTGRES_DB: ${WRITE_DB}
+    ports:
+      - "5432:5432"
+
+  read-db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: ${USER_DB}
+      POSTGRES_PASSWORD: ${PWD_DB}
+      POSTGRES_DB: ${READ_DB}
+    ports:
+      - "5433:5432"
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    environment:
+      RABBITMQ_DEFAULT_USER: ${USER_RMC}
+      RABBITMQ_DEFAULT_PASS: ${PWD_RMC}
+    ports:
+      - "15672:15672" # Management UI
+      - "5672:5672"    # RabbitMQ main port
