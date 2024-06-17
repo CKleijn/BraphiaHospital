@@ -1,8 +1,9 @@
 ﻿using AppointmentManagement.Common.Annotations;
+using AppointmentManagement.Features.ReferralFeature.CreateReferral.Command;
 using Carter;
 using MediatR;
 
-namespace AppointmentManagement.Features.Referral.CreateReferral
+namespace AppointmentManagement.Features.ReferralFeature.CreateReferral
 {
     public sealed class CreateReferralEndpoint
         : ICarterModule
@@ -25,7 +26,7 @@ namespace AppointmentManagement.Features.Referral.CreateReferral
                     return Results.Problem(e.Message);
                 }
             })
-            .WithTags(Tags.APPOINTMENT_TAG);
+            .WithTags(Tags.REFERRAL_TAG);
         }
     }
 }

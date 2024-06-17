@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppointmentManagement.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240617133717_InitialCreate")]
+    [Migration("20240617174433_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -157,11 +157,18 @@ namespace AppointmentManagement.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Code")
+                    b.Property<string>("BSN")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Diagnosis")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("HospitalFacilityId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ReferralCode")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

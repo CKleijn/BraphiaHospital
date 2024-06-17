@@ -38,7 +38,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Features\Appointment\" />
+    <Folder Include="Features\AppointmentFeature\" />
+    <Folder Include="Features\HospitalFacilityFeature\" />
+    <Folder Include="Features\PatientFeature\" />
+    <Folder Include="Features\StaffMemberFeature\" />
   </ItemGroup>
 
 </Project>

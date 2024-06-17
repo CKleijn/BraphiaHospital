@@ -5,6 +5,8 @@ using RabbitMQ.Client.Events;
 using Newtonsoft.Json.Linq;
 using AppointmentManagement.Common.Interfaces;
 using AppointmentManagement.Infrastructure.MessageBus.Interfaces;
+using AppointmentManagement.Common.Entities;
+using AppointmentManagement.Features.ReferralFeature.CreateReferral.Event;
 
 namespace AppointmentManagement.Infrastructure.MessageBus.Implementations
 {
@@ -26,13 +28,11 @@ namespace AppointmentManagement.Infrastructure.MessageBus.Implementations
 
         private async Task HandlePublishEvent(string eventName, string payload)
         {
-
-            //TODO: implement events
             switch (eventName)
             {
-                /*                case nameof(PatientRegisteredEvent):
-                                    await publisher.Publish(new PatientRegisteredEvent(TranslatePayload<Patient>(payload)));
-                                    break;*/
+                case nameof(ReferralCreatedEvent):
+                    await publisher.Publish(new ReferralCreatedEvent(TranslatePayload<Referral>(payload)));
+                    break;
 
             }
         }
