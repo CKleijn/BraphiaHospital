@@ -20,7 +20,7 @@ services:
       - ACCEPT_EULA=Y
       - MSSQL_SA_PASSWORD=YourStrong!Passw0rd
     volumes:
-      - patient-db-data:/var/lib/mssql
+      - "./_Server/Development/MySQL/Database/PatientManagement:/var/opt/mssql/data"
 
   patient.eventstore:
     image: mcr.microsoft.com/mssql/server:2022-latest
@@ -31,7 +31,39 @@ services:
       - ACCEPT_EULA=Y
       - MSSQL_SA_PASSWORD=YourStrong!Passw0rd
     volumes:
-      - patient-es-data:/var/lib/mssql
+      - "./_Server/Development/MySQL/EventStore/PatientManagement:/var/opt/mssql/data"
+
+  appointment.management:
+    image: ${DOCKER_REGISTRY-}appointmentmanagement
+    container_name: appointment.management
+    build:
+      context: AppointmentManagement
+      dockerfile: Dockerfile
+    ports:
+      - "5002:5002"
+      - "5003:5003"
+
+  appointment.database:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: appointment.database
+    ports:
+      - "14333:1433"
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=YourStrong!Passw0rd
+    volumes:
+      - "./_Server/Development/MySQL/Database/AppointmentManagement:/var/opt/mssql/data"
+
+  appointment.eventstore:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: appointment.eventstore
+    ports:
+      - "14334:1433"
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=YourStrong!Passw0rd
+    volumes:
+      - "./_Server/Development/MySQL/EventStore/AppointmentManagement:/var/opt/mssql/data"
 
   rabbitmq:
     image: rabbitmq:3.13-management
@@ -45,9 +77,5 @@ services:
     depends_on:
       - patient.eventstore
       - patient.database
-
-volumes:
-  patient-db-data:
-    driver: local
-  patient-es-data:
-    driver: local  
+      - appointment.eventstore
+      - appointment.database
