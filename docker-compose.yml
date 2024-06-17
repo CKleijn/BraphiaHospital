@@ -84,7 +84,7 @@ services:
       - ACCEPT_EULA=Y
       - MSSQL_SA_PASSWORD=YourStrong!Passw0rd
     volumes:
-      - "./_Server/Development/MySQL/Database/Consultancy:/var/opt/mssql/data"
+      - "./_Server/Database/Consultancy:/var/opt/mssql/data"
 
   consultancy.eventstore:
     image: mcr.microsoft.com/mssql/server:2022-latest
@@ -95,7 +95,7 @@ services:
       - ACCEPT_EULA=Y
       - MSSQL_SA_PASSWORD=YourStrong!Passw0rd
     volumes:
-      - "./_Server/Development/MySQL/EventStore/Consultancy:/var/opt/mssql/data"
+      - "./_Server/EventStore/Consultancy:/var/opt/mssql/data"
 
   rabbitmq:
     image: rabbitmq:3.13-management
