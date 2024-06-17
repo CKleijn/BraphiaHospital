@@ -20,7 +20,7 @@ services:
       - ACCEPT_EULA=Y
       - MSSQL_SA_PASSWORD=YourStrong!Passw0rd
     volumes:
-      - "./_Server/Development/MySQL/Database/PatientManagement:/var/opt/mssql/data"
+      - "./_Server/Database/PatientManagement:/var/opt/mssql/data"
 
   patient.eventstore:
     image: mcr.microsoft.com/mssql/server:2022-latest
@@ -31,7 +31,7 @@ services:
       - ACCEPT_EULA=Y
       - MSSQL_SA_PASSWORD=YourStrong!Passw0rd
     volumes:
-      - "./_Server/Development/MySQL/EventStore/PatientManagement:/var/opt/mssql/data"
+      - "./_Server/EventStore/PatientManagement:/var/opt/mssql/data"
 
   appointment.management:
     image: ${DOCKER_REGISTRY-}appointmentmanagement
@@ -52,7 +52,7 @@ services:
       - ACCEPT_EULA=Y
       - MSSQL_SA_PASSWORD=YourStrong!Passw0rd
     volumes:
-      - "./_Server/Development/MySQL/Database/AppointmentManagement:/var/opt/mssql/data"
+      - "./_Server/Database/AppointmentManagement:/var/opt/mssql/data"
 
   appointment.eventstore:
     image: mcr.microsoft.com/mssql/server:2022-latest
@@ -63,7 +63,7 @@ services:
       - ACCEPT_EULA=Y
       - MSSQL_SA_PASSWORD=YourStrong!Passw0rd
     volumes:
-      - "./_Server/Development/MySQL/EventStore/AppointmentManagement:/var/opt/mssql/data"
+      - "./_Server/EventStore/AppointmentManagement:/var/opt/mssql/data"
 
   rabbitmq:
     image: rabbitmq:3.13-management
