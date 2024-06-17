@@ -4,10 +4,10 @@
     <ProjectVersion>2.1</ProjectVersion>
     <DockerTargetOS>Linux</DockerTargetOS>
     <DockerPublishLocally>False</DockerPublishLocally>
-    <ProjectGuid>d4c4e61c-5654-4f0e-9e73-7933881fc75d</ProjectGuid>
+    <ProjectGuid>a844555c-4cb2-4483-9cd4-1ca4cfa13716</ProjectGuid>
     <DockerLaunchAction>LaunchBrowser</DockerLaunchAction>
     <DockerServiceUrl>{Scheme}://localhost:{ServicePort}/swagger</DockerServiceUrl>
-    <DockerServiceName>appointmentmanagement</DockerServiceName>
+    <DockerServiceName>patientmanagement</DockerServiceName>
   </PropertyGroup>
   <ItemGroup>
     <None Include="docker-compose.override.yml">

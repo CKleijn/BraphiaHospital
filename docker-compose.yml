@@ -1,43 +1,53 @@
 version: '3.4'
 
 services:
-  appointment.api:
-    container_name: appointment-api  
-    image: ${DOCKER_REGISTRY-}appointmentapi
+  patient.management:
+    image: ${DOCKER_REGISTRY-}patientmanagement
+    container_name: patient.management
     build:
-      context: "."
-      dockerfile: AppointmentManagement\Dockerfile
+      context: PatientManagement
+      dockerfile: Dockerfile
     ports:
       - "5000:5000"
       - "5001:5001"
 
-  appointment.database:
+  patient.database:
     image: mcr.microsoft.com/mssql/server:2022-latest
-    container_name: appointment-db
+    container_name: patient.database
     ports:
       - "14331:1433"
-    volumes:
-      - "./_Server/Development/MySQL/Database/AppointmentManagement:/var/opt/mssql/data"
     environment:
       - ACCEPT_EULA=Y
-      - MSSQL_SA_PASSWORD=k@Ps6W^!cxLMFun^&#
+      - MSSQL_SA_PASSWORD=YourStrong!Passw0rd
+    volumes:
+      - patient-db-data:/var/lib/mssql
 
-  appointment.eventstore:
+  patient.eventstore:
     image: mcr.microsoft.com/mssql/server:2022-latest
-    container_name: appointment-eventstore-db
+    container_name: patient.eventstore
     ports:
       - "14332:1433"
-    volumes:
-      - "./_Server/Development/MySQL/EventStore/AppointmentManagement:/var/opt/mssql/data"
     environment:
       - ACCEPT_EULA=Y
-      - MSSQL_SA_PASSWORD=NBudfVC*unvcvX^3NF
+      - MSSQL_SA_PASSWORD=YourStrong!Passw0rd
+    volumes:
+      - patient-es-data:/var/lib/mssql
 
   rabbitmq:
     image: rabbitmq:3.13-management
     container_name: rabbitmq
     ports:
       - "15672:15672"
+      - "5672:5672"
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
+    depends_on:
+      - patient.eventstore
+      - patient.database
+
+volumes:
+  patient-db-data:
+    driver: local
+  patient-es-data:
+    driver: local  
