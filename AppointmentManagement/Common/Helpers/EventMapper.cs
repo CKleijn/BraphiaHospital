@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace PatientManagement.Common.Helpers
+namespace AppointmentManagement.Common.Helpers
 {
     public static class EventMapper
     {
