@@ -1,5 +1,5 @@
-using Carter;
 using AppointmentManagement;
+using Carter;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,9 +17,13 @@ if (app.Environment.IsDevelopment())
     app.UseDeveloperExceptionPage();
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.ApplyDatabaseMigrations();
+    app.ApplyEventStoreMigrations();
 }
 
 app.UseHttpsRedirection();
 app.UseRouting();
+
+app.RunConsumer();
 
 app.Run();
