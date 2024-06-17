@@ -1,23 +1,23 @@
 ﻿using Carter;
 using MediatR;
 using AppointmentManagement.Common.Annotations;
-using AppointmentManagement.Features.ReferralFeature.GetReferralByReferralCode.Query;
+using AppointmentManagement.Features.AppointmentFeature.GetAppointment.Query;
 
-namespace AppointmentManagement.Features.ReferralFeature.GetReferralByReferralCode
+namespace AppointmentManagement.Features.AppointmentFeature.GetAppointment
 {
-    public sealed class GetReferralByReferralCodeEndpoint
+    public sealed class GetAppointmentEndpoint
         : ICarterModule
     {
         public void AddRoutes(IEndpointRouteBuilder app)
         {
-            app.MapGet("referral/code/{referralCode}", async (
+            app.MapGet("appointment/{id}", async (
                 ISender sender,
-                string referralCode,
+                Guid id,
                 CancellationToken cancellationToken) =>
             {
                 try
                 {
-                    var query = new GetReferralByReferralCodeQuery(referralCode);
+                    var query = new GetAppointmentQuery(id);
 
                     var result = await sender.Send(query, cancellationToken);
 
@@ -28,7 +28,7 @@ namespace AppointmentManagement.Features.ReferralFeature.GetReferralByReferralCo
                     return Results.Problem(e.Message);
                 }
             })
-            .WithTags(Tags.REFERRAL_TAG);
+            .WithTags(Tags.APPOINTMENT_TAG);
         }
     }
 }
