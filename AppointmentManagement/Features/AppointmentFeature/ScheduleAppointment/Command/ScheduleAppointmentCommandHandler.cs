@@ -17,25 +17,23 @@ namespace AppointmentManagement.Features.AppointmentFeature.ScheduleAppointment.
         IEventStore eventStore,
         IValidator<ScheduleAppointmentCommand> validator,
         IAppointmentMapper mapper,
-        ApplicationDbContext context)
+        ApplicationDbContext context,
+        IApiClient apiClient,
+        IConfiguration config)
         : IRequestHandler<ScheduleAppointmentCommand>
     {
         public async Task Handle(
             ScheduleAppointmentCommand request,
             CancellationToken cancellationToken)
         {
-
-            //TODO: if partial payload is allowed there will be no need for the context call
-            //Move id validation to validator when partial payload will be implemented
-
             var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
             if (!validationResult.IsValid)
                 throw new ValidationException(validationResult.Errors);
 
-            //TODO: patient check through api for most recent data, cause its important a patient is able to create an appointment instantly
-            _ = await context.Set<Patient>()
-                .FindAsync(request.PatientId, cancellationToken) ?? throw new ArgumentNullException($"Patient #{request.PatientId} doesn't exist");
+            _ = await apiClient
+                .GetAsync<Patient>($"{ConfigurationHelper.GetPatientManagementServiceConnectionString()}/patient/{request.PatientId}", cancellationToken)
+                ?? throw new ArgumentNullException($"Patient #{request.PatientId} doesn't exist");
 
             _ = await context.Set<Referral>()
                 .FindAsync(request.ReferralId, cancellationToken) ?? throw new ArgumentNullException($"Referral #{request.ReferralId} doesn't exist");
@@ -69,6 +67,11 @@ namespace AppointmentManagement.Features.AppointmentFeature.ScheduleAppointment.
                 EventMapper.MapEventToRoutingKey(appointmentScheduledEvent.GetType().Name),
                 appointmentScheduledEvent.GetType().Name,
                 JsonSerializer.Serialize(appointmentScheduledEvent));
+        }
+
+        private object GetPatientManagementServiceConnectionString()
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -8,6 +8,7 @@ using AppointmentManagement.Infrastructure.Persistence.Contexts;
 using AppointmentManagement.Infrastructure.Persistence.Stores;
 using AppointmentManagement.Common.Interfaces;
 using AppointmentManagement.Common.Mappers;
+using System.Net.Http;
 
 namespace AppointmentManagement
 {
@@ -23,6 +24,9 @@ namespace AppointmentManagement
             builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
             
             builder.Services.AddCarter();
+
+            builder.Services.AddSingleton<HttpClient>();
+            builder.Services.AddScoped<IApiClient, ApiClient>();
 
             builder.Services.AddScoped<IEventStore, EventStore>();
             builder.Services.AddScoped<IEventRouter, EventRouter>();
