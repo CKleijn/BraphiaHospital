@@ -34,17 +34,16 @@ namespace Consultancy.Features.ConsultFeature.CreateConsult.Command
             if (await context.Set<Consult>().AnyAsync(c => c.AppointmentId == request.AppointmentId, cancellationToken))
                 throw new DuplicateNameException($"{request.AppointmentId} already has a consult");
 
-            if (await context.Set<Consult>().AnyAsync(c => c.Survey.Id == request.Survey.Id, cancellationToken))
+            if (await context.Set<Consult>().AnyAsync(c => c.Survey != null && request.Survey != null && c.Survey.Id == request.Survey.Id, cancellationToken))
                 throw new DuplicateNameException($"Unable to create new survey with already existing survey id");
 
             var existingQuestionIds = await context.Set<Consult>()
+                .Where(c => c.Survey != null)
                 .SelectMany(c => c.Survey.Questions.Select(q => q.Id))
                 .ToListAsync();
 
-            if (request.Survey.Questions.Any(rq => existingQuestionIds.Contains(rq.Id)))
-            {
+            if (request.Survey != null && request.Survey.Questions.Any(rq => existingQuestionIds.Contains(rq.Id)))
                 throw new DuplicateNameException($"Unable to create new question with already existing question id");
-            }
 
             var consult = mapper.CreateConsultCommandToConsult(request);
 
