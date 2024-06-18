@@ -3,6 +3,8 @@ using MediatR;
 
 namespace DossierManagement.Events.ConsultAppended
 {
-    public sealed record DossierConsultAppendedEvent(Dossier Dossier)
+    public sealed record DossierConsultAppendedEvent(
+        Guid PatientId,
+        Consult Consult)
         : INotification;
 }

@@ -17,11 +17,9 @@ namespace DossierManagement.Infrastructure.MessageBus.Implementations
 
             channel.QueueDeclare(Keys.PATIENT_QUEUE_DOSSIERMANAGEMENT, true, false, false, null);
             channel.QueueDeclare(Keys.DOSSIER_QUEUE_DOSSIERMANAGEMENT, true, false, false, null);
-            channel.QueueDeclare(Keys.LABORATORY_QUEUE_DOSSIERMANAGEMENT, true, false, false, null);
 
             channel.QueueBind(Keys.PATIENT_QUEUE_DOSSIERMANAGEMENT, Keys.EVENTS_EXCHANGE, Keys.PATIENT_ROUTING_KEY);
             channel.QueueBind(Keys.DOSSIER_QUEUE_DOSSIERMANAGEMENT, Keys.EVENTS_EXCHANGE, Keys.DOSSIER_ROUTING_KEY);
-            channel.QueueBind(Keys.LABORATORY_QUEUE_DOSSIERMANAGEMENT, Keys.EVENTS_EXCHANGE, Keys.LABORATORY_ROUTING_KEY);
 
             channel.BasicQos(0, 1, false);
 
@@ -37,7 +35,6 @@ namespace DossierManagement.Infrastructure.MessageBus.Implementations
 
             channel.BasicConsume(Keys.PATIENT_QUEUE_DOSSIERMANAGEMENT, false, consumer);
             channel.BasicConsume(Keys.DOSSIER_QUEUE_DOSSIERMANAGEMENT, false, consumer);
-            channel.BasicConsume(Keys.LABORATORY_QUEUE_DOSSIERMANAGEMENT, false, consumer);
 
             Console.ReadLine();
 

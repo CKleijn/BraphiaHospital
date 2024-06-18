@@ -11,9 +11,15 @@ namespace DossierManagement.Events.DossierCreated
             DossierCreatedEvent notification,
             CancellationToken cancellationToken)
         {
+            var dossier = new Dossier
+            {
+                Id = notification.Id,
+                PatientId = notification.PatientId
+            };
+
             context
                 .Set<Dossier>()
-                .Add(notification.Dossier);
+                .Add(dossier);
 
             await context.SaveChangesAsync(cancellationToken);
         }

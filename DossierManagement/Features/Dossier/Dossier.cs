@@ -8,9 +8,9 @@ namespace DossierManagement.Features.Dossier
     {
         [Key]
         public Guid Id { get; init; } = Guid.NewGuid();
-        public Patient Patient { get; init; } = new Patient();
+        public Guid PatientId { get; set; }
+        public Patient Patient { get; set; }
         public IList<Consult>? Consults { get; set; }
-        public IList<Result>? Results { get; set; }
-        public IList<Medication>? Medications { get; set; }
+        public IList<string>? Medications { get; set; }
     }
 }

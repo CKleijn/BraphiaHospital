@@ -6,8 +6,6 @@ using DossierManagement.Infrastructure.MessageBus.Implementations;
 using DossierManagement.Infrastructure.MessageBus.Interfaces;
 using DossierManagement.Infrastructure.Persistence.Contexts;
 using DossierManagement.Infrastructure.Persistence.Stores;
-using DossierManagement.Features.Dossier._Interfaces;
-using DossierManagement.Features.Dossier;
 
 namespace DossierManagement
 {
@@ -27,7 +25,6 @@ namespace DossierManagement
             builder.Services.AddScoped<IEventRouter, EventRouter>();
             builder.Services.AddScoped<IProducer, Producer>();
             builder.Services.AddScoped<IConsumer, Consumer>();
-            builder.Services.AddScoped<IDossierMapper, DossierMapper>();
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DossierManagement.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialDossierPatientConsult : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -33,7 +33,6 @@ namespace DossierManagement.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     PatientId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Results = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Medications = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
@@ -52,6 +51,7 @@ namespace DossierManagement.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Note = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     DossierId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
@@ -72,7 +72,8 @@ namespace DossierManagement.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Dossiers_PatientId",
                 table: "Dossiers",
-                column: "PatientId");
+                column: "PatientId",
+                unique: true);
         }
 
         /// <inheritdoc />

@@ -9,9 +9,17 @@ namespace DossierManagement.Infrastructure.Persistence.Contexts
         public DbSet<Patient> Patients { get; set; }
         public DbSet<Dossier> Dossiers { get; set; }
         public DbSet<Consult> Consults { get; set; }
-        public DbSet<Result> Results { get; set; }
-        public DbSet<Medication> Medications { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder) { }
+        protected override void OnModelCreating(ModelBuilder modelBuilder) 
+        {
+            modelBuilder.Entity<Dossier>()
+                .HasOne(d => d.Patient)
+                .WithOne()
+                .HasForeignKey<Dossier>(d => d.PatientId);
+
+            modelBuilder.Entity<Dossier>()
+                .HasMany(d => d.Consults)
+                .WithOne();
+        }
     }
 }

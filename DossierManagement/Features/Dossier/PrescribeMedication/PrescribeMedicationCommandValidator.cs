@@ -11,9 +11,9 @@ namespace DossierManagement.Features.Dossier.PrescribeMedication
                 .NotEmpty()
                 .WithMessage("PatientId is required!");
 
-            RuleFor(dossier => dossier.Medication)
+            RuleFor(dossier => dossier.Medications)
                 .NotEmpty()
-                .WithMessage("Medication is required!");
+                .WithMessage("Medications is required!");
         }
     }
 }

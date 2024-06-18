@@ -1,6 +1,5 @@
 ﻿using DossierManagement.Common.Helpers;
 using DossierManagement.Events.DossierCreated;
-using DossierManagement.Features.Dossier._Interfaces;
 using DossierManagement.Infrastructure.MessageBus.Interfaces;
 using DossierManagement.Infrastructure.Persistence.Contexts;
 using DossierManagement.Infrastructure.Persistence.Stores;
@@ -15,7 +14,6 @@ namespace DossierManagement.Features.Dossier.CreateDossier
     public sealed class CreateDossierCommandHandler(
         IEventStore eventStore,
         IProducer producer,
-        IDossierMapper mapper,
         ApplicationDbContext context,
         IValidator<CreateDossierCommand> validator)
         : IRequestHandler<CreateDossierCommand>
@@ -29,11 +27,9 @@ namespace DossierManagement.Features.Dossier.CreateDossier
             if (!validationResult.IsValid)
                 throw new ValidationException(validationResult.Errors);
 
-            var patient = await context
+           if (await context
                 .Set<Patient>()
-                .FirstOrDefaultAsync(p => p.Id == request.PatientId, cancellationToken);
-
-            if (patient == null)
+                .AnyAsync(p => p.Id != request.PatientId, cancellationToken))
                 throw new ArgumentNullException($"Patient #{request.PatientId} doesn't exist");
 
             if (await context
@@ -42,20 +38,22 @@ namespace DossierManagement.Features.Dossier.CreateDossier
                 .AnyAsync(d => d.Patient.Id == request.PatientId, cancellationToken))
                 throw new DuplicateNameException($"Dossier with patient #{request.PatientId} already exist");
 
-            var dossier = mapper.PatientToDossier(patient);
+            var dossierCreatedEvent = new DossierCreatedEvent
+            (
+                Id: Guid.NewGuid(),
+                PatientId: request.PatientId
+            );
 
             var result = await eventStore
                 .AddEvent(
-                    typeof(DossierCreatedEvent).Name,
-                    JsonSerializer.Serialize(dossier),
+                    dossierCreatedEvent.GetType().Name,
+                    JsonSerializer.Serialize(dossierCreatedEvent),
                     cancellationToken);
 
             if (result)
             {
-                var dossierCreatedEvent = mapper.DossierToDossierCreatedEvent(dossier);
-
                 producer.Produce(
-                    EventMapper.MapEventToRoutingKey(typeof(DossierCreatedEvent).Name),
+                    EventMapper.MapEventToRoutingKey(dossierCreatedEvent.GetType().Name),
                     dossierCreatedEvent.GetType().Name,
                     JsonSerializer.Serialize(dossierCreatedEvent));
             }

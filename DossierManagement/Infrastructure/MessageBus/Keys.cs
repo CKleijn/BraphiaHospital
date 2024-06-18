@@ -9,7 +9,5 @@
         public static readonly string PATIENT_ROUTING_KEY = "Patient.#";
         public static readonly string DOSSIER_QUEUE_DOSSIERMANAGEMENT = "DossierQueue-DossierManagement";
         public static readonly string DOSSIER_ROUTING_KEY = "Dossier.#";
-        public static readonly string LABORATORY_QUEUE_DOSSIERMANAGEMENT = "LaboratoryQueue-DossierManagement";
-        public static readonly string LABORATORY_ROUTING_KEY = "Laboratory.#";
     }
 }

@@ -6,8 +6,6 @@ using Newtonsoft.Json.Linq;
 using DossierManagement.Infrastructure.MessageBus.Interfaces;
 using DossierManagement.Features.Dossier;
 using DossierManagement.Events.ConsultAppended;
-using DossierManagement.Events.ResultAppended;
-using DossierManagement.Events.LabTestResultAvailable;
 using DossierManagement.Events.DossierCreated;
 using DossierManagement.Events.PatientRegistered;
 using DossierManagement.Events.MedicationPrescribed;
@@ -37,22 +35,16 @@ namespace DossierManagement.Infrastructure.MessageBus.Implementations
             switch (eventName)
             {
                 case nameof(DossierConsultAppendedEvent):
-                    await publisher.Publish(new DossierConsultAppendedEvent(TranslatePayload<Dossier>(payload)));
+                    await publisher.Publish(JsonConvert.DeserializeObject<DossierConsultAppendedEvent>(payload)!);
                     break;
                 case nameof(DossierCreatedEvent):
-                    await publisher.Publish(new DossierCreatedEvent(TranslatePayload<Dossier>(payload)));
-                    break;
-                case nameof(LaboratoryTestResultAvailableEvent):
-                    await publisher.Publish(new LaboratoryTestResultAvailableEvent(TranslatePayload<Guid>(payload), TranslatePayload<Result>(payload)));
+                    await publisher.Publish(JsonConvert.DeserializeObject<DossierCreatedEvent>(payload)!);
                     break;
                 case nameof(DossierMedicationPrescribedEvent):
-                    await publisher.Publish(new DossierMedicationPrescribedEvent(TranslatePayload<Dossier>(payload)));
+                    await publisher.Publish(JsonConvert.DeserializeObject<DossierMedicationPrescribedEvent>(payload)!);
                     break;
                 case nameof(PatientRegisteredEvent):
                     await publisher.Publish(new PatientRegisteredEvent(TranslatePayload<Patient>(payload)));
-                    break;
-                case nameof(DossierResultAppendedEvent):
-                    await publisher.Publish(new DossierResultAppendedEvent(TranslatePayload<Dossier>(payload)));
                     break;
             }
         }

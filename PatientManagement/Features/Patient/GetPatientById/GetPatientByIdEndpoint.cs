@@ -1,7 +1,7 @@
 ﻿using Carter;
 using MediatR;
 using PatientManagement.Common.Annotations;
-using PatientManagement.Features.Patient.GetPatient.Query;
+using PatientManagement.Features.Patient.GetPatientById;
 
 namespace PatientManagement.Features.Patient.GetPatient
 {

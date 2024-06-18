@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DossierManagement.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240618095146_Update Dossier")]
-    partial class UpdateDossier
+    [Migration("20240618194730_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -34,6 +34,9 @@ namespace DossierManagement.Migrations
                     b.Property<Guid?>("DossierId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Note")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("DossierId");
@@ -47,34 +50,18 @@ namespace DossierManagement.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Medications")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<Guid>("PatientId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PatientId");
+                    b.HasIndex("PatientId")
+                        .IsUnique();
 
                     b.ToTable("Dossiers");
-                });
-
-            modelBuilder.Entity("DossierManagement.Features.Dossier.Medication", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("DossierId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Medicine")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DossierId");
-
-                    b.ToTable("Medication");
                 });
 
             modelBuilder.Entity("DossierManagement.Features.Dossier.Patient", b =>
@@ -107,26 +94,6 @@ namespace DossierManagement.Migrations
                     b.ToTable("Patients");
                 });
 
-            modelBuilder.Entity("DossierManagement.Features.Dossier.Result", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("DossierId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Outcome")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DossierId");
-
-                    b.ToTable("Result");
-                });
-
             modelBuilder.Entity("DossierManagement.Features.Dossier.Consult", b =>
                 {
                     b.HasOne("DossierManagement.Features.Dossier.Dossier", null)
@@ -137,35 +104,17 @@ namespace DossierManagement.Migrations
             modelBuilder.Entity("DossierManagement.Features.Dossier.Dossier", b =>
                 {
                     b.HasOne("DossierManagement.Features.Dossier.Patient", "Patient")
-                        .WithMany()
-                        .HasForeignKey("PatientId")
+                        .WithOne()
+                        .HasForeignKey("DossierManagement.Features.Dossier.Dossier", "PatientId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Patient");
                 });
 
-            modelBuilder.Entity("DossierManagement.Features.Dossier.Medication", b =>
-                {
-                    b.HasOne("DossierManagement.Features.Dossier.Dossier", null)
-                        .WithMany("Medications")
-                        .HasForeignKey("DossierId");
-                });
-
-            modelBuilder.Entity("DossierManagement.Features.Dossier.Result", b =>
-                {
-                    b.HasOne("DossierManagement.Features.Dossier.Dossier", null)
-                        .WithMany("Results")
-                        .HasForeignKey("DossierId");
-                });
-
             modelBuilder.Entity("DossierManagement.Features.Dossier.Dossier", b =>
                 {
                     b.Navigation("Consults");
-
-                    b.Navigation("Medications");
-
-                    b.Navigation("Results");
                 });
 #pragma warning restore 612, 618
         }
