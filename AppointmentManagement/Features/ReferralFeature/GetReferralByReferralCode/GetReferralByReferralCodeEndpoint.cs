@@ -1,9 +1,9 @@
 ﻿using Carter;
 using MediatR;
 using AppointmentManagement.Common.Annotations;
-using AppointmentManagement.Features.ReferralFeature.GetReferral.Query;
+using AppointmentManagement.Features.ReferralFeature.GetReferralByReferralCode.Query;
 
-namespace AppointmentManagement.Features.ReferralFeature.GetReferral
+namespace AppointmentManagement.Features.ReferralFeature.GetReferralByReferralCode
 {
     public sealed class GetReferralByReferralCodeEndpoint
         : ICarterModule

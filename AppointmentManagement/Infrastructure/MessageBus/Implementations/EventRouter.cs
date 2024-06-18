@@ -7,6 +7,8 @@ using AppointmentManagement.Common.Interfaces;
 using AppointmentManagement.Infrastructure.MessageBus.Interfaces;
 using AppointmentManagement.Common.Entities;
 using AppointmentManagement.Features.ReferralFeature.CreateReferral.Event;
+using AppointmentManagement.Features.AppointmentFeature.ScheduleAppointment.Event;
+using AppointmentManagement.Features.AppointmentFeature.UpdatePatientArrival.Event;
 
 namespace AppointmentManagement.Infrastructure.MessageBus.Implementations
 {
@@ -30,8 +32,19 @@ namespace AppointmentManagement.Infrastructure.MessageBus.Implementations
         {
             switch (eventName)
             {
+                //Referral
                 case nameof(ReferralCreatedEvent):
                     await publisher.Publish(new ReferralCreatedEvent(TranslatePayload<Referral>(payload)));
+                    break;
+                //Appointment
+                case nameof(AppointmentScheduledEvent):
+                    await publisher.Publish(new AppointmentScheduledEvent(TranslatePayload<Appointment>(payload)));
+                    break;
+                case nameof(AppointmentRescheduledEvent):
+                    await publisher.Publish(new AppointmentRescheduledEvent(TranslatePayload<Appointment>(payload)));
+                    break;
+                case nameof(PatientArrivalUpdatedEvent):
+                    await publisher.Publish(new PatientArrivalUpdatedEvent(TranslatePayload<Appointment>(payload)));
                     break;
 
             }

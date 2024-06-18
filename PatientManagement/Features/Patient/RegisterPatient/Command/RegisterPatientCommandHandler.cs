@@ -29,6 +29,7 @@ namespace PatientManagement.Features.Patient.RegisterPatient.Command
             if (!validationResult.IsValid)
                 throw new ValidationException(validationResult.Errors);
 
+            // Check based on eventStore instead of read db?
             if (await context.Set<Patient>().AnyAsync(p => p.BSN == request.BSN, cancellationToken))
                 throw new DuplicateNameException($"{request.BSN} already exists");
 

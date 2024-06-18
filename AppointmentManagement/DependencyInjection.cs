@@ -29,8 +29,8 @@ namespace AppointmentManagement
             builder.Services.AddScoped<IProducer, Producer>();
             builder.Services.AddScoped<IConsumer, Consumer>();
 
-            //Add mappers
             builder.Services.AddScoped<IReferralMapper, ReferralMapper>();
+            builder.Services.AddScoped<IAppointmentMapper, AppointmentMapper>();
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();

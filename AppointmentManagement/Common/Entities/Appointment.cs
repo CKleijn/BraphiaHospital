@@ -15,7 +15,7 @@ namespace AppointmentManagement.Common.Entities
         public StaffMember Physician { get; set; }
         public HospitalFacility HospitalFacility { get; set; }
 
-        public ArrivalStatus Status { get; init; } = ArrivalStatus.Absent;
-        public DateTime ScheduledDateTime { get; init; } = DateTime.Now;
+        public ArrivalStatus Status { get; set; } = ArrivalStatus.Absent;
+        public DateTime ScheduledDateTime { get; set; } = DateTime.Now;
     }
 }
