@@ -9,6 +9,8 @@ namespace DossierManagement.Infrastructure.Persistence.Contexts
         public DbSet<Patient> Patients { get; set; }
         public DbSet<Dossier> Dossiers { get; set; }
         public DbSet<Consult> Consults { get; set; }
+        public DbSet<Result> Results { get; set; }
+        public DbSet<Medication> Medications { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder) { }
     }

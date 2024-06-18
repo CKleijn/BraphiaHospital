@@ -6,7 +6,10 @@ namespace DossierManagement.Infrastructure.Persistence.Stores
     public class EventStore
         : IEventStore
     {
-        public async Task<bool> AddEvent(string type, string? payload, CancellationToken cancellationToken)
+        public async Task<bool> AddEvent(
+            string type, 
+            string? payload, 
+            CancellationToken cancellationToken)
         {
             try
             {

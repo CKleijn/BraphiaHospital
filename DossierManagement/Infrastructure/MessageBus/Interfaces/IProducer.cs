@@ -2,6 +2,9 @@
 {
     public interface IProducer
     {
-        void Produce(string routingKey, string eventName, string eventMessage);
+        void Produce(
+            string routingKey, 
+            string eventName, 
+            string eventMessage);
     }
 }

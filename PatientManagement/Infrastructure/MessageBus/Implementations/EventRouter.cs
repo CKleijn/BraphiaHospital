@@ -1,12 +1,12 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
-using PatientManagement.Features.Patient.RegisterPatient.Event;
 using PatientManagement.Features.Patient;
 using System.Text;
 using RabbitMQ.Client.Events;
 using Newtonsoft.Json.Linq;
 using PatientManagement.Common.Interfaces;
 using PatientManagement.Infrastructure.MessageBus.Interfaces;
+using PatientManagement.Events;
 
 namespace PatientManagement.Infrastructure.MessageBus.Implementations
 {

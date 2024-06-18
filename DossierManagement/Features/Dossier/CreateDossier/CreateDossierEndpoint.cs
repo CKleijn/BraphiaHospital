@@ -1,6 +1,5 @@
 ﻿using Carter;
 using DossierManagement.Common.Annotations;
-using DossierManagement.Features.Dossier.CreateDossier.Command;
 using MediatR;
 
 namespace DossierManagement.Features.Dossier.CreateDossier

@@ -1,5 +1,5 @@
-﻿using PatientManagement.Features.Patient.RegisterPatient.Command;
-using PatientManagement.Features.Patient.RegisterPatient.Event;
+﻿using PatientManagement.Events;
+using PatientManagement.Features.Patient.RegisterPatient;
 
 namespace PatientManagement.Features.Patient._Interfaces
 {

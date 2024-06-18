@@ -10,6 +10,10 @@ services:
     ports:
       - "5000:5000"
       - "5001:5001"
+    depends_on:
+      - rabbitmq
+      - patient.database 
+      - patient.eventstore 
 
   patient.database:
     image: mcr.microsoft.com/mssql/server:2022-latest
@@ -42,6 +46,10 @@ services:
     ports:
       - "5002:5002"
       - "5003:5003"
+    depends_on:
+      - rabbitmq
+      - appointment.database 
+      - appointment.eventstore 
 
   appointment.database:
     image: mcr.microsoft.com/mssql/server:2022-latest
@@ -74,6 +82,10 @@ services:
     ports:
       - "5006:5006"
       - "5007:5007"
+    depends_on:
+      - rabbitmq
+      - dossier.database 
+      - dossier.eventstore 
 
   dossier.database:
     image: mcr.microsoft.com/mssql/server:2022-latest
@@ -106,10 +118,3 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
-    depends_on:
-      - patient.eventstore
-      - patient.database
-      - appointment.eventstore
-      - appointment.database      
-      - dossier.eventstore
-      - dossier.database

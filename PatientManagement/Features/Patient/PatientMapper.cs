@@ -1,6 +1,6 @@
-﻿using PatientManagement.Features.Patient._Interfaces;
-using PatientManagement.Features.Patient.RegisterPatient.Command;
-using PatientManagement.Features.Patient.RegisterPatient.Event;
+﻿using PatientManagement.Events;
+using PatientManagement.Features.Patient._Interfaces;
+using PatientManagement.Features.Patient.RegisterPatient;
 using Riok.Mapperly.Abstractions;
 
 namespace PatientManagement.Features.Patient

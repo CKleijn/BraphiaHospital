@@ -12,7 +12,10 @@ namespace DossierManagement
 
             using ApplicationDbContext dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-            dbContext.Database.Migrate();
+            bool databaseExists = dbContext.Database.CanConnect();
+
+            if (!databaseExists)
+                dbContext.Database.Migrate();
         }
 
         public static void ApplyEventStoreMigrations(this IApplicationBuilder app)

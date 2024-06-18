@@ -7,7 +7,10 @@ namespace DossierManagement.Infrastructure.MessageBus.Implementations
     public class Producer
         : IProducer
     {
-        public void Produce(string routingKey, string eventName, string eventMessage)
+        public void Produce(
+            string routingKey, 
+            string eventName, 
+            string eventMessage)
         {
             var factory = new ConnectionFactory { HostName = Keys.HOST_NAME };
             using var connection = factory.CreateConnection();
@@ -25,6 +28,9 @@ namespace DossierManagement.Infrastructure.MessageBus.Implementations
             channel.BasicPublish(Keys.EVENTS_EXCHANGE, routingKey, properties, Encoding.UTF8.GetBytes(eventMessage));
 
             Console.WriteLine($"Sent: {eventMessage}");
+
+            channel.Close();
+            connection.Close();
         }
     }
 }

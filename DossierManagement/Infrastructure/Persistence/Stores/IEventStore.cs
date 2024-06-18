@@ -2,6 +2,9 @@
 {
     public interface IEventStore
     {
-        Task<bool> AddEvent(string eventKey, string eventValue, CancellationToken cancellationToken);
+        Task<bool> AddEvent(
+            string eventKey, 
+            string eventValue, 
+            CancellationToken cancellationToken);
     }
 }

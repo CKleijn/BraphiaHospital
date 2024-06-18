@@ -44,20 +44,34 @@ namespace DossierManagement.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Medications")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<Guid>("PatientId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Results")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("PatientId");
 
                     b.ToTable("Dossiers");
+                });
+
+            modelBuilder.Entity("DossierManagement.Features.Dossier.Medication", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("DossierId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Medicine")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DossierId");
+
+                    b.ToTable("Medication");
                 });
 
             modelBuilder.Entity("DossierManagement.Features.Dossier.Patient", b =>
@@ -90,6 +104,26 @@ namespace DossierManagement.Migrations
                     b.ToTable("Patients");
                 });
 
+            modelBuilder.Entity("DossierManagement.Features.Dossier.Result", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("DossierId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Outcome")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DossierId");
+
+                    b.ToTable("Result");
+                });
+
             modelBuilder.Entity("DossierManagement.Features.Dossier.Consult", b =>
                 {
                     b.HasOne("DossierManagement.Features.Dossier.Dossier", null)
@@ -108,9 +142,27 @@ namespace DossierManagement.Migrations
                     b.Navigation("Patient");
                 });
 
+            modelBuilder.Entity("DossierManagement.Features.Dossier.Medication", b =>
+                {
+                    b.HasOne("DossierManagement.Features.Dossier.Dossier", null)
+                        .WithMany("Medications")
+                        .HasForeignKey("DossierId");
+                });
+
+            modelBuilder.Entity("DossierManagement.Features.Dossier.Result", b =>
+                {
+                    b.HasOne("DossierManagement.Features.Dossier.Dossier", null)
+                        .WithMany("Results")
+                        .HasForeignKey("DossierId");
+                });
+
             modelBuilder.Entity("DossierManagement.Features.Dossier.Dossier", b =>
                 {
                     b.Navigation("Consults");
+
+                    b.Navigation("Medications");
+
+                    b.Navigation("Results");
                 });
 #pragma warning restore 612, 618
         }
