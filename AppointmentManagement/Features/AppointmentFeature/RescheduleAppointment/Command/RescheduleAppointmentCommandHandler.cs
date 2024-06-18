@@ -43,7 +43,7 @@ namespace AppointmentManagement.Features.AppointmentFeature.RescheduleAppointmen
 
             var result = await eventStore
                 .AddEvent(
-                    typeof(AppointmentRescheduledEvent).Name,
+                    typeof(AppointmentScheduledEvent).Name,
                     JsonSerializer.Serialize(appointment),
                     cancellationToken);
 

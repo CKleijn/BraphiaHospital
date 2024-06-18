@@ -34,23 +34,22 @@ namespace AppointmentManagement.Infrastructure.MessageBus.Implementations
             {
                 //Referral
                 case nameof(ReferralCreatedEvent):
-                    await publisher.Publish(new ReferralCreatedEvent(TranslatePayload<Referral>(payload)));
+                    await publisher.Publish(new ReferralCreatedEvent(TranslatePayloadToEntity<Referral>(payload)));
                     break;
                 //Appointment
                 case nameof(AppointmentScheduledEvent):
-                    await publisher.Publish(new AppointmentScheduledEvent(TranslatePayload<Appointment>(payload)));
+                    await publisher.Publish(JsonConvert.DeserializeObject<AppointmentScheduledEvent>(payload)!);
                     break;
                 case nameof(AppointmentRescheduledEvent):
-                    await publisher.Publish(new AppointmentRescheduledEvent(TranslatePayload<Appointment>(payload)));
+                    await publisher.Publish(new AppointmentRescheduledEvent(TranslatePayloadToEntity<Appointment>(payload)));
                     break;
                 case nameof(PatientArrivalUpdatedEvent):
-                    await publisher.Publish(new PatientArrivalUpdatedEvent(TranslatePayload<Appointment>(payload)));
+                    await publisher.Publish(new PatientArrivalUpdatedEvent(TranslatePayloadToEntity<Appointment>(payload)));
                     break;
-
             }
         }
 
-        private T TranslatePayload<T>(string payload)
+        private T TranslatePayloadToEntity<T>(string payload)
             where T : IEntity
         {
             var jsonObject = JObject.Parse(payload);
