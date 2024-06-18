@@ -97,6 +97,52 @@ services:
     volumes:
       - "./_Server/EventStore/Consultancy:/var/opt/mssql/data"
 
+  hospital.management:
+    image: ${DOCKER_REGISTRY-}hospitalmanagement
+    container_name: hospital.management
+    build:
+      context: HospitalManagement
+      dockerfile: Dockerfile
+    ports:
+      - "5008:5008"
+      - "500:5009"
+    environment:
+      - DATABASE_HOST_READ=hospital.database
+      - DATABASE_HOST_WRITE=hospital.eventstore
+      - DATABASE_NAME_READ=HospitalDb
+      - DATABASE_NAME_WRITE=HospitalEventStore
+      - DATABASE_USER=admin
+      - DATABASE_PASSWORD=admin
+      - DATABASE_PORT=5432
+    depends_on:
+      - hospital.database
+      - hospital.eventstore
+      - rabbitmq
+
+  hospital.database:
+    image: postgres
+    container_name: hospital.database
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: HospitalDb
+    ports:
+      - "5434:5432"
+    volumes:
+      - ./HospitalManagement/hospitalDb.script.sql:/docker-entrypoint-initdb.d/hospitalDb.script.sql
+    
+  hospital.eventstore:
+    image: postgres
+    container_name: hospital.eventstore
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: HospitalEventStore
+    ports:
+      - "5435:5432"
+    volumes:
+      - ./HospitalManagement/eventStore.script.sql:/docker-entrypoint-initdb.d/eventStore.script.sql
+
   rabbitmq:
     image: rabbitmq:3.13-management
     container_name: rabbitmq
@@ -112,4 +158,6 @@ services:
       - appointment.eventstore
       - appointment.database
       - consultancy.database
-      - consultancy.eventstore 
+      - consultancy.eventstore
+      - hospital.database
+      - hospital.eventstore 
