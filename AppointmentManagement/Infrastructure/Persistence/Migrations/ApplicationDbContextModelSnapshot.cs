@@ -154,11 +154,18 @@ namespace AppointmentManagement.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Code")
+                    b.Property<string>("BSN")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Diagnosis")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("HospitalFacilityId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ReferralCode")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

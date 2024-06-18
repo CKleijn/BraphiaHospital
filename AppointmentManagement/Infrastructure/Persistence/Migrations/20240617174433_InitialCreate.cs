@@ -56,8 +56,10 @@ namespace AppointmentManagement.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Diagnosis = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Code = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    HospitalFacilityId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ReferralCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    BSN = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Diagnosis = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {

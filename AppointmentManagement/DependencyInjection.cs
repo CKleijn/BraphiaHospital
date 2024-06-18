@@ -6,6 +6,8 @@ using AppointmentManagement.Infrastructure.MessageBus.Implementations;
 using AppointmentManagement.Infrastructure.MessageBus.Interfaces;
 using AppointmentManagement.Infrastructure.Persistence.Contexts;
 using AppointmentManagement.Infrastructure.Persistence.Stores;
+using AppointmentManagement.Common.Interfaces;
+using AppointmentManagement.Common.Mappers;
 
 namespace AppointmentManagement
 {
@@ -19,14 +21,16 @@ namespace AppointmentManagement
 
             builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(Assembly.GetExecutingAssembly()));
             builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
-
+            
             builder.Services.AddCarter();
+
             builder.Services.AddScoped<IEventStore, EventStore>();
             builder.Services.AddScoped<IEventRouter, EventRouter>();
             builder.Services.AddScoped<IProducer, Producer>();
             builder.Services.AddScoped<IConsumer, Consumer>();
 
-            //MAPPERS
+            builder.Services.AddScoped<IReferralMapper, ReferralMapper>();
+            builder.Services.AddScoped<IAppointmentMapper, AppointmentMapper>();
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();

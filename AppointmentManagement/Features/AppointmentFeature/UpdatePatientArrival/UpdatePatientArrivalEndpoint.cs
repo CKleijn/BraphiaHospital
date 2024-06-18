@@ -1,17 +1,18 @@
 ﻿using AppointmentManagement.Common.Annotations;
+using AppointmentManagement.Features.AppointmentFeature.UpdatePatientArrival.Command;
 using Carter;
 using MediatR;
 
-namespace AppointmentManagement.Features.Referral.CreateReferral
+namespace AppointmentManagement.Features.AppointmentFeature.UpdatePatientArrival
 {
-    public sealed class CreateReferralEndpoint
+    public sealed class UpdatePatientArrivalEndpoint
         : ICarterModule
     {
         public void AddRoutes(IEndpointRouteBuilder app)
         {
-            app.MapPost("referral", async (
+            app.MapPut("appointment/arrival/{id}", async (
                 ISender sender,
-                CreateReferralCommand command,
+                UpdatePatientArrivalCommand command,
                 CancellationToken cancellationToken) =>
             {
                 try
