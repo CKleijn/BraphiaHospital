@@ -17,6 +17,7 @@ namespace AppointmentManagement.Features.AppointmentFeature.ScheduleAppointment.
             if (appointmentToUpdate == null)
                 throw new ArgumentNullException($"Appointment #{notification.Appointment.Id} doesn't exist");
 
+
             appointmentToUpdate.ScheduledDateTime = notification.Appointment.ScheduledDateTime;
             await context.SaveChangesAsync(cancellationToken);
         }

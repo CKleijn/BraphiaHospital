@@ -12,11 +12,13 @@ namespace AppointmentManagement.Features.AppointmentFeature.UpdatePatientArrival
         {
             app.MapPut("appointment/arrival/{id}", async (
                 ISender sender,
+                Guid id,
                 UpdatePatientArrivalCommand command,
                 CancellationToken cancellationToken) =>
             {
                 try
                 {
+                    command.Id = id;
                     await sender.Send(command, cancellationToken);
 
                     return Results.Created();

@@ -17,7 +17,7 @@ namespace AppointmentManagement.Common.Mappers
         public partial AppointmentScheduledEvent AppointmentToAppointmentScheduledEvent(Appointment appointment);
 
         public partial Appointment RescheduleAppointmentCommandToAppointment(RescheduleAppointmentCommand command);
-        public partial AppointmentRescheduledEvent AppointmentToAppointmentRescheduledEventEvent(Appointment appointment);
+        public partial AppointmentRescheduledEvent AppointmentToAppointmentRescheduledEvent(Appointment appointment);
 
         public partial Appointment UpdatePatientArrivalCommandToAppointment(UpdatePatientArrivalCommand command);
         public partial PatientArrivalUpdatedEvent AppointmentToPatientArrivalUpdatedEvent(Appointment appointment);
