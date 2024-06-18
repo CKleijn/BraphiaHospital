@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppointmentManagement.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240617174433_InitialCreate")]
+    [Migration("20240618194924_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -52,8 +52,6 @@ namespace AppointmentManagement.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("HospitalFacilityId");
-
-                    b.HasIndex("PatientId");
 
                     b.HasIndex("PhysicianId");
 
@@ -119,36 +117,6 @@ namespace AppointmentManagement.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("HospitalFacilities");
-                });
-
-            modelBuilder.Entity("AppointmentManagement.Common.Entities.Patient", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("BSN")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("DateOfBirth")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Patients");
                 });
 
             modelBuilder.Entity("AppointmentManagement.Common.Entities.Referral", b =>
@@ -235,12 +203,6 @@ namespace AppointmentManagement.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("AppointmentManagement.Common.Entities.Patient", "Patient")
-                        .WithMany()
-                        .HasForeignKey("PatientId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("AppointmentManagement.Common.Entities.StaffMember", "Physician")
                         .WithMany()
                         .HasForeignKey("PhysicianId")
@@ -254,8 +216,6 @@ namespace AppointmentManagement.Migrations
                         .IsRequired();
 
                     b.Navigation("HospitalFacility");
-
-                    b.Navigation("Patient");
 
                     b.Navigation("Physician");
 

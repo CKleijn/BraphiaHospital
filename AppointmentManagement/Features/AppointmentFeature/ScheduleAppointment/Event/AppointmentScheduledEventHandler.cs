@@ -5,15 +5,17 @@ using MediatR;
 
 namespace AppointmentManagement.Features.AppointmentFeature.ScheduleAppointment.Event
 { 
-    public sealed class AppointmentScheduledEventHandler(ApplicationDbContext context)
+    public sealed class AppointmentScheduledEventHandler(ApplicationDbContext context, IApiClient apiClient)
         : INotificationHandler<AppointmentScheduledEvent>
     {
         public async Task Handle(
             AppointmentScheduledEvent notification,
             CancellationToken cancellationToken)
         {
-            Patient? patient = await context.Set<Patient>()
-            .FindAsync(notification.PatientId, cancellationToken) ?? throw new ArgumentNullException($"Patient #{notification.PatientId} doesn't exist");
+            _ = await apiClient
+                .GetAsync<Patient>($"{ConfigurationHelper.GetPatientManagementServiceConnectionString()}/patient/{notification.PatientId}", cancellationToken)
+                ?? throw new ArgumentNullException($"Patient #{notification.PatientId} doesn't exist");
+
             Referral? referral = await context.Set<Referral>()
             .FindAsync(notification.ReferralId, cancellationToken) ?? throw new ArgumentNullException($"Referral #{notification.ReferralId} doesn't exist");
             StaffMember? physician = await context.Set<StaffMember>()
@@ -24,7 +26,7 @@ namespace AppointmentManagement.Features.AppointmentFeature.ScheduleAppointment.
             Appointment appointment = new()
             {
                 Id = notification.Id,
-                Patient = patient,
+                PatientId = notification.PatientId,
                 Referral = referral,
                 Physician = physician,
                 HospitalFacility = hospitalFacility,

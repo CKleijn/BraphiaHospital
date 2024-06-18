@@ -36,22 +36,6 @@ namespace AppointmentManagement.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Patients",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    DateOfBirth = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    BSN = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Address = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Patients", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Referrals",
                 columns: table => new
                 {
@@ -109,12 +93,6 @@ namespace AppointmentManagement.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Appointments_Patients_PatientId",
-                        column: x => x.PatientId,
-                        principalTable: "Patients",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
                         name: "FK_Appointments_Referrals_ReferralId",
                         column: x => x.ReferralId,
                         principalTable: "Referrals",
@@ -132,11 +110,6 @@ namespace AppointmentManagement.Migrations
                 name: "IX_Appointments_HospitalFacilityId",
                 table: "Appointments",
                 column: "HospitalFacilityId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Appointments_PatientId",
-                table: "Appointments",
-                column: "PatientId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Appointments_PhysicianId",
@@ -157,9 +130,6 @@ namespace AppointmentManagement.Migrations
 
             migrationBuilder.DropTable(
                 name: "HospitalFacilities");
-
-            migrationBuilder.DropTable(
-                name: "Patients");
 
             migrationBuilder.DropTable(
                 name: "Referrals");

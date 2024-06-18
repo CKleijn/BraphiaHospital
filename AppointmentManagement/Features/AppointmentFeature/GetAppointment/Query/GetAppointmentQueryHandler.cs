@@ -13,7 +13,6 @@ namespace AppointmentManagement.Features.AppointmentFeature.GetAppointment.Query
             CancellationToken cancellationToken)
         {
             var result = await context.Set<Appointment>()
-                .Include(a => a.Patient)
                 .Include(a => a.Referral)
                 .Include(a => a.Physician)
                 .Include(a => a.HospitalFacility)
