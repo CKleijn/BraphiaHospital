@@ -1,13 +1,14 @@
 ﻿using MediatR;
 using Consultancy.Infrastructure.Persistence.Contexts;
+using Consultancy.Common.Entities;
 
-namespace Consultancy.Features.Consult.RegisterConsult.Event
+namespace Consultancy.Features.ConsultFeature.CreateConsult.Event
 {
-    public sealed class ConsultRegisteredEventHandler(ApplicationDbContext context)
-        : INotificationHandler<ConsultRegisteredEvent>
+    public sealed class ConsultCreatedEventHandler(ApplicationDbContext context)
+        : INotificationHandler<ConsultCreatedEvent>
     {
         public async Task Handle(
-            ConsultRegisteredEvent notification, 
+            ConsultCreatedEvent notification, 
             CancellationToken cancellationToken)
         {
             context.Set<Consult>().Add(notification.Consult);

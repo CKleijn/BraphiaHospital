@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Consultancy.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240617134437_InitialCreate")]
+    [Migration("20240618150304_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -25,7 +25,7 @@ namespace Consultancy.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Consultancy.Features.Consult.Consult", b =>
+            modelBuilder.Entity("Consultancy.Common.Entities.Consult", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -34,41 +34,40 @@ namespace Consultancy.Migrations
                     b.Property<Guid>("AppointmentId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("SurveyId")
+                    b.Property<Guid?>("SurveyId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
                     b.HasIndex("SurveyId");
 
-                    b.ToTable("Consult");
+                    b.ToTable("Consults");
                 });
 
-            modelBuilder.Entity("Consultancy.Features.Consult.Question", b =>
+            modelBuilder.Entity("Consultancy.Common.Entities.Question", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("AnswerValue")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("QuestionValue")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("SurveyId")
+                    b.Property<Guid?>("SurveyId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
                     b.HasIndex("SurveyId");
 
-                    b.ToTable("Question");
+                    b.ToTable("Questions");
                 });
 
-            modelBuilder.Entity("Consultancy.Features.Consult.Survey", b =>
+            modelBuilder.Entity("Consultancy.Common.Entities.Survey", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -80,35 +79,27 @@ namespace Consultancy.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Survey");
+                    b.ToTable("Surveys");
                 });
 
-            modelBuilder.Entity("Consultancy.Features.Consult.Consult", b =>
+            modelBuilder.Entity("Consultancy.Common.Entities.Consult", b =>
                 {
-                    b.HasOne("Consultancy.Features.Consult.Survey", "Survey")
-                        .WithMany("Consults")
-                        .HasForeignKey("SurveyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.HasOne("Consultancy.Common.Entities.Survey", "Survey")
+                        .WithMany()
+                        .HasForeignKey("SurveyId");
 
                     b.Navigation("Survey");
                 });
 
-            modelBuilder.Entity("Consultancy.Features.Consult.Question", b =>
+            modelBuilder.Entity("Consultancy.Common.Entities.Question", b =>
                 {
-                    b.HasOne("Consultancy.Features.Consult.Survey", "Survey")
+                    b.HasOne("Consultancy.Common.Entities.Survey", null)
                         .WithMany("Questions")
-                        .HasForeignKey("SurveyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Survey");
+                        .HasForeignKey("SurveyId");
                 });
 
-            modelBuilder.Entity("Consultancy.Features.Consult.Survey", b =>
+            modelBuilder.Entity("Consultancy.Common.Entities.Survey", b =>
                 {
-                    b.Navigation("Consults");
-
                     b.Navigation("Questions");
                 });
 #pragma warning restore 612, 618
