@@ -10,7 +10,7 @@ namespace AppointmentManagement.Features.AppointmentFeature.ScheduleAppointment.
         IProducer producer,
         IEventStore eventStore,
         IValidator<ScheduleAppointmentCommand> validator,
-        IReferralMapper mapper)
+        IAppointmentMapper mapper)
         : IRequestHandler<ScheduleAppointmentCommand>
     {
         public async Task Handle(
