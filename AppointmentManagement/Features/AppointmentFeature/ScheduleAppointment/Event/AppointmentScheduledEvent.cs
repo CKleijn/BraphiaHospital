@@ -1,8 +1,16 @@
 ﻿using MediatR;
-using AppointmentManagement.Common.Entities;
+using AppointmentManagement.Common.Enums;
 
 namespace AppointmentManagement.Features.AppointmentFeature.ScheduleAppointment.Event
 {
-    public sealed record AppointmentScheduledEvent(Appointment Appointment)
+    public sealed record AppointmentScheduledEvent(
+            Guid Id,
+            Guid PatientId,
+            Guid ReferralId,
+            Guid PhysicianId,
+            Guid HospitalFacilityId,
+            ArrivalStatus Status,
+            DateTime ScheduledDateTime
+        )
         : INotification;
 }

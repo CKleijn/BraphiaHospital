@@ -9,7 +9,6 @@ namespace AppointmentManagement.Features.AppointmentFeature.ScheduleAppointment.
         Guid ReferralId,
         Guid PhysicianId,
         Guid HospitalFacilityId,
-        ArrivalStatus Status,
         DateTime ScheduledDateTime
     ) : IRequest;
 }

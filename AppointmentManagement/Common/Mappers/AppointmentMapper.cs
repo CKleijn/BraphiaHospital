@@ -13,9 +13,6 @@ namespace AppointmentManagement.Common.Mappers
     public partial class AppointmentMapper
         : IAppointmentMapper
     {
-        public partial Appointment ScheduleAppointmentCommandToAppointment(ScheduleAppointmentCommand command);
-        public partial AppointmentScheduledEvent AppointmentToAppointmentScheduledEvent(Appointment appointment);
-
         public partial Appointment RescheduleAppointmentCommandToAppointment(RescheduleAppointmentCommand command);
         public partial AppointmentRescheduledEvent AppointmentToAppointmentRescheduledEvent(Appointment appointment);
 

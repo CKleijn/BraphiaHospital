@@ -9,9 +9,6 @@ namespace AppointmentManagement.Common.Interfaces
 {
     public interface IAppointmentMapper
     {
-        Appointment ScheduleAppointmentCommandToAppointment(ScheduleAppointmentCommand command);
-        AppointmentScheduledEvent AppointmentToAppointmentScheduledEvent(Appointment appointment);
-
         Appointment RescheduleAppointmentCommandToAppointment(RescheduleAppointmentCommand command);
         AppointmentRescheduledEvent AppointmentToAppointmentRescheduledEvent(Appointment appointment);
 
