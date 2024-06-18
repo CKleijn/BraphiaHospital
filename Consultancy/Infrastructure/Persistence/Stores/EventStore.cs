@@ -10,7 +10,7 @@ namespace Consultancy.Infrastructure.Persistence.Stores
         {
             try
             {
-                using SqlConnection connection = new(ConfigurationHelper.GetApplicationConnectionString());
+                using SqlConnection connection = new(ConfigurationHelper.GetEventConnectionString());
 
                 await connection.OpenAsync(cancellationToken);
 

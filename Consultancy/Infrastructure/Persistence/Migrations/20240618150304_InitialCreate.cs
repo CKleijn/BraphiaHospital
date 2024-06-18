@@ -12,7 +12,7 @@ namespace Consultancy.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Survey",
+                name: "Surveys",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -20,56 +20,54 @@ namespace Consultancy.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Survey", x => x.Id);
+                    table.PrimaryKey("PK_Surveys", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Consult",
+                name: "Consults",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     AppointmentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    SurveyId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    SurveyId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Consult", x => x.Id);
+                    table.PrimaryKey("PK_Consults", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Consult_Survey_SurveyId",
+                        name: "FK_Consults_Surveys_SurveyId",
                         column: x => x.SurveyId,
-                        principalTable: "Survey",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalTable: "Surveys",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
-                name: "Question",
+                name: "Questions",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    SurveyId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     QuestionValue = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    AnswerValue = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    AnswerValue = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SurveyId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Question", x => x.Id);
+                    table.PrimaryKey("PK_Questions", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Question_Survey_SurveyId",
+                        name: "FK_Questions_Surveys_SurveyId",
                         column: x => x.SurveyId,
-                        principalTable: "Survey",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalTable: "Surveys",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Consult_SurveyId",
-                table: "Consult",
+                name: "IX_Consults_SurveyId",
+                table: "Consults",
                 column: "SurveyId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Question_SurveyId",
-                table: "Question",
+                name: "IX_Questions_SurveyId",
+                table: "Questions",
                 column: "SurveyId");
         }
 
@@ -77,13 +75,13 @@ namespace Consultancy.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Consult");
+                name: "Consults");
 
             migrationBuilder.DropTable(
-                name: "Question");
+                name: "Questions");
 
             migrationBuilder.DropTable(
-                name: "Survey");
+                name: "Surveys");
         }
     }
 }

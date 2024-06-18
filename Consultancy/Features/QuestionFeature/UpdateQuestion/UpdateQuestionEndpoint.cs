@@ -1,32 +1,34 @@
 ﻿using Carter;
 using MediatR;
 using Consultancy.Common.Annotations;
-using Consultancy.Features.Consult.RegisterConsult.Command;
+using Consultancy.Features.ConsultFeature.UpdateQuestion.Command;
 
-namespace Consultancy.Features.Consult.RegisterConsult
+namespace Consultancy.Features.ConsultFeature.UpdateQuestion
 {
-    public sealed class RegisterConsultEndpoint
+    public sealed class UpdateQuestionEndpoint
         : ICarterModule
     {
         public void AddRoutes(IEndpointRouteBuilder app)
         {
-            app.MapPost("consult", async (
+            app.MapPatch("question/{id}", async (
                 ISender sender,
-                RegisterConsultCommand command,
+                Guid id,
+                UpdateQuestionCommmand command,
                 CancellationToken cancellationToken) =>
             {
                 try
                 {
+                    command.Id = id;
                     await sender.Send(command, cancellationToken);
 
-                    return Results.Created();
+                    return Results.Ok();
                 }
                 catch (Exception e)
                 {
                     return Results.Problem(e.Message);
                 }
             })
-            .WithTags(Tags.CONSULT_TAG);
+            .WithTags(Tags.QUESTION_TAG);
         }
     }
 }

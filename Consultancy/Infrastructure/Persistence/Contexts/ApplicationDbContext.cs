@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Consultancy.Features.Consult;
+using Consultancy.Common.Entities;
 
 namespace Consultancy.Infrastructure.Persistence.Contexts
 {
@@ -7,20 +7,10 @@ namespace Consultancy.Infrastructure.Persistence.Contexts
         : DbContext(options)
     {
         public DbSet<Consult> Consults { get; set; }
-        public DbSet<Consult> Surveys { get; set; }
-        public DbSet<Consult> Questions { get; set; }
+        public DbSet<Survey> Surveys { get; set; }
+        public DbSet<Question> Questions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder) {
-            modelBuilder.Entity<Consult>()
-                .HasOne(c => c.Survey)
-                .WithMany(s => s.Consults)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<Question>()
-                .HasOne(q => q.Survey)
-                .WithMany(s => s.Questions)
-                .IsRequired()
-                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
