@@ -24,6 +24,8 @@ namespace Consultancy
             builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
             builder.Services.AddCarter();
+            builder.Services.AddSingleton<HttpClient>();
+            builder.Services.AddScoped<IApiClient, ApiClient>();
             builder.Services.AddScoped<IEventStore, EventStore>();
             builder.Services.AddScoped<IEventRouter, EventRouter>();
             builder.Services.AddScoped<IProducer, Producer>();

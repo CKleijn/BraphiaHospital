@@ -19,6 +19,7 @@ namespace Consultancy.Features.ConsultFeature.CreateConsult.Command
         IEventStore eventStore,
         IValidator<CreateConsultCommand> validator,
         IConsultMapper mapper,
+        IApiClient apiClient,
         ApplicationDbContext context)
         : IRequestHandler<CreateConsultCommand>
     {
@@ -44,6 +45,10 @@ namespace Consultancy.Features.ConsultFeature.CreateConsult.Command
 
             if (request.Survey != null && request.Survey.Questions.Any(rq => existingQuestionIds.Contains(rq.Id)))
                 throw new DuplicateNameException($"Unable to create new question with already existing question id");
+
+            _ = await apiClient
+                .GetAsync<Appointment>($"{ConfigurationHelper.GetAppointmentManagementServiceConnectionString()}/appointment/{request.AppointmentId}", cancellationToken)
+                ?? throw new ArgumentNullException($"Appointment #{request.AppointmentId} doesn't exist");
 
             var consult = mapper.CreateConsultCommandToConsult(request);
 
