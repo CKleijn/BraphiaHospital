@@ -2,7 +2,7 @@
 using Consultancy.Features.ConsultFeature.CreateConsult.Command;
 using Consultancy.Features.ConsultFeature.CreateConsult.Event;
 
-namespace Consultancy.Features.ConsultFeature._Interfaces
+namespace Consultancy.Common.Interfaces
 {
     public interface IConsultMapper
     {

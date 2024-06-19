@@ -2,7 +2,6 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Consultancy.Common.Helpers;
-using Consultancy.Features.ConsultFeature._Interfaces;
 
 using System.Data;
 using System.Text.Json;
@@ -18,7 +17,7 @@ namespace Consultancy.Features.ConsultFeature.CreateConsult.Command
         IProducer producer,
         IEventStore eventStore,
         IValidator<CreateConsultCommand> validator,
-        IConsultMapper mapper,
+        IApiClient apiClient,
         ApplicationDbContext context)
         : IRequestHandler<CreateConsultCommand>
     {
@@ -45,23 +44,33 @@ namespace Consultancy.Features.ConsultFeature.CreateConsult.Command
             if (request.Survey != null && request.Survey.Questions.Any(rq => existingQuestionIds.Contains(rq.Id)))
                 throw new DuplicateNameException($"Unable to create new question with already existing question id");
 
-            var consult = mapper.CreateConsultCommandToConsult(request);
+            Appointment coupledAppointment = await apiClient
+                .GetAsync<Appointment>($"{ConfigurationHelper.GetAppointmentManagementServiceConnectionString()}/appointment/{request.AppointmentId}", cancellationToken)
+                ?? throw new ArgumentNullException($"Appointment #{request.AppointmentId} doesn't exist");
+
+            ConsultCreatedEvent consultCreatedEvent = new ConsultCreatedEvent(
+                PatientId: coupledAppointment.PatientId,
+                Consult: new Consult()
+                {
+                    Id = Guid.NewGuid(),
+                    AppointmentId = request.AppointmentId,
+                    Survey = request.Survey
+                }
+            );
 
             var result = await eventStore
                 .AddEvent(
                     typeof(ConsultCreatedEvent).Name,
-                    JsonSerializer.Serialize(consult),
+                    JsonSerializer.Serialize(consultCreatedEvent),
                     cancellationToken);
 
-            if (result)
-            {
-                var consultCreatedEvent = mapper.ConsultToConsultCreatedEvent(consult);
+            if (!result)
+                return;
 
-                producer.Produce(
-                    EventMapper.MapEventToRoutingKey(consultCreatedEvent.GetType().Name),
-                    consultCreatedEvent.GetType().Name,
-                    JsonSerializer.Serialize(consultCreatedEvent));
-            }
+            producer.Produce(
+                EventMapper.MapEventToRoutingKey(consultCreatedEvent.GetType().Name),
+                consultCreatedEvent.GetType().Name,
+                JsonSerializer.Serialize(consultCreatedEvent));
         }
     }
 }

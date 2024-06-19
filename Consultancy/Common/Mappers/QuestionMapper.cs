@@ -1,5 +1,5 @@
 ﻿using Consultancy.Common.Entities;
-using Consultancy.Features.ConsultFeature._Interfaces;
+using Consultancy.Common.Interfaces;
 using Consultancy.Features.ConsultFeature.UpdateQuestion.Event;
 using Riok.Mapperly.Abstractions;
 

@@ -1,7 +1,7 @@
 ﻿using Consultancy.Common.Entities;
 using Consultancy.Features.ConsultFeature.UpdateQuestion.Event;
 
-namespace Consultancy.Features.ConsultFeature._Interfaces
+namespace Consultancy.Common.Interfaces
 {
     public interface IQuestionMapper
     {

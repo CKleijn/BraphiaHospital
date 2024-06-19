@@ -28,5 +28,14 @@
 
             return configuration.GetConnectionString("EventStoreConnectionString")!;
         }
+
+        public static string GetAppointmentManagementServiceConnectionString()
+        {
+            IConfigurationRoot configuration = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.Development.json")
+                .Build();
+
+            return configuration.GetConnectionString("AppointmentManagementServiceConnectionString")!;
+        }
     }
 }

@@ -1,9 +1,9 @@
 ﻿using Consultancy.Common.Entities;
 using MediatR;
 
-namespace Consultancy.Features.ConsultFeature.CreateConsult.Event
+namespace Consultancy.Features.ConsultFeature.UpdateNotes.Event
 {
-    public sealed record ConsultCreatedEvent(
+    public sealed record DossierConsultAppendedEvent(
             Guid PatientId,
             Consult Consult
         )

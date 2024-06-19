@@ -12,12 +12,18 @@ namespace Consultancy.Features.ConsultFeature.GetConsult.Query
             GetConsultQuery request,
             CancellationToken cancellationToken)
         {
-            var result = await context.Set<Consult>()
+            var consult = await context.Set<Consult>()
                 .Include(c => c.Survey)
-                .Include(c => c.Survey.Questions)
                 .FirstOrDefaultAsync(p => p.Id == request.id, cancellationToken);
 
-            return result == null ? throw new ArgumentNullException($"Consult #{request.id} doesn't exist") : result;
+            if (consult?.Survey != null)
+            {
+                await context.Entry(consult.Survey)
+                    .Collection(s => s.Questions)
+                    .LoadAsync(cancellationToken);
+            }
+
+            return consult ?? throw new ArgumentNullException($"Consult #{request.id} doesn't exist");
         }
     }
 }
