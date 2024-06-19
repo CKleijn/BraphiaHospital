@@ -13,7 +13,9 @@ namespace AppointmentManagement.Features.AppointmentFeature.RescheduleAppointmen
 
             RuleFor(x => x.ScheduledDateTime)
                 .NotEmpty()
-                .WithMessage("ScheduledDateTime is required!");
+                .WithMessage("ScheduledDateTime is required!")
+                .Must(x => x > DateTime.Now)
+                .WithMessage("ScheduledDateTime must be in the future!");
         }
     }
 }

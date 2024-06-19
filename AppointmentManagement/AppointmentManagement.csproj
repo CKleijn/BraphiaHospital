@@ -10,6 +10,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Features\PatientFeature\**" />
+    <Content Remove="Features\PatientFeature\**" />
+    <EmbeddedResource Remove="Features\PatientFeature\**" />
+    <None Remove="Features\PatientFeature\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Dockerfile1.original" />
   </ItemGroup>
 
@@ -39,7 +46,6 @@
 
   <ItemGroup>
     <Folder Include="Features\HospitalFacilityFeature\" />
-    <Folder Include="Features\PatientFeature\" />
     <Folder Include="Features\StaffMemberFeature\" />
   </ItemGroup>
 

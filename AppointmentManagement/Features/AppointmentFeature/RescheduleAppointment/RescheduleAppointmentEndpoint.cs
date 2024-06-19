@@ -12,11 +12,13 @@ namespace AppointmentManagement.Features.ReferralFeature.CreateReferral
         {
             app.MapPut("appointment/reschedule/{id}", async (
                 ISender sender,
+                Guid id,
                 RescheduleAppointmentCommand command,
                 CancellationToken cancellationToken) =>
             {
                 try
                 {
+                    command.Id = id;
                     await sender.Send(command, cancellationToken);
 
                     return Results.Created();

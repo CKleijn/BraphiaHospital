@@ -2,8 +2,11 @@
 
 namespace AppointmentManagement.Features.AppointmentFeature.RescheduleAppointment.Command
 {
-    public sealed record RescheduleAppointmentCommand (
+    public sealed record RescheduleAppointmentCommand(
         Guid Id,
         DateTime ScheduledDateTime
-    ) : IRequest;
+    ) : IRequest
+    {
+        public Guid Id { get; set; }
+    }
 }

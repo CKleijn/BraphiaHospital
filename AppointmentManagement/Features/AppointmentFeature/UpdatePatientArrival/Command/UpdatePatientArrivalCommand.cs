@@ -6,5 +6,8 @@ namespace AppointmentManagement.Features.AppointmentFeature.UpdatePatientArrival
     public sealed record UpdatePatientArrivalCommand(
         Guid Id,
         ArrivalStatus Status
-    ) : IRequest;
+    ) : IRequest
+    {
+        public Guid Id { get; set;}
+    }
 }
