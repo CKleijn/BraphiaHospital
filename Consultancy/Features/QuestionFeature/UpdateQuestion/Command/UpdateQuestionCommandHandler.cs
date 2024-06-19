@@ -1,7 +1,6 @@
 ﻿using FluentValidation;
 using MediatR;
 using Consultancy.Common.Helpers;
-using Consultancy.Features.ConsultFeature._Interfaces;
 
 using System.Text.Json;
 using Consultancy.Infrastructure.MessageBus.Interfaces;
@@ -9,6 +8,7 @@ using Consultancy.Infrastructure.Persistence.Stores;
 using Consultancy.Features.ConsultFeature.UpdateQuestion.Event;
 using Consultancy.Common.Entities;
 using Consultancy.Infrastructure.Persistence.Contexts;
+using Consultancy.Common.Interfaces;
 
 namespace Consultancy.Features.ConsultFeature.UpdateQuestion.Command
 {

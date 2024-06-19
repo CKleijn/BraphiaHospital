@@ -6,9 +6,9 @@ using Consultancy.Infrastructure.MessageBus.Implementations;
 using Consultancy.Infrastructure.MessageBus.Interfaces;
 using Consultancy.Infrastructure.Persistence.Contexts;
 using Consultancy.Infrastructure.Persistence.Stores;
-using Consultancy.Features.ConsultFeature._Interfaces;
 using Consultancy.Features.ConsultFeature;
 using Consultancy.Common.Mappers;
+using Consultancy.Common.Interfaces;
 
 namespace Consultancy
 {
@@ -30,7 +30,6 @@ namespace Consultancy
             builder.Services.AddScoped<IEventRouter, EventRouter>();
             builder.Services.AddScoped<IProducer, Producer>();
             builder.Services.AddScoped<IConsumer, Consumer>();
-            builder.Services.AddScoped<IConsultMapper, ConsultMapper>();
             builder.Services.AddScoped<IQuestionMapper, QuestionMapper>();
 
             builder.Services.AddEndpointsApiExplorer();

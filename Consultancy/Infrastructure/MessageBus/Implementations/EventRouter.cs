@@ -32,7 +32,7 @@ namespace Consultancy.Infrastructure.MessageBus.Implementations
             switch (eventName)
             {
                 case nameof(ConsultCreatedEvent):
-                    await publisher.Publish(new ConsultCreatedEvent(TranslatePayload<Consult>(payload)));
+                    await publisher.Publish(JsonConvert.DeserializeObject<ConsultCreatedEvent>(payload)!);
                     break;
                 case nameof(QuestionUpdatedEvent):
                     await publisher.Publish(new QuestionUpdatedEvent(TranslatePayload<Question>(payload)));
