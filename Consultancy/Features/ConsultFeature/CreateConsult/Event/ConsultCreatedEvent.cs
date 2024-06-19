@@ -4,10 +4,8 @@ using MediatR;
 namespace Consultancy.Features.ConsultFeature.CreateConsult.Event
 {
     public sealed record ConsultCreatedEvent(
-            Guid Id,
-            Guid AppointmentId,
             Guid PatientId,
-            Survey? Survey
+            Consult Consult
         )
         : INotification;
 }

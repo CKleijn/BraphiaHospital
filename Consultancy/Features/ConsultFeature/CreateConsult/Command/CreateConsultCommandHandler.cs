@@ -49,10 +49,13 @@ namespace Consultancy.Features.ConsultFeature.CreateConsult.Command
                 ?? throw new ArgumentNullException($"Appointment #{request.AppointmentId} doesn't exist");
 
             ConsultCreatedEvent consultCreatedEvent = new ConsultCreatedEvent(
-                Id: Guid.NewGuid(),
-                AppointmentId: request.AppointmentId,
                 PatientId: coupledAppointment.PatientId,
-                Survey: request.Survey
+                Consult: new Consult()
+                {
+                    Id = Guid.NewGuid(),
+                    AppointmentId = request.AppointmentId,
+                    Survey = request.Survey
+                }
             );
 
             var result = await eventStore
