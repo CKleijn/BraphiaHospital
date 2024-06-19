@@ -9,6 +9,8 @@ using Consultancy.Features.ConsultFeature.UpdateQuestion.Event;
 using Consultancy.Common.Entities;
 using Consultancy.Infrastructure.Persistence.Contexts;
 using Consultancy.Common.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Consultancy.Features.ConsultFeature.UpdateQuestion.Command
 {
@@ -29,11 +31,17 @@ namespace Consultancy.Features.ConsultFeature.UpdateQuestion.Command
             if (!validationResult.IsValid)
                 throw new ValidationException(validationResult.Errors);
 
+            if (!await context.Set<Consult>().AnyAsync(c => c.Id == request.Id, cancellationToken))
+                throw new KeyNotFoundException($"No consult present with id #{request.Id}");
+
+            if (await context.Set<Consult>().AnyAsync(c => c.Id == request.Id && c.Notes.IsNullOrEmpty()!, cancellationToken))
+                throw new InvalidOperationException($"Consult with id #{request.Id} has already finished and therefore cannot be edited");
+
             Question? question = await context.Set<Question>()
                 .FindAsync(request.Id, cancellationToken);
 
             if (question == null)
-                throw new ArgumentNullException($"Question #{request.Id} doesn't exist");
+                throw new KeyNotFoundException($"Question #{request.Id} doesn't exist");
 
             question.AnswerValue = request.AnswerValue;
 
