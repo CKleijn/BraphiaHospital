@@ -5,6 +5,6 @@ namespace Consultancy.Common.Interfaces
 {
     public interface IConsultMapper
     {
-        SurveyFilledInEvent ConsultToSurveyFilledInEvent(Consult Consult);
+        ConsultSurveyFilledInEvent ConsultToConsultSurveyFilledInEvent(Consult Consult);
     }
 }

@@ -38,7 +38,7 @@ namespace Consultancy.Features.ConsultFeature.UpdateQuestions.Command
             if (consult.Survey == null)
                 throw new KeyNotFoundException($"No survey present within consult with id #{request.Id}");
 
-            if (consult.Notes.IsNullOrEmpty()!)
+            if (!consult.Notes.IsNullOrEmpty())
                 throw new InvalidOperationException($"Consult with id #{request.Id} has already finished and therefore cannot be edited");
 
             await context.Entry(consult.Survey)
@@ -53,18 +53,18 @@ namespace Consultancy.Features.ConsultFeature.UpdateQuestions.Command
                 questionContext.AnswerValue = questionRequest.AnswerValue;
             }
 
-            if (consult.Survey.Questions.Any(q => q.AnswerValue == null))
+            if (consult.Survey.Questions.Any(q => q.AnswerValue.IsNullOrEmpty()))
                 throw new InvalidOperationException("Not all questions in the survey are answered");
 
             var result = await eventStore
                 .AddEvent(
-                    typeof(SurveyFilledInEvent).Name,
+                    typeof(ConsultSurveyFilledInEvent).Name,
                     JsonSerializer.Serialize(consult),
                     cancellationToken);
 
             if (result)
             {
-                var surveyFilledInEvent = mapper.ConsultToSurveyFilledInEvent(consult);
+                var surveyFilledInEvent = mapper.ConsultToConsultSurveyFilledInEvent(consult);
 
                 producer.Produce(
                     EventMapper.MapEventToRoutingKey(surveyFilledInEvent.GetType().Name),

@@ -9,6 +9,6 @@ namespace Consultancy.Common.Mappers
     public partial class ConsultMapper
         : IConsultMapper
     {
-        public partial SurveyFilledInEvent ConsultToSurveyFilledInEvent(Consult Consult);
+        public partial ConsultSurveyFilledInEvent ConsultToConsultSurveyFilledInEvent(Consult Consult);
     }
 }

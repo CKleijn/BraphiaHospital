@@ -33,7 +33,11 @@ namespace Consultancy.Features.ConsultFeature.UpdateNotes.Command
             if (!await context.Set<Consult>().AnyAsync(c => c.Id == request.Id, cancellationToken))
                 throw new KeyNotFoundException($"No consult present with id #{request.Id}");
 
-            if (await context.Set<Consult>().AnyAsync(c => c.Id == request.Id && c.Notes.IsNullOrEmpty()!, cancellationToken))
+            List<Consult> consults = await context.Set<Consult>()
+                .Where(c => c.Id == request.Id)
+                .ToListAsync(cancellationToken);
+
+            if (consults.Any(c => !c.Notes.IsNullOrEmpty()))
                 throw new InvalidOperationException($"Consult with id #{request.Id} has already finished and therefore cannot be edited");
 
             Consult consult = await context.FindAsync<Consult>(request.Id) ?? throw new KeyNotFoundException($"No consult present with id #{request.Id}");
