@@ -208,3 +208,5 @@ services:
       - consultancy.eventstore
       - hospital.database
       - hospital.eventstore 
+      - staff.database
+      - staff.eventstore 

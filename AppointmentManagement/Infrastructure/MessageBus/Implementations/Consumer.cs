@@ -33,8 +33,6 @@ namespace AppointmentManagement.Infrastructure.MessageBus.Implementations
 
             consumer.Received += async (model, eventArgs) =>
             {
-                //TODO: check hospital/staff event
-
                 await eventRouter.RouteEvents(eventArgs);
                 channel.BasicAck(eventArgs.DeliveryTag, false);
             };

@@ -23,9 +23,6 @@ namespace AppointmentManagement.Features.AppointmentFeature.RescheduleAppointmen
             RescheduleAppointmentCommand request,
             CancellationToken cancellationToken)
         {
-            //TODO: if partial payload is allowed there will be no need for the context call
-            //Move id validation to validator when partial payload will be implemented
-
             var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
             if (!validationResult.IsValid)
