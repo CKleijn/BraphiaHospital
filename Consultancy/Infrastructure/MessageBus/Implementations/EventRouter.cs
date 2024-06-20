@@ -38,8 +38,8 @@ namespace Consultancy.Infrastructure.MessageBus.Implementations
                 case nameof(DossierConsultAppendedEvent):
                     await publisher.Publish(JsonConvert.DeserializeObject<DossierConsultAppendedEvent>(payload)!);
                     break;
-                case nameof(SurveyFilledInEvent):
-                    await publisher.Publish(JsonConvert.DeserializeObject<SurveyFilledInEvent>(payload)!);
+                case nameof(ConsultSurveyFilledInEvent):
+                    await publisher.Publish(JsonConvert.DeserializeObject<ConsultSurveyFilledInEvent>(payload)!);
                     break;
             }
         }

@@ -9,7 +9,7 @@ namespace Consultancy.Common.Entities
         [Key]
         public Guid Id { get; init; } = Guid.NewGuid();
         public Guid AppointmentId { get; set; } = Guid.Empty;
-        public Survey? Survey { get; set; } = new Survey();
+        public Survey? Survey { get; set; } = null;
         public string? Notes { get; set; } = string.Empty;
     }
 }
