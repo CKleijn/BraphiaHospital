@@ -15,21 +15,20 @@ namespace AppointmentManagement.Features.AppointmentFeature.ScheduleAppointment.
             _ = await apiClient
                 .GetAsync<Patient>($"{ConfigurationHelper.GetPatientManagementServiceConnectionString()}/patient/{notification.PatientId}", cancellationToken)
                 ?? throw new ArgumentNullException($"Patient #{notification.PatientId} doesn't exist");
-
-            Referral? referral = await context.Set<Referral>()
+            _ = await context.Set<Referral>()
             .FindAsync(notification.ReferralId, cancellationToken) ?? throw new ArgumentNullException($"Referral #{notification.ReferralId} doesn't exist");
-            StaffMember? physician = await context.Set<StaffMember>()
+            _ = await context.Set<StaffMember>()
             .FindAsync(notification.PhysicianId, cancellationToken) ?? throw new ArgumentNullException($"Physician #{notification.PhysicianId} doesn't exist");
-            HospitalFacility? hospitalFacility = await context.Set<HospitalFacility>()
+            _ = await context.Set<HospitalFacility>()
             .FindAsync(notification.HospitalFacilityId, cancellationToken) ?? throw new ArgumentNullException($"HospitalFacility #{notification.HospitalFacilityId} doesn't exist");
 
             Appointment appointment = new()
             {
                 Id = notification.Id,
                 PatientId = notification.PatientId,
-                Referral = referral,
-                Physician = physician,
-                HospitalFacility = hospitalFacility,
+                ReferralId = notification.ReferralId,
+                PhysicianId = notification.PhysicianId,
+                HospitalFacilityId = notification.HospitalFacilityId,
                 ScheduledDateTime = notification.ScheduledDateTime
             };
 
