@@ -2,12 +2,7 @@ const { getChannel, setupConsumerByTopic } = require('../../connections/connectR
 const { createHospital } = require('../../services/hospitalRead.service');
 
 const startHospitalCreateConsumer = async () => {
-    try {
         await setupConsumerByTopic(process.env.HOSPITAL_QUEUE_RMC, process.env.HOSPITAL_CREATED_RMC_KEY, hospitalCreateHandler);
-        console.log('Hospital create consumer started.');
-    } catch (error) {
-        console.error('Error setting up consumer:', error);
-    }
 };
 
 const hospitalCreateHandler = async (msg) => {

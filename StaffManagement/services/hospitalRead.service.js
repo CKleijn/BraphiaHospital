@@ -4,7 +4,7 @@ const { readPool } = require('../connections/connectPostgreDB');
 const createHospitalQuery = `INSERT INTO hospital (hospital_id, name) VALUES ($1, $2);`;
 const updateHospitalQuery = `UPDATE hospital SET name = $1 WHERE hospital_id = $2;`;
 const getHospitalQuery = `SELECT * FROM hospital;`;
-const getHospitalByIdQuery = 'SELECT * FROM hospital WHERE hospital_id = $1;';
+const getHospitalByIdQuery = 'SELECT * FROM hospital WHERE hospitalId = $1;';
 
 const handleDatabaseError = (res, err) => { 
     console.error(err);
@@ -19,8 +19,8 @@ const createHospital = async (data) => {
         
         console.log(`Hospital record inserted successfully: ${data.hospital}`);
     } catch (error) {
-        console.error('Error creating hospital:', error);
-        throw error;
+        handleDatabaseError(res, error);
+        return;
     }
 };
 
@@ -39,8 +39,7 @@ const updateHospital = async (data) => {
 const getHospital = async (req, res) => {   
     try {
         const result = await readPool.query(getHospitalQuery);
-        const hospitals = result.rows;
-        res.status(200).json(hospitals);
+        res.status(200).json({count: result.rows.length, result: result.rows});
     } catch (err) {
         handleDatabaseError(res, err);
         return;

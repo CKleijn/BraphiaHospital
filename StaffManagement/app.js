@@ -36,7 +36,7 @@ const startServer = async () => {
   try {
     await connectRabbitMQ();
     
-    // await setupRabbitMQ();
+    await setupRabbitMQ();
 
     // // Initialize the consumers
     await startStaffCreateConsumer();

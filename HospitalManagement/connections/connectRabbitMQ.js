@@ -5,7 +5,6 @@ let channel, connection;
 
 const connectRabbitMQ = async () => {
     try {
-        // local connection string
         const connectionString = `amqp://${process.env.USER_RMC}:${process.env.PWD_RMC}@${process.env.HOST_RMC}:${process.env.PORT_RMC}${process.env.VHOST_RMC}`;
         connection = await amqp.connect(connectionString);
         channel = await connection.createChannel();
@@ -17,21 +16,6 @@ const connectRabbitMQ = async () => {
 
 const getChannel = () => channel;
 
-// Listens to all messages in the queue
-const setupConsumer = async (queueName, onMessage) => {
-    try {
-        if (!channel) {
-            console.error('Channel is not initialized');
-            return;
-        }
-        await channel.assertQueue(queueName, { durable: true });
-        channel.consume(queueName, onMessage, { noAck: false });
-        console.log(`Consuming messages from ${queueName}`);
-    } catch (err) {
-        console.error(`Error consuming messages from ${queueName}:`, err);
-    }
-};
-
 // Listens to messages in the queue with the specific routing key pattern
 const setupConsumerByTopic = async (queueName, routingKeyPattern, onMessage) => {
     try {
@@ -39,8 +23,15 @@ const setupConsumerByTopic = async (queueName, routingKeyPattern, onMessage) => 
             console.error('Channel is not initialized');
             return;
         }
+        
+        // assert Exchange
+        assertExchange(process.env.EXCHANGE_RMC, 'topic', { durable: true });
+
         // Assert the queue to ensure it exists
         await channel.assertQueue(queueName, { durable: true });
+
+        // Bind the queue to the exchange with the specific routing key pattern
+        await channel.bindQueue(queueName, process.env.EXCHANGE_RMC, routingKeyPattern);
 
         // Consume messages from the queue with the specific routing key pattern
         channel.consume(queueName, (msg) => {
@@ -68,11 +59,12 @@ const sendMessageToExchange = async (exchangeName, routingKey, message) => {
 
         // Publish the message to the exchange with the specified routing key
         channel.publish(exchangeName, routingKey, Buffer.from(message));
+        
         console.log(`Message sent to exchange ${exchangeName} with routing key ${routingKey}: ${message}`);
-
+        
     } catch (error) {
         console.error('Error publishing message:', error);
     }
 };
 
-module.exports = { connectRabbitMQ, getChannel, setupConsumer, setupConsumerByTopic, sendMessageToExchange};
+module.exports = { connectRabbitMQ, getChannel, setupConsumerByTopic, sendMessageToExchange};

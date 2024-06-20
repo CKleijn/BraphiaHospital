@@ -15,24 +15,10 @@ const handleValidationErrors = (res, message) => {
 };
 
 const createEvent = async (req, res) => {
-    const { hospital, street, number, postalCode, city, country, stores, squares, phoneNumber, email, website, totalBeds, builtYear} = req.body;
-
     // Construct the payload object to be inserted
     const payloadToInsert = {
         id: uuidv4(),
-        hospital,
-        street,
-        number,
-        postalCode,
-        city,
-        country,
-        stores,
-        squares,
-        phoneNumber,
-        email,
-        website,
-        totalBeds,
-        builtYear
+        ...req.body
     };
 
     try {
@@ -48,6 +34,7 @@ const createEvent = async (req, res) => {
         res.status(201).json(newEvent);
     } catch (err) {
         handleDatabaseError(res, err);
+        return;
     }
 };
 

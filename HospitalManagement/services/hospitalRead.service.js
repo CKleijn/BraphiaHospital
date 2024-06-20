@@ -45,16 +45,15 @@ const createHospital = async (data) => {
         const result = await readPool.query(createHospitalQuery, queryValues);
         console.log(`Hospital record inserted successfully:`, result.rows[0]);
     } catch (err) {
-        console.error('Error creating hospital:', err);
-        throw err;
+        handleDatabaseError(res, err);
+        return;
     }
 };
 
 const getHospital = async (req, res) => {   
     try {
         const result = await readPool.query(getHospitalQuery);
-        const hospitals = result.rows;
-        res.status(200).json(hospitals);
+        res.status(200).json({count: result.rows.length, result: result.rows});
     } catch (err) {
         handleDatabaseError(res, err);
         return;
@@ -89,7 +88,7 @@ const updateHospital = async (data) => {
         res.status(200).json(result.row[0]);
     } catch (err) {
         handleDatabaseError(res, err);
-        throw err;
+        return;
     }
 }
 

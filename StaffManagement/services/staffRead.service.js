@@ -16,6 +16,7 @@ const handleDatabaseError = (res, err) => {
 
 const createStaff = async (data) => {
     const { id, name, specialization, hospitalId, street, city, state, zip, phoneNumber, email, employmentDate } = data;
+    
     try {
         const result = await readPool.query(createStaffQuery, 
             [id, name, specialization, hospitalId, street, city, state, zip, phoneNumber, email, employmentDate]
@@ -26,15 +27,15 @@ const createStaff = async (data) => {
         console.log('Staff created successfully:', result.rows[0]);
         return result.rows[0];
     } catch (error) {
-        console.error('Error creating staff:', error);
-        throw error;
+        handleDatabaseError(res, error);
+        return;
     }
 };
 
 const getStaff = async (req,res) => {
     try {
         const result = await readPool.query(getStaffQuery);
-        res.status(200).json(result.rows);
+        res.status(200).json({count: result.rows.length, result: result.rows});
     } catch (error) {
         handleDatabaseError(res, error);
         return;
