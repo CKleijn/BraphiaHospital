@@ -12,6 +12,6 @@ router.get('/:id', getHospitalById);
 /* POST hospital. */
 router.post('/', createEvent);
 /* POST hospital. */
-router.put('/', updateEvent);
+router.put('/:id', updateEvent);
 
 module.exports = router;

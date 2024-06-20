@@ -31,7 +31,7 @@ const createEvent = async (req, res) => {
         // Send message to exchange with the complete payload
         sendMessageToExchange(process.env.EXCHANGE_RMC, process.env.HOSPITAL_CREATED_RMC_KEY, payloadString);
 
-        res.status(201).json(newEvent);
+        res.status(201).json(newEvent.rows[0]);
     } catch (err) {
         handleDatabaseError(res, err);
         return;
@@ -46,12 +46,12 @@ const updateEvent = async (req, res) => {
     try {
         const payloadString = JSON.stringify(payload);
 
-        await writePool.query(postEventQuery, [process.env.HOSPITAL_UPDATED_RMC_KEY, payloadString]);
+        const newEvent = await writePool.query(postEventQuery, [process.env.HOSPITAL_UPDATED_RMC_KEY, payloadString]);
 
         // send message to exchange based on event type
         sendMessageToExchange(process.env.EXCHANGE_RMC, process.env.HOSPITAL_UPDATED_RMC_KEY, payloadString);
 
-        res.status(201).json(newEvent);
+        res.status(201).json(newEvent.rows[0]);
     } catch (err) {
         handleDatabaseError(res, err);
         return;

@@ -1,7 +1,7 @@
 const { getChannel, setupConsumerByTopic } = require('../../connections/connectRabbitMQ');
 const { createStaff } = require('../../services/staffRead.service');
 
-const startStaffCreateConsumer = async () => {
+const startStaffQueueConsumer = async () => {
         await setupConsumerByTopic(process.env.STAFF_QUEUE_RMC, process.env.STAFF_RMC_KEY, staffCreateHandler);
 };
 
@@ -24,4 +24,4 @@ const staffCreateHandler = async (msg) => {
 };
 
 
-module.exports = startStaffCreateConsumer;
+module.exports = startStaffQueueConsumer;
