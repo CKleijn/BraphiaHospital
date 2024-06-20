@@ -42,4 +42,4 @@ const JsonParse = (msg, key) => {
 }
 
 
-module.exports = startHospitalCreateConsumer;
+module.exports = startHospitalQueueConsumer;
