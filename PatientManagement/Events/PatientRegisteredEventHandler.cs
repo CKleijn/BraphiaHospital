@@ -11,7 +11,10 @@ namespace PatientManagement.Events
             PatientRegisteredEvent notification,
             CancellationToken cancellationToken)
         {
-            context.Set<Patient>().Add(notification.Patient);
+            context
+                .Set<Patient>()
+                .Add(notification.Patient);
+
             await context.SaveChangesAsync(cancellationToken);
         }
     }

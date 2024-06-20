@@ -11,7 +11,9 @@ namespace PatientManagement.Features.Patient.GetPatients
             GetPatientsQuery request,
             CancellationToken cancellationToken)
         {
-            return await context.Set<Patient>().ToListAsync(cancellationToken);
+            return await context
+                .Set<Patient>()
+                .ToListAsync(cancellationToken);
         }
     }
 }

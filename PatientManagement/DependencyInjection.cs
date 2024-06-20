@@ -2,8 +2,6 @@
 using Carter;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
-using PatientManagement.Features.Patient;
-using PatientManagement.Features.Patient._Interfaces;
 using PatientManagement.Infrastructure.MessageBus.Implementations;
 using PatientManagement.Infrastructure.MessageBus.Interfaces;
 using PatientManagement.Infrastructure.Persistence.Contexts;
@@ -27,7 +25,6 @@ namespace PatientManagement
             builder.Services.AddScoped<IEventRouter, EventRouter>();
             builder.Services.AddScoped<IProducer, Producer>();
             builder.Services.AddScoped<IConsumer, Consumer>();
-            builder.Services.AddScoped<IPatientMapper, PatientMapper>();
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();

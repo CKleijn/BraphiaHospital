@@ -118,6 +118,10 @@ services:
     ports:
         - "5004:5004"
         - "5005:5005"
+    depends_on:
+      - rabbitmq
+      - consultancy.database 
+      - consultancy.eventstore 
 
   consultancy.database:
     image: mcr.microsoft.com/mssql/server:2022-latest

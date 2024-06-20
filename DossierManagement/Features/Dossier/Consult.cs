@@ -8,6 +8,6 @@ namespace DossierManagement.Features.Dossier
     {
         [Key]
         public Guid Id { get; init; } = Guid.NewGuid();
-        public string? Note { get; set; }
+        public string? Notes { get; set; } = string.Empty;
     }
 }

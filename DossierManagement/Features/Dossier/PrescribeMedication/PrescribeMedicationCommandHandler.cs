@@ -27,9 +27,9 @@ namespace DossierManagement.Features.Dossier.PrescribeMedication
             if (!validationResult.IsValid)
                 throw new ValidationException(validationResult.Errors);
 
-            if (await context
+            if (!await context
                 .Set<Dossier>()
-                .AnyAsync(d => d.Patient.Id != request.PatientId, cancellationToken))
+                .AnyAsync(d => d.Patient.Id == request.PatientId, cancellationToken))
                 throw new ArgumentNullException($"Dossier doesn't exist for patient #{request.PatientId}");
 
             var medicationPrescribedEvent = new DossierMedicationPrescribedEvent

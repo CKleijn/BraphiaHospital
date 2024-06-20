@@ -14,15 +14,8 @@ namespace AppointmentManagement
 
             bool databaseExists = dbContext.Database.CanConnect();
 
-            if(databaseExists)
-            {
+            if (!databaseExists)
                 dbContext.Database.Migrate();
-            } 
-            else
-            {
-                dbContext.Database.EnsureCreated();
-                dbContext.Database.Migrate();
-            }
         }
 
         public static void ApplyEventStoreMigrations(this IApplicationBuilder app)

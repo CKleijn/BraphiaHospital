@@ -4,7 +4,6 @@ using System.Text;
 using RabbitMQ.Client.Events;
 using Newtonsoft.Json.Linq;
 using DossierManagement.Infrastructure.MessageBus.Interfaces;
-using DossierManagement.Features.Dossier;
 using DossierManagement.Events.ConsultAppended;
 using DossierManagement.Events.DossierCreated;
 using DossierManagement.Events.PatientRegistered;
@@ -44,7 +43,7 @@ namespace DossierManagement.Infrastructure.MessageBus.Implementations
                     await publisher.Publish(JsonConvert.DeserializeObject<DossierMedicationPrescribedEvent>(payload)!);
                     break;
                 case nameof(PatientRegisteredEvent):
-                    await publisher.Publish(new PatientRegisteredEvent(TranslatePayload<Patient>(payload)));
+                    await publisher.Publish(JsonConvert.DeserializeObject<PatientRegisteredEvent>(payload)!);
                     break;
             }
         }

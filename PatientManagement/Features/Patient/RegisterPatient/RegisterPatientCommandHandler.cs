@@ -3,7 +3,6 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PatientManagement.Common.Helpers;
 using PatientManagement.Events;
-using PatientManagement.Features.Patient._Interfaces;
 using PatientManagement.Infrastructure.MessageBus.Interfaces;
 using PatientManagement.Infrastructure.Persistence.Contexts;
 using PatientManagement.Infrastructure.Persistence.Stores;
@@ -16,7 +15,6 @@ namespace PatientManagement.Features.Patient.RegisterPatient
         IProducer producer,
         IEventStore eventStore,
         IValidator<RegisterPatientCommand> validator,
-        IPatientMapper mapper,
         ApplicationDbContext context)
         : IRequestHandler<RegisterPatientCommand>
     {
@@ -29,22 +27,30 @@ namespace PatientManagement.Features.Patient.RegisterPatient
             if (!validationResult.IsValid)
                 throw new ValidationException(validationResult.Errors);
 
-            // Check based on eventStore instead of read db?
             if (await context.Set<Patient>().AnyAsync(p => p.BSN == request.BSN, cancellationToken))
                 throw new DuplicateNameException($"{request.BSN} already exists");
 
-            var patient = mapper.RegisterPatientCommandToPatient(request);
+            var patientRegisteredEvent = new PatientRegisteredEvent
+            (
+                Patient: new Patient
+                {
+                    Id = Guid.NewGuid(),
+                    FirstName = request.FirstName,
+                    LastName = request.LastName,
+                    DateOfBirth = request.DateOfBirth,
+                    BSN = request.BSN,
+                    Address = request.Address
+                }
+            );
 
             var result = await eventStore
                 .AddEvent(
-                    typeof(PatientRegisteredEvent).Name,
-                    JsonSerializer.Serialize(patient),
+                    patientRegisteredEvent.GetType().Name,
+                    JsonSerializer.Serialize(patientRegisteredEvent),
                     cancellationToken);
 
             if (result)
             {
-                var patientRegisteredEvent = mapper.PatientToPatientRegisteredEvent(patient);
-
                 producer.Produce(
                     EventMapper.MapEventToRoutingKey(patientRegisteredEvent.GetType().Name),
                     patientRegisteredEvent.GetType().Name,

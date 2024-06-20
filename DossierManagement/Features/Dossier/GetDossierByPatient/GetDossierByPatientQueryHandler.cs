@@ -15,16 +15,7 @@ namespace DossierManagement.Features.Dossier.GetDossierByPatient
                 .Set<Dossier>()
                 .Include(d => d.Patient)
                 .Include(d => d.Consults)
-                .Where(d => d.PatientId == request.PatientId)
-                .Select(d => new Dossier
-                {
-                    Id = d.Id,
-                    PatientId = d.PatientId,
-                    Patient = d.Patient,
-                    Consults = d.Consults,
-                    Medications = (d.Medications ?? new List<string>()).ToList()
-                })
-                .FirstOrDefaultAsync(cancellationToken)
+                .FirstOrDefaultAsync(d => d.PatientId == request.PatientId, cancellationToken)
                 ?? throw new ArgumentNullException($"Patient #{request.PatientId} doesn't have a dossier");
 
             return dossier;

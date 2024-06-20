@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
-using PatientManagement.Features.Patient;
 using System.Text;
 using RabbitMQ.Client.Events;
 using Newtonsoft.Json.Linq;
@@ -31,7 +30,7 @@ namespace PatientManagement.Infrastructure.MessageBus.Implementations
             switch (eventName)
             {
                 case nameof(PatientRegisteredEvent):
-                    await publisher.Publish(new PatientRegisteredEvent(TranslatePayload<Patient>(payload)));
+                    await publisher.Publish(JsonConvert.DeserializeObject<PatientRegisteredEvent>(payload)!);
                     break;
             }
         }

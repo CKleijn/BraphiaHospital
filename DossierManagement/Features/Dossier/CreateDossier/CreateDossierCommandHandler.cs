@@ -27,9 +27,9 @@ namespace DossierManagement.Features.Dossier.CreateDossier
             if (!validationResult.IsValid)
                 throw new ValidationException(validationResult.Errors);
 
-           if (await context
+           if (!await context
                 .Set<Patient>()
-                .AnyAsync(p => p.Id != request.PatientId, cancellationToken))
+                .AnyAsync(p => p.Id == request.PatientId, cancellationToken))
                 throw new ArgumentNullException($"Patient #{request.PatientId} doesn't exist");
 
             if (await context

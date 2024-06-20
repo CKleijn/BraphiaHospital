@@ -11,10 +11,10 @@ namespace PatientManagement.Features.Patient.GetPatientById
             GetPatientByIdQuery request,
             CancellationToken cancellationToken)
         {
-            var patient = await context.Set<Patient>().FirstOrDefaultAsync(p => p.Id == request.Id, cancellationToken);
-
-            if (patient == null)
-                throw new ArgumentNullException($"Patient #{request.Id} doesn't exist");
+            var patient = await context
+                .Set<Patient>()
+                .FirstOrDefaultAsync(p => p.Id == request.Id, cancellationToken)
+                ?? throw new ArgumentNullException($"Patient #{request.Id} doesn't exist");
 
             return patient;
         }
