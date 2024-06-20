@@ -40,11 +40,16 @@ const createEvent = async (req, res) => {
 
 
 const updateEvent = async (req, res) => { 
+    const id = req.params.id;
+    const payload = { id, ...req.body };
+
     try {
-        await writePool.query(postEventQuery, [process.env.HOSPITAL_UPDATED_RMC_KEY, req.body]);
+        const payloadString = JSON.stringify(payload);
+
+        await writePool.query(postEventQuery, [process.env.HOSPITAL_UPDATED_RMC_KEY, payloadString]);
 
         // send message to exchange based on event type
-        sendMessageToExchange(process.env.EXCHANGE_RMC, process.env.HOSPITAL_UPDATED_RMC_KEY, req.body);
+        sendMessageToExchange(process.env.EXCHANGE_RMC, process.env.HOSPITAL_UPDATED_RMC_KEY, payloadString);
 
         res.status(201).json(newEvent);
     } catch (err) {

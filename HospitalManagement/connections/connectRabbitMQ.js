@@ -17,7 +17,7 @@ const connectRabbitMQ = async () => {
 const getChannel = () => channel;
 
 // Listens to messages in the queue with the specific routing key pattern
-const setupConsumerByTopic = async (queueName, routingKeyPattern, onMessage) => {
+const setupConsumer = async (queueName, routingKeyPattern, onMessage) => {
     try {
         if (!channel) {
             console.error('Channel is not initialized');
@@ -35,7 +35,8 @@ const setupConsumerByTopic = async (queueName, routingKeyPattern, onMessage) => 
 
         // Consume messages from the queue with the specific routing key pattern
         channel.consume(queueName, (msg) => {
-            if (msg.fields.routingKey === routingKeyPattern) {
+            if (msg) {
+                const routingKey = msg.fields.routingKey;
                 onMessage(msg);
             }
         }, { noAck: false });

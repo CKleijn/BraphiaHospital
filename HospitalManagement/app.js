@@ -4,8 +4,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const { connectRabbitMQ} = require('./connections/connectRabbitMQ');
-const startHospitalUpdateConsumer = require('./rabbitMQ/consumers/hospitalUpdate.consumer');
-const startHospitalCreateConsumer = require('./rabbitMQ/consumers/hospitalCreate.consumer');
+const startHospitalQueueConsumer = require('./rabbitMQ/consumers/hospitalUpdate.consumer');
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./utils/swagger/swagger_output.json');
 var hospitalRouter = require('./routes/hospital');
@@ -35,8 +34,7 @@ const startServer = async () => {
     await setupRabbitMQ();
 
     // // Initialize the consumers
-    // await startHospitalCreateConsumer();
-    // await startHospitalUpdateConsumer();
+    // await startHospitalQueueConsumer();
 
     app.listen(PORT, () => {
       console.log(`Server listening on port ${PORT}`);
