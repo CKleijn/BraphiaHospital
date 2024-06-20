@@ -1,19 +1,19 @@
 ﻿using Carter;
 using MediatR;
 using Consultancy.Common.Annotations;
-using Consultancy.Features.ConsultFeature.UpdateQuestion.Command;
+using Consultancy.Features.ConsultFeature.UpdateQuestions.Command;
 
-namespace Consultancy.Features.ConsultFeature.UpdateQuestion
+namespace Consultancy.Features.ConsultFeature.UpdateQuestions
 {
-    public sealed class UpdateQuestionEndpoint
+    public sealed class UpdateQuestionsEndpoint
         : ICarterModule
     {
         public void AddRoutes(IEndpointRouteBuilder app)
         {
-            app.MapPatch("question/{id}", async (
+            app.MapPatch("consult/{id}/survey", async (
                 ISender sender,
                 Guid id,
-                UpdateQuestionCommmand command,
+                UpdateQuestionsCommmand command,
                 CancellationToken cancellationToken) =>
             {
                 try
@@ -28,7 +28,7 @@ namespace Consultancy.Features.ConsultFeature.UpdateQuestion
                     return Results.Problem(e.Message);
                 }
             })
-            .WithTags(Tags.QUESTION_TAG);
+            .WithTags(Tags.CONSULT_TAG);
         }
     }
 }
