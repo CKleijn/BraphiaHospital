@@ -31,7 +31,7 @@ const setupConsumerByTopic = async (queueName, routingKeyPattern, onMessage) => 
         await channel.assertQueue(queueName, { durable: true });
 
         // Bind the queue to the exchange with the specific routing key pattern
-        await channel.bindQueue(queueName, process.env.EXCHANGE_RMC, routingKeyPattern);
+        await channel.bindQueue(queueName, process.env.EXCHANGE_RMC, routingKeyPattern + '#');
 
         // Consume messages from the queue with the specific routing key pattern
         channel.consume(queueName, (msg) => {

@@ -5,18 +5,17 @@ async function setupRabbitMQ() {
     try {
         const exchangeName = process.env.EXCHANGE_RMC;
         const queueNameS = process.env.STAFF_QUEUE_RMC;
-        const routingCreateKeyS = process.env.STAFF_CREATED_RMC_KEY
-        const routingUpdateKeyS = process.env.STAFF_UPDATED_RMC_KEY
         const queueNameH = process.env.HOSPITAL_QUEUE_RMC;
-        const routingCreateKeyH = process.env.HOSPITAL_CREATED_RMC_KEY
-        const routingUpdateKeyH = process.env.HOSPITAL_UPDATED_RMC_KEY
+        const routingKeyS = process.env.STAFF_RMC_KEY
+        const routingKeyH = process.env.HOSPITAL_RMC_KEY
 
+        const queueNameAS = process.env.APPOINTMENT_STAFF_QUEUE_RMC;
+        
         // Setup queues and bindings
-        await setupQueue(queueNameS, exchangeName, routingCreateKeyS);
-        await setupQueue(queueNameS, exchangeName, routingUpdateKeyS);
-        await setupQueue(queueNameH, exchangeName, routingCreateKeyH);
-        await setupQueue(queueNameH, exchangeName, routingUpdateKeyH);
-
+        await setupQueue(queueNameS, exchangeName, routingKeyS);
+        await setupQueue(queueNameH, exchangeName, routingKeyH);
+        await setupQueue(queueNameAS, exchangeName, routingKeyS);
+        
         console.log('Queues and bindings setup completed');
     } catch (error) {
         console.error('Error setting up queues and bindings:', error);
@@ -34,9 +33,9 @@ async function setupQueue(queueName, exchangeName, routingKeyPattern) {
         await channel.assertQueue(queueName, { durable: true });
 
         // Bind the queue to the exchange with the routing key pattern
-        await channel.bindQueue(queueName, exchangeName, routingKeyPattern);
+        await channel.bindQueue(queueName, exchangeName, routingKeyPattern + '#');
 
-        console.log(`Queue ${queueName} is bound to exchange ${exchangeName} with pattern ${routingKeyPattern}`);
+        console.log(`Queue ${queueName} is bound to exchange ${exchangeName} with pattern ${routingKeyPattern}#`);
 
     } catch (error) {
         console.error('Error setting up queue:', error);

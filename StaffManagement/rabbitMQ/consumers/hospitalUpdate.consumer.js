@@ -2,7 +2,7 @@ const { getChannel, setupConsumerByTopic } = require('../../connections/connectR
 const { updateHospital } = require('../../services/hospitalRead.service');
 
 const startHospitalUpdateConsumer = async () => {
-    await setupConsumerByTopic(process.env.HOSPITAL_QUEUE_RMC,process.env.HOSPITAL_UPDATED_RMC_KEY, hospitalUpdateHandler);
+    await setupConsumerByTopic(process.env.HOSPITAL_QUEUE_RMC,process.env.HOSPITAL_RMC_KEY, hospitalUpdateHandler);
 };
 
 const hospitalUpdateHandler = async (msg) => {

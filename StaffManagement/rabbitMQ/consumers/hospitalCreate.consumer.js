@@ -2,7 +2,7 @@ const { getChannel, setupConsumerByTopic } = require('../../connections/connectR
 const { createHospital } = require('../../services/hospitalRead.service');
 
 const startHospitalCreateConsumer = async () => {
-        await setupConsumerByTopic(process.env.HOSPITAL_QUEUE_RMC, process.env.HOSPITAL_CREATED_RMC_KEY, hospitalCreateHandler);
+        await setupConsumerByTopic(process.env.HOSPITAL_QUEUE_RMC, process.env.HOSPITAL_RMC_KEY, hospitalCreateHandler);
 };
 
 const hospitalCreateHandler = async (msg) => {

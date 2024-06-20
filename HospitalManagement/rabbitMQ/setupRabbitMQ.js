@@ -5,12 +5,12 @@ async function setupRabbitMQ() {
     try {
         const exchangeName = process.env.EXCHANGE_RMC;
         const queueName = process.env.HOSPITAL_QUEUE_RMC;
-        const routingCreateKey = process.env.HOSPITAL_CREATED_RMC_KEY
-        const routingUpdateKey = process.env.HOSPITAL_UPDATED_RMC_KEY
+        const routingKey = process.env.HOSPITAL_RMC_KEY
+        const queueNameAH = process.env.APPOINTMENT_HOSPITAL_QUEUE_RMC;
 
         // Setup queues and bindings
-        await setupQueue(queueName, exchangeName, routingCreateKey);
-        await setupQueue(queueName, exchangeName, routingUpdateKey);
+        await setupQueue(queueName, exchangeName, routingKey);
+        await setupQueue(queueNameAH, exchangeName, routingKey);
 
         console.log('Queues and bindings setup completed');
     } catch (error) {
@@ -29,9 +29,9 @@ async function setupQueue(queueName, exchangeName, routingKeyPattern) {
         await channel.assertQueue(queueName, { durable: true });
 
         // Bind the queue to the exchange with the routing key pattern
-        await channel.bindQueue(queueName, exchangeName, routingKeyPattern);
+        await channel.bindQueue(queueName, exchangeName, routingKeyPattern + '#');
 
-        console.log(`Queue ${queueName} is bound to exchange ${exchangeName} with pattern ${routingKeyPattern}`);
+        console.log(`Queue ${queueName} is bound to exchange ${exchangeName} with pattern ${routingKeyPattern}#`);
 
     } catch (error) {
         console.error('Error setting up queue:', error);

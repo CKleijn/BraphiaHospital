@@ -1,7 +1,7 @@
 const { getChannel, setupConsumerByTopic } = require('../../connections/connectRabbitMQ');
 
 const startStaffUpdateConsumer = async () => {
-    await setupConsumerByTopic(process.env.STAFF_QUEUE_RMC, process.env.STAFF_UPDATED_RMC_KEY, staffUpdateHandler);
+    await setupConsumerByTopic(process.env.STAFF_QUEUE_RMC, process.env.STAFF_RMC_KEY, staffUpdateHandler);
 };
 
 const staffUpdateHandler = async (msg) => {

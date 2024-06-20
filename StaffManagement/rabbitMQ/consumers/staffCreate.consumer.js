@@ -2,7 +2,7 @@ const { getChannel, setupConsumerByTopic } = require('../../connections/connectR
 const { createStaff } = require('../../services/staffRead.service');
 
 const startStaffCreateConsumer = async () => {
-        await setupConsumerByTopic(process.env.STAFF_QUEUE_RMC, process.env.STAFF_CREATED_RMC_KEY, staffCreateHandler);
+        await setupConsumerByTopic(process.env.STAFF_QUEUE_RMC, process.env.STAFF_RMC_KEY, staffCreateHandler);
 };
 
 const staffCreateHandler = async (msg) => {
