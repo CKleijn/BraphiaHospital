@@ -8,7 +8,7 @@ namespace AppointmentManagement.Common.Entities
     {
         [Key]
         public Guid Id { get; init; } = Guid.NewGuid();
-        public Guid HospitalFacilityId { get; set; }
+        public Guid HospitalId { get; set; }
         public string Name { get; set; } = string.Empty;
         public string Specialization { get; set; } = string.Empty;
         public string Street { get; set; } = string.Empty;

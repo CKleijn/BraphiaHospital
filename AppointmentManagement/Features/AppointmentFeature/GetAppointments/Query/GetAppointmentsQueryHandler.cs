@@ -14,9 +14,6 @@ namespace AppointmentManagement.Features.AppointmentFeature.GetAppointments.Quer
         {
 
             return await context.Set<Appointment>()
-                .Include(a => a.Referral)
-                .Include(a => a.Physician)
-                .Include(a => a.HospitalFacility)
                 .ToListAsync(cancellationToken);
         }
     }

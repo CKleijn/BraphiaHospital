@@ -17,13 +17,11 @@ namespace AppointmentManagement.Infrastructure.MessageBus.Implementations
 
             channel.QueueDeclare(Keys.APPOINTMENT_APPOINTMENTMANAGEMENT_QUEUE, true, false, false, null);
             channel.QueueDeclare(Keys.REFERRAL_APPOINTMENTMANAGEMENT_QUEUE, true, false, false, null);
-            channel.QueueDeclare(Keys.PATIENT_APPOINTMENTMANAGEMENT_QUEUE, true, false, false, null);
             channel.QueueDeclare(Keys.HOSPITALFACILITY_APPOINTMENTMANAGEMENT_QUEUE, true, false, false, null);
             channel.QueueDeclare(Keys.STAFFMEMBER_APPOINTMENTMANAGEMENT_QUEUE, true, false, false, null);
 
             channel.QueueBind(Keys.APPOINTMENT_APPOINTMENTMANAGEMENT_QUEUE, Keys.EVENTS_EXCHANGE, Keys.APPOINTMENT_ROUTING_KEY);
             channel.QueueBind(Keys.REFERRAL_APPOINTMENTMANAGEMENT_QUEUE, Keys.EVENTS_EXCHANGE, Keys.REFERRAL_ROUTING_KEY);
-            channel.QueueBind(Keys.PATIENT_APPOINTMENTMANAGEMENT_QUEUE, Keys.EVENTS_EXCHANGE, Keys.PATIENT_ROUTING_KEY);
             channel.QueueBind(Keys.HOSPITALFACILITY_APPOINTMENTMANAGEMENT_QUEUE, Keys.EVENTS_EXCHANGE, Keys.HOSPITALFACILITY_ROUTING_KEY);
             channel.QueueBind(Keys.STAFFMEMBER_APPOINTMENTMANAGEMENT_QUEUE, Keys.EVENTS_EXCHANGE, Keys.STAFFMEMBER_ROUTING_KEY);
 
@@ -41,7 +39,6 @@ namespace AppointmentManagement.Infrastructure.MessageBus.Implementations
 
             channel.BasicConsume(Keys.APPOINTMENT_APPOINTMENTMANAGEMENT_QUEUE, false, consumer);
             channel.BasicConsume(Keys.REFERRAL_APPOINTMENTMANAGEMENT_QUEUE, false, consumer);
-            channel.BasicConsume(Keys.PATIENT_APPOINTMENTMANAGEMENT_QUEUE, false, consumer);
             channel.BasicConsume(Keys.HOSPITALFACILITY_APPOINTMENTMANAGEMENT_QUEUE, false, consumer);
             channel.BasicConsume(Keys.STAFFMEMBER_APPOINTMENTMANAGEMENT_QUEUE, false, consumer);
 
