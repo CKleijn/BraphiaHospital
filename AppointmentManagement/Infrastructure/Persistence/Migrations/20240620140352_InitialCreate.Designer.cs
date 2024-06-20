@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppointmentManagement.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240618194924_InitialCreate")]
+    [Migration("20240620140352_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -50,12 +50,6 @@ namespace AppointmentManagement.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("HospitalFacilityId");
-
-                    b.HasIndex("PhysicianId");
-
-                    b.HasIndex("ReferralId");
 
                     b.ToTable("Appointments");
                 });
@@ -163,7 +157,7 @@ namespace AppointmentManagement.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("HospitalFacilityId")
+                    b.Property<Guid>("HospitalId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
@@ -193,33 +187,6 @@ namespace AppointmentManagement.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("StaffMembers");
-                });
-
-            modelBuilder.Entity("AppointmentManagement.Common.Entities.Appointment", b =>
-                {
-                    b.HasOne("AppointmentManagement.Common.Entities.HospitalFacility", "HospitalFacility")
-                        .WithMany()
-                        .HasForeignKey("HospitalFacilityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("AppointmentManagement.Common.Entities.StaffMember", "Physician")
-                        .WithMany()
-                        .HasForeignKey("PhysicianId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("AppointmentManagement.Common.Entities.Referral", "Referral")
-                        .WithMany()
-                        .HasForeignKey("ReferralId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("HospitalFacility");
-
-                    b.Navigation("Physician");
-
-                    b.Navigation("Referral");
                 });
 #pragma warning restore 612, 618
         }
