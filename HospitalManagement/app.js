@@ -34,7 +34,7 @@ const startServer = async () => {
     await setupRabbitMQ();
 
     // // Initialize the consumers
-    await startHospitalQueueConsumer();
+    // await startHospitalQueueConsumer();
 
     app.listen(PORT, () => {
       console.log(`Server listening on port ${PORT}`);
