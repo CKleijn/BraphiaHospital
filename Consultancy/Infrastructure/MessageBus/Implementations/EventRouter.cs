@@ -3,10 +3,12 @@ using Newtonsoft.Json;
 using System.Text;
 using RabbitMQ.Client.Events;
 using Newtonsoft.Json.Linq;
+using Consultancy.Features.ConsultFeature.CreateConsult.Event;
+using Consultancy.Common.Entities;
 using Consultancy.Common.Interfaces;
 using Consultancy.Infrastructure.MessageBus.Interfaces;
-using Consultancy.Features.Consult.RegisterConsult.Event;
-using Consultancy.Features.Consult;
+using Consultancy.Features.ConsultFeature.UpdateQuestion.Event;
+using Consultancy.Features.ConsultFeature.UpdateNotes.Event;
 
 namespace Consultancy.Infrastructure.MessageBus.Implementations
 {
@@ -30,8 +32,14 @@ namespace Consultancy.Infrastructure.MessageBus.Implementations
         {
             switch (eventName)
             {
-                case nameof(ConsultRegisteredEvent):
-                    await publisher.Publish(new ConsultRegisteredEvent(TranslatePayload<Consult>(payload)));
+                case nameof(ConsultCreatedEvent):
+                    await publisher.Publish(JsonConvert.DeserializeObject<ConsultCreatedEvent>(payload)!);
+                    break;
+                case nameof(DossierConsultAppendedEvent):
+                    await publisher.Publish(JsonConvert.DeserializeObject<DossierConsultAppendedEvent>(payload)!);
+                    break;
+                case nameof(QuestionUpdatedEvent):
+                    await publisher.Publish(new QuestionUpdatedEvent(TranslatePayload<Question>(payload)));
                     break;
             }
         }

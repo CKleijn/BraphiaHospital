@@ -10,7 +10,7 @@ namespace AppointmentManagement.Common.Entities
         [Key]
         public Guid Id { get; init; } = Guid.NewGuid();
 
-        public Patient Patient { get; set; }
+        public Guid PatientId { get; set; }
         public Referral Referral { get; set; }
         public StaffMember Physician { get; set; }
         public HospitalFacility HospitalFacility { get; set; }

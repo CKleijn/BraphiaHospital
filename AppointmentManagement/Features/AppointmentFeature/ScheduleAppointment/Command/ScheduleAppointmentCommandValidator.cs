@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using AppointmentManagement.Common.Entities;
+using FluentValidation;
 
 namespace AppointmentManagement.Features.AppointmentFeature.ScheduleAppointment.Command
 {
@@ -7,18 +8,25 @@ namespace AppointmentManagement.Features.AppointmentFeature.ScheduleAppointment.
     {
         public ScheduleAppointmentCommandValidator()
         {
-            //TODO: Validate relations
+            RuleFor(x => x.PatientId)
+                .NotEmpty()
+                .WithMessage("PatientId is required!");
 
+            RuleFor(x => x.ReferralId)
+                .NotEmpty()
+                .WithMessage("ReferralId is required!");
+
+            RuleFor(x => x.PhysicianId)
+                .NotEmpty()
+                .WithMessage("PhysicianId is required!");
+
+            RuleFor(x => x.HospitalFacilityId)
+                .NotEmpty()
+                .WithMessage("HospitalFacilityId is required!");
 
             RuleFor(x => x.ScheduledDateTime)
                .NotEmpty()
                .WithMessage("ScheduledDateTime is required!");
-
-            RuleFor(x => x.Status)
-               .NotEmpty()
-               .WithMessage("Status is required!")
-               .IsInEnum()
-               .WithMessage("Status is invalid!");
         }
     }
 }

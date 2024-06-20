@@ -19,5 +19,14 @@
 
             return configuration.GetConnectionString("GlobalEventStoreConnectionString")!;
         }
+
+        public static string GetPatientManagementServiceConnectionString()
+        {
+            IConfigurationRoot configuration = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.Development.json")
+                .Build();
+
+            return configuration.GetConnectionString("PatientManagementServiceConnectionString")!;
+        }
     }
 }

@@ -1,6 +1,4 @@
-﻿using AppointmentManagement.Common.Entities;
-using AppointmentManagement.Common.Enums;
-using MediatR;
+﻿using MediatR;
 
 namespace AppointmentManagement.Features.AppointmentFeature.ScheduleAppointment.Command
 {
@@ -9,7 +7,6 @@ namespace AppointmentManagement.Features.AppointmentFeature.ScheduleAppointment.
         Guid ReferralId,
         Guid PhysicianId,
         Guid HospitalFacilityId,
-        ArrivalStatus Status,
         DateTime ScheduledDateTime
     ) : IRequest;
 }
