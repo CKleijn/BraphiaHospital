@@ -109,6 +109,38 @@ services:
     volumes:
       - "./_Server/EventStore/DossierManagement:/var/opt/mssql/data"
 
+  consultancy:
+    image: ${DOCKER_REGISTRY-}consultancy
+    container_name: consultancy
+    build:
+        context: Consultancy
+        dockerfile: Dockerfile
+    ports:
+        - "5004:5004"
+        - "5005:5005"
+
+  consultancy.database:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: consultancy.database
+    ports:
+      - "14335:1433"
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=YourStrong!Passw0rd
+    volumes:
+      - "./_Server/Database/Consultancy:/var/opt/mssql/data"
+
+  consultancy.eventstore:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: consultancy.eventstore
+    ports:
+      - "14336:1433"
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=YourStrong!Passw0rd
+    volumes:
+      - "./_Server/EventStore/Consultancy:/var/opt/mssql/data"
+
   rabbitmq:
     image: rabbitmq:3.13-management
     container_name: rabbitmq
