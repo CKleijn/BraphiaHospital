@@ -1,4 +1,5 @@
 require('dotenv').config();
+const { json } = require('express');
 const { writePool } = require('../connections/connectPostgreDB');
 const { sendMessageToExchange } = require('../connections/connectRabbitMQ');
 const { v4: uuidv4 } = require('uuid');
@@ -39,11 +40,20 @@ const createEvent = async (req, res) => {
 };
 
  const updateEvent = async (req, res) => { 
+    const id = req.params.id;
+    const payload = {
+        id,
+        ...req.body
+    };
+
     try {
-        await writePool.query(postEventQuery, [process.env.STAFF_UPDATED_RMC_KEY, req.body]);
+        // Convert updatedPayload to a string for storage and message sending
+        const payloadString = JSON.stringify(payloadToInsert);
+
+        const newEvent = await writePool.query(postEventQuery, [process.env.STAFF_UPDATED_RMC_KEY, payloadString]);
 
         // send message to exchange based on event type
-        sendMessageToExchange(process.env.EXCHANGE_RMC, process.env.STAFF_UPDATED_RMC_KEY, req.body);
+        sendMessageToExchange(process.env.EXCHANGE_RMC, process.env.STAFF_UPDATED_RMC_KEY, payloadString);
 
         res.status(201).json(newEvent);
     } catch (err) {

@@ -17,14 +17,15 @@ const connectRabbitMQ = async () => {
 const getChannel = () => channel;
 
 // Listens to messages in the queue with the specific routing key pattern
-const setupConsumerByTopic = async (queueName, routingKeyPattern, onMessage) => {
+const setupConsumer = async (queueName, routingKeyPattern, onMessage) => {
     try {
         if (!channel) {
             console.error('Channel is not initialized');
             return;
         }
+        
         // assert Exchange
-        await channel.assertExchange(process.env.EXCHANGE_RMC, 'topic', { durable: true });
+        assertExchange(process.env.EXCHANGE_RMC, 'topic', { durable: true });
 
         // Assert the queue to ensure it exists
         await channel.assertQueue(queueName, { durable: true });
@@ -32,13 +33,15 @@ const setupConsumerByTopic = async (queueName, routingKeyPattern, onMessage) => 
         // Bind the queue to the exchange with the specific routing key pattern
         await channel.bindQueue(queueName, process.env.EXCHANGE_RMC, routingKeyPattern + '#');
 
+        // Consume messages from the queue with the specific routing key pattern
         channel.consume(queueName, (msg) => {
-            if(msg.fields.routingKey === routingKeyPattern) {
-                onMessage(msg);
-            }   
+            if (msg) {
+                const routingKey = msg.fields.routingKey;
+                onMessage(msg, routingKey);
+            }
         }, { noAck: false });
 
-        console.log(`Consuming messages from ${queueName} with pattern '${routingKeyPattern}'`);
+        console.log(`Consuming messages from ${queueName} with topic '${routingKeyPattern}'`);
     } catch (err) {
         console.error(`Error consuming messages from ${queueName}:`, err);
     }
