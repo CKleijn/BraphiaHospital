@@ -16,9 +16,6 @@ namespace AppointmentManagement.Features.HospitalFacilityFeature.UpdateHospitalF
             CancellationToken cancellationToken)
         {
 
-            HospitalFacility? hospitalToUpdate = await context.Set<HospitalFacility>()
-                .FindAsync(notification.HospitalFacility.Id, cancellationToken);
-
             var result = await eventStore
                 .AddEvent(
                     typeof(HospitalFacilityUpdatedEvent).Name,
@@ -28,8 +25,24 @@ namespace AppointmentManagement.Features.HospitalFacilityFeature.UpdateHospitalF
             if (!result)
                 return;
 
+            HospitalFacility? hospitalToUpdate = await context.Set<HospitalFacility>()
+                .FindAsync(notification.HospitalFacility.Id, cancellationToken);
+
             // update through event sourcing
-            hospitalToUpdate = notification.HospitalFacility;
+
+            hospitalToUpdate.Street = notification.HospitalFacility.Street;
+            hospitalToUpdate.Number = notification.HospitalFacility.Number;
+            hospitalToUpdate.PostalCode = notification.HospitalFacility.PostalCode;
+            hospitalToUpdate.City = notification.HospitalFacility.City;
+            hospitalToUpdate.Country = notification.HospitalFacility.Country;
+            hospitalToUpdate.Stores = notification.HospitalFacility.Stores;
+            hospitalToUpdate.Squares = notification.HospitalFacility.Squares;
+            hospitalToUpdate.PhoneNumber = notification.HospitalFacility.PhoneNumber;
+            hospitalToUpdate.Email = notification.HospitalFacility.Email;
+            hospitalToUpdate.Website = notification.HospitalFacility.Website;
+            hospitalToUpdate.TotalBeds = notification.HospitalFacility.TotalBeds;
+            hospitalToUpdate.BuiltYear = notification.HospitalFacility.BuiltYear;
+
             await context.SaveChangesAsync(cancellationToken);
         }
     }

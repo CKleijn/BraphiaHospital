@@ -16,9 +16,6 @@ namespace AppointmentManagement.Features.StaffMemberFeature.UpdateStaffMember.Ev
             CancellationToken cancellationToken)
         {
 
-            StaffMember? staffToUpdate = await context.Set<StaffMember>()
-                .FindAsync(notification.StaffMember.Id, cancellationToken);
-
             var result = await eventStore
                 .AddEvent(
                     typeof(StaffUpdatedEvent).Name,
@@ -28,8 +25,21 @@ namespace AppointmentManagement.Features.StaffMemberFeature.UpdateStaffMember.Ev
             if (!result)
                 return;
 
+            StaffMember? staffToUpdate = await context.Set<StaffMember>()
+                .FindAsync(notification.StaffMember.Id, cancellationToken);
+
             // update through event sourcing
-            staffToUpdate = notification.StaffMember;
+
+            staffToUpdate.Name = notification.StaffMember.Name;
+            staffToUpdate.Specialization = notification.StaffMember.Specialization;
+            staffToUpdate.Street = notification.StaffMember.Street;
+            staffToUpdate.City = notification.StaffMember.City;
+            staffToUpdate.State = notification.StaffMember.State;
+            staffToUpdate.Zip = notification.StaffMember.Zip;
+            staffToUpdate.PhoneNumber = notification.StaffMember.PhoneNumber;
+            staffToUpdate.Email = notification.StaffMember.Email;
+            staffToUpdate.EmploymentDate = notification.StaffMember.EmploymentDate;
+
             await context.SaveChangesAsync(cancellationToken);
         }
     }

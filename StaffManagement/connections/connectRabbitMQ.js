@@ -69,4 +69,4 @@ const sendMessageToExchange = async (exchangeName, routingKey, message) => {
 };
 
 
-module.exports = { connectRabbitMQ, getChannel, setupConsumerByTopic, sendMessageToExchange};
+module.exports = { connectRabbitMQ, getChannel, setupConsumer, sendMessageToExchange};

@@ -37,7 +37,7 @@ const setupConsumer = async (queueName, routingKeyPattern, onMessage) => {
         channel.consume(queueName, (msg) => {
             if (msg) {
                 const routingKey = msg.fields.routingKey;
-                onMessage(msg);
+                onMessage(msg, routingKey);
             }
         }, { noAck: false });
 
@@ -68,4 +68,4 @@ const sendMessageToExchange = async (exchangeName, routingKey, message) => {
     }
 };
 
-module.exports = { connectRabbitMQ, getChannel, setupConsumerByTopic, sendMessageToExchange};
+module.exports = { connectRabbitMQ, getChannel, setupConsumer, sendMessageToExchange};

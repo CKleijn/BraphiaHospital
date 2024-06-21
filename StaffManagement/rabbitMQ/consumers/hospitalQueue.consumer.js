@@ -1,7 +1,7 @@
 const { getChannel, setupConsumerByTopic } = require('../../connections/connectRabbitMQ');
 const { createHospital } = require('../../services/hospitalRead.service');
 
-const startHospitalCreateConsumer = async () => {
+const startHospitalQueueConsumer = async () => {
         await setupConsumerByTopic(process.env.HOSPITAL_QUEUE_RMC, process.env.HOSPITAL_RMC_KEY, hospitalCreateHandler);
 };
 
@@ -24,4 +24,4 @@ const hospitalCreateHandler = async (msg) => {
 
 };
 
-module.exports = startHospitalCreateConsumer;
+module.exports = startHospitalQueueConsumer;
