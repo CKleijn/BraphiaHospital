@@ -55,7 +55,6 @@ namespace Consultancy.Features.ConsultFeature.CreateConsult.Command
                     Id = Guid.NewGuid(),
                     AppointmentId = request.AppointmentId,
                     Survey = request.Survey,
-                    Notes = request.Notes,
                 }
             );
 
