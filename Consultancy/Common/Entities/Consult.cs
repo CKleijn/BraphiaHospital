@@ -1,15 +1,40 @@
-﻿using Consultancy.Common.Interfaces;
-using System.ComponentModel.DataAnnotations;
+﻿using Consultancy.Common.Aggregates;
+using Consultancy.Features.ConsultFeature.CreateConsult.RabbitEvent;
+using Consultancy.Features.ConsultFeature.UpdateNotes.RabbitEvent;
+using Consultancy.Features.ConsultFeature.UpdateQuestions.RabbitEvent;
 
 namespace Consultancy.Common.Entities
 {
-    public sealed record Consult
-        : IEntity
+    public sealed class Consult
+        : AggregateRoot
     {
-        [Key]
-        public Guid Id { get; init; } = Guid.NewGuid();
+        public Guid PatientId { get; set; } = Guid.Empty;
         public Guid AppointmentId { get; set; } = Guid.Empty;
         public Survey? Survey { get; set; } = null;
         public string? Notes { get; set; } = string.Empty;
+
+        public void Apply(ConsultCreatedEvent @event)
+        {
+            PatientId = @event.Consult.PatientId;
+            AppointmentId = @event.Consult.AppointmentId;
+            Survey = @event.Consult.Survey;
+            Notes = @event.Consult.Notes;
+        }
+
+        public void Apply(DossierConsultAppendedEvent @event)
+        {
+            PatientId = @event.Consult.PatientId;
+            AppointmentId = @event.Consult.AppointmentId;
+            Survey = @event.Consult.Survey;
+            Notes = @event.Consult.Notes;
+        }
+
+        public void Apply(ConsultSurveyFilledInEvent @event)
+        {
+            PatientId = @event.Consult.PatientId;
+            AppointmentId = @event.Consult.AppointmentId;
+            Survey = @event.Consult.Survey;
+            Notes = @event.Consult.Notes;
+        }
     }
 }

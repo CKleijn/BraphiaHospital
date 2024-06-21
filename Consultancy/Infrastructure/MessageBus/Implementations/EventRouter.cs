@@ -3,12 +3,11 @@ using Newtonsoft.Json;
 using System.Text;
 using RabbitMQ.Client.Events;
 using Newtonsoft.Json.Linq;
-using Consultancy.Features.ConsultFeature.CreateConsult.Event;
-using Consultancy.Common.Entities;
 using Consultancy.Common.Interfaces;
 using Consultancy.Infrastructure.MessageBus.Interfaces;
-using Consultancy.Features.ConsultFeature.UpdateQuestions.Event;
-using Consultancy.Features.ConsultFeature.UpdateNotes.Event;
+using Consultancy.Features.ConsultFeature.CreateConsult.RabbitEvent;
+using Consultancy.Features.ConsultFeature.UpdateNotes.RabbitEvent;
+using Consultancy.Features.ConsultFeature.UpdateQuestions.RabbitEvent;
 
 namespace Consultancy.Infrastructure.MessageBus.Implementations
 {
