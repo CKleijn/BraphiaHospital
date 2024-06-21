@@ -16,10 +16,10 @@ namespace Consultancy.Infrastructure.MessageBus.Implementations
             channel.ExchangeDeclare(Keys.EVENTS_EXCHANGE, ExchangeType.Topic, true, false, null);
 
             channel.QueueDeclare(Keys.CONSULT_QUEUE, true, false, false, null);
-            channel.QueueDeclare(Keys.QUESTION_QUEUE, true, false, false, null);
+            channel.QueueDeclare(Keys.DOSSIER_QUEUE, true, false, false, null);
 
             channel.QueueBind(Keys.CONSULT_QUEUE, Keys.EVENTS_EXCHANGE, Keys.CONSULT_ROUTING_KEY);
-            channel.QueueBind(Keys.QUESTION_QUEUE, Keys.EVENTS_EXCHANGE, Keys.QUESTION_ROUTING_KEY);
+            channel.QueueBind(Keys.DOSSIER_QUEUE, Keys.EVENTS_EXCHANGE, Keys.DOSSIER_ROUTING_KEY);
 
             channel.BasicQos(0, 1, false);
 
@@ -34,7 +34,7 @@ namespace Consultancy.Infrastructure.MessageBus.Implementations
             };
 
             channel.BasicConsume(Keys.CONSULT_QUEUE, false, consumer);
-            channel.BasicConsume(Keys.QUESTION_QUEUE, false, consumer);
+            channel.BasicConsume(Keys.DOSSIER_QUEUE, false, consumer);
 
             Console.ReadLine();
         }

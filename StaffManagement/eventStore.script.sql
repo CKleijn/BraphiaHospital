@@ -1,0 +1,10 @@
+-- DROP TABLE IF EXISTS eventStore;
+
+CREATE SEQUENCE version_seq START 1 INCREMENT 1;
+CREATE TABLE eventStore (
+	id SERIAL PRIMARY KEY,
+	type VARCHAR(50) NOT NULL,
+	payload TEXT NOT NULL,
+	version INT NOT NULL DEFAULT nextval('version_seq'),
+	createdAT TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

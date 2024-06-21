@@ -9,6 +9,10 @@ using AppointmentManagement.Common.Entities;
 using AppointmentManagement.Features.ReferralFeature.CreateReferral.Event;
 using AppointmentManagement.Features.AppointmentFeature.ScheduleAppointment.Event;
 using AppointmentManagement.Features.AppointmentFeature.UpdatePatientArrival.Event;
+using AppointmentManagement.Features.StaffMemberFeature.CreateStaffMember.Event;
+using AppointmentManagement.Features.StaffMemberFeature.UpdateStaffMember.Event;
+using AppointmentManagement.Features.HospitalFacilityFeature.CreateHospitalFacility.Event;
+using AppointmentManagement.Features.HospitalFacilityFeature.UpdateHospitalFacility.Event;
 
 namespace AppointmentManagement.Infrastructure.MessageBus.Implementations
 {
@@ -20,12 +24,23 @@ namespace AppointmentManagement.Infrastructure.MessageBus.Implementations
             var body = eventArgs.Body.ToArray();
             var payload = Encoding.UTF8.GetString(body);
 
-            if (eventArgs.BasicProperties.Headers.TryGetValue("EventName", out var eventObj))
-            {
-                var eventName = Encoding.UTF8.GetString((byte[])eventObj);
+            string eventName = "";
 
-                await HandlePublishEvent(eventName, payload);
+            if (eventArgs.BasicProperties.Headers?.TryGetValue("EventName", out var eventObj) == true)
+            {
+                eventName = Encoding.UTF8.GetString((byte[])eventObj);
             }
+            else
+            {
+                var routingKeyParts = eventArgs.RoutingKey.Split('.');
+                if (routingKeyParts.Length >= 2)
+                {
+                    eventName = $"{routingKeyParts[0]}{routingKeyParts[1]}Event";
+                }
+            }
+
+            if (!string.IsNullOrEmpty(eventName))
+                await HandlePublishEvent(eventName, payload);
         }
 
         private async Task HandlePublishEvent(string eventName, string payload)
@@ -45,6 +60,20 @@ namespace AppointmentManagement.Infrastructure.MessageBus.Implementations
                     break;
                 case nameof(PatientArrivalUpdatedEvent):
                     await publisher.Publish(new PatientArrivalUpdatedEvent(TranslatePayloadToEntity<Appointment>(payload)));
+                    break;
+
+                //External
+                case nameof(StaffCreatedEvent):
+                    await publisher.Publish(new StaffCreatedEvent(JsonConvert.DeserializeObject<StaffMember>(payload)!));
+                    break;
+                case nameof(StaffUpdatedEvent):
+                    await publisher.Publish(new StaffUpdatedEvent(JsonConvert.DeserializeObject<StaffMember>(payload)!));
+                    break;
+                case nameof(HospitalFacilityCreatedEvent):
+                    await publisher.Publish(new HospitalFacilityCreatedEvent(JsonConvert.DeserializeObject<HospitalFacility>(payload)!));
+                    break;
+                case nameof(HospitalFacilityUpdatedEvent):
+                    await publisher.Publish(new HospitalFacilityUpdatedEvent(JsonConvert.DeserializeObject<HospitalFacility>(payload)!));
                     break;
             }
         }

@@ -5,6 +5,7 @@ namespace Consultancy.Features.ConsultFeature.CreateConsult.Command
 {
     public sealed record CreateConsultCommand(
         Guid AppointmentId,
-        Survey? Survey)
+        Survey? Survey,
+        string? Notes)
         : IRequest;
 }
