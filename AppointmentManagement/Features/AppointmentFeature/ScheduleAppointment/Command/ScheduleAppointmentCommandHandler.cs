@@ -31,36 +31,54 @@ namespace AppointmentManagement.Features.AppointmentFeature.ScheduleAppointment.
             if (!validationResult.IsValid)
                 throw new ValidationException(validationResult.Errors);
 
-            Patient? patient = await apiClient
-                .GetAsync<Patient>($"{ConfigurationHelper.GetPatientManagementServiceConnectionString()}/patient/{request.PatientId}", cancellationToken)
-                ?? throw new ArgumentNullException($"Patient #{request.PatientId} doesn't exist");
+            /*            Patient? patient = await apiClient
+                            .GetAsync<Patient>($"{ConfigurationHelper.GetPatientManagementServiceConnectionString()}/patient/{request.PatientId}", cancellationToken)
+                            ?? throw new ArgumentNullException($"Patient #{request.PatientId} doesn't exist");*/
 
-            Referral? referral = await context.Set<Referral>()
-                .FindAsync(request.ReferralId, cancellationToken) ?? throw new ArgumentNullException($"Referral #{request.ReferralId} doesn't exist");
+            //TODO: test patient when 
+            var patient = new Patient();
 
-            _ = await context.Set<StaffMember>()
-                .FindAsync(request.PhysicianId, cancellationToken) ?? throw new ArgumentNullException($"Physician #{request.PhysicianId} doesn't exist");
+            if (await eventStore.EventByAggregateIdExists(request.ReferralId, cancellationToken))
+                throw new ArgumentNullException($"Referral #{request.ReferralId} doesn't exist");
 
-            _ = await context.Set<HospitalFacility>()
-                .FindAsync(request.HospitalFacilityId, cancellationToken) ?? throw new ArgumentNullException($"HospitalFacility #{request.HospitalFacilityId} doesn't exist");
+            if (await eventStore.EventByAggregateIdExists(request.PhysicianId, cancellationToken))
+                throw new ArgumentNullException($"Physician #{request.PhysicianId} doesn't exist");
 
-            if (!patient.BSN.Equals(referral.BSN))
-                throw new ArgumentException("Patient BSN doesn't match referral BSN");
-            
+            if (await eventStore.EventByAggregateIdExists(request.HospitalFacilityId, cancellationToken))
+                throw new ArgumentNullException($"HospitalFacility #{request.HospitalFacilityId} doesn't exist");
+
+            Referral referral = new() { Id = request.ReferralId };
+            StaffMember physician = new() { Id = request.PhysicianId };
+            HospitalFacility hospitalFacility = new() { Id = request.HospitalFacilityId };
+
+            Guid newId = Guid.NewGuid();
+
             AppointmentScheduledEvent appointmentScheduledEvent = new AppointmentScheduledEvent(
-                Id: Guid.NewGuid(),
-                PatientId: request.PatientId,
-                ReferralId: request.ReferralId,
-                PhysicianId: request.PhysicianId,
-                HospitalFacilityId: request.HospitalFacilityId,
-                Status: ArrivalStatus.Absent,
-                ScheduledDateTime: request.ScheduledDateTime
-            );
+                newId,
+                request.PatientId,
+                request.ReferralId,
+                request.PhysicianId,
+                request.HospitalFacilityId,
+                request.ScheduledDateTime,
+                ArrivalStatus.Absent)
+            {
+                AggregateId = newId,
+                Type = nameof(AppointmentScheduledEvent),
+                Payload = JsonSerializer.Serialize(new
+                {
+                    Id = newId,
+                    request.PatientId,
+                    request.ReferralId,
+                    request.PhysicianId,
+                    request.HospitalFacilityId,
+                    request.ScheduledDateTime,
+                    Status = ArrivalStatus.Absent
+                })
+        };
 
             var result = await eventStore
                 .AddEvent(
-                    typeof(AppointmentScheduledEvent).Name,
-                    JsonSerializer.Serialize(appointmentScheduledEvent),
+                appointmentScheduledEvent,
                     cancellationToken);
 
             if (!result)
@@ -70,11 +88,6 @@ namespace AppointmentManagement.Features.AppointmentFeature.ScheduleAppointment.
                 EventMapper.MapEventToRoutingKey(appointmentScheduledEvent.GetType().Name),
                 appointmentScheduledEvent.GetType().Name,
                 JsonSerializer.Serialize(appointmentScheduledEvent));
-        }
-
-        private object GetPatientManagementServiceConnectionString()
-        {
-            throw new NotImplementedException();
         }
     }
 }

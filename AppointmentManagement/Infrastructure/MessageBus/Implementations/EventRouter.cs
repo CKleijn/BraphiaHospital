@@ -13,6 +13,7 @@ using AppointmentManagement.Features.StaffMemberFeature.CreateStaffMember.Event;
 using AppointmentManagement.Features.StaffMemberFeature.UpdateStaffMember.Event;
 using AppointmentManagement.Features.HospitalFacilityFeature.CreateHospitalFacility.Event;
 using AppointmentManagement.Features.HospitalFacilityFeature.UpdateHospitalFacility.Event;
+using AppointmentManagement.Common.Aggregates;
 
 namespace AppointmentManagement.Infrastructure.MessageBus.Implementations
 {
@@ -53,13 +54,13 @@ namespace AppointmentManagement.Infrastructure.MessageBus.Implementations
                     break;
                 //Appointment
                 case nameof(AppointmentScheduledEvent):
-                    await publisher.Publish(JsonConvert.DeserializeObject<AppointmentScheduledEvent>(payload)!);
+                    await publisher.Publish(new AppointmentScheduledEvent(JsonConvert.DeserializeObject<Appointment>(payload)!).Appointment);
                     break;
                 case nameof(AppointmentRescheduledEvent):
-                    await publisher.Publish(new AppointmentRescheduledEvent(TranslatePayloadToEntity<Appointment>(payload)));
+                    await publisher.Publish(JsonConvert.DeserializeObject<Appointment>(payload)!);
                     break;
                 case nameof(PatientArrivalUpdatedEvent):
-                    await publisher.Publish(new PatientArrivalUpdatedEvent(TranslatePayloadToEntity<Appointment>(payload)));
+                    await publisher.Publish(JsonConvert.DeserializeObject<Appointment>(payload)!);
                     break;
 
                 //External
@@ -67,19 +68,19 @@ namespace AppointmentManagement.Infrastructure.MessageBus.Implementations
                     await publisher.Publish(new StaffCreatedEvent(JsonConvert.DeserializeObject<StaffMember>(payload)!));
                     break;
                 case nameof(StaffUpdatedEvent):
-                    await publisher.Publish(new StaffUpdatedEvent(JsonConvert.DeserializeObject<StaffMember>(payload)!));
+                    await publisher.Publish(JsonConvert.DeserializeObject<StaffUpdatedEvent>(payload)!);
                     break;
                 case nameof(HospitalFacilityCreatedEvent):
                     await publisher.Publish(new HospitalFacilityCreatedEvent(JsonConvert.DeserializeObject<HospitalFacility>(payload)!));
                     break;
                 case nameof(HospitalFacilityUpdatedEvent):
-                    await publisher.Publish(new HospitalFacilityUpdatedEvent(JsonConvert.DeserializeObject<HospitalFacility>(payload)!));
+                    await publisher.Publish(JsonConvert.DeserializeObject<HospitalFacilityUpdatedEvent>(payload)!);
                     break;
             }
         }
 
         private T TranslatePayloadToEntity<T>(string payload)
-            where T : IEntity
+            where T : AggregateRoot
         {
             var jsonObject = JObject.Parse(payload);
             var entityPayload = (jsonObject[typeof(T).Name]?.ToString())

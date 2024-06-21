@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppointmentManagement.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240620140352_InitialCreate")]
+    [Migration("20240621164756_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -49,7 +49,18 @@ namespace AppointmentManagement.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
+                    b.Property<int>("Version")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("HospitalFacilityId");
+
+                    b.HasIndex("PatientId");
+
+                    b.HasIndex("PhysicianId");
+
+                    b.HasIndex("ReferralId");
 
                     b.ToTable("Appointments");
                 });
@@ -60,18 +71,11 @@ namespace AppointmentManagement.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("BuiltYear")
-                        .HasColumnType("int");
-
                     b.Property<string>("City")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Country")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -83,34 +87,50 @@ namespace AppointmentManagement.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("PostalCode")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Squares")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Stores")
-                        .HasColumnType("int");
 
                     b.Property<string>("Street")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("TotalBeds")
+                    b.Property<int>("Version")
                         .HasColumnType("int");
 
-                    b.Property<string>("Website")
+                    b.HasKey("Id");
+
+                    b.ToTable("HospitalFacilities");
+                });
+
+            modelBuilder.Entity("AppointmentManagement.Common.Entities.Patient", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BSN")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("DateOfBirth")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("HospitalFacilities");
+                    b.ToTable("Patient");
                 });
 
             modelBuilder.Entity("AppointmentManagement.Common.Entities.Referral", b =>
@@ -134,6 +154,9 @@ namespace AppointmentManagement.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("Version")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.ToTable("Referrals");
@@ -145,18 +168,6 @@ namespace AppointmentManagement.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("City")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EmploymentDate")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<Guid>("HospitalId")
                         .HasColumnType("uniqueidentifier");
 
@@ -164,29 +175,51 @@ namespace AppointmentManagement.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Specialization")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("State")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Street")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Zip")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Version")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.ToTable("StaffMembers");
+                });
+
+            modelBuilder.Entity("AppointmentManagement.Common.Entities.Appointment", b =>
+                {
+                    b.HasOne("AppointmentManagement.Common.Entities.HospitalFacility", "HospitalFacility")
+                        .WithMany()
+                        .HasForeignKey("HospitalFacilityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AppointmentManagement.Common.Entities.Patient", "Patient")
+                        .WithMany()
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AppointmentManagement.Common.Entities.StaffMember", "Physician")
+                        .WithMany()
+                        .HasForeignKey("PhysicianId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AppointmentManagement.Common.Entities.Referral", "Referral")
+                        .WithMany()
+                        .HasForeignKey("ReferralId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("HospitalFacility");
+
+                    b.Navigation("Patient");
+
+                    b.Navigation("Physician");
+
+                    b.Navigation("Referral");
                 });
 #pragma warning restore 612, 618
         }

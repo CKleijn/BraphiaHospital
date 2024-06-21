@@ -7,7 +7,6 @@ using System.Text.Json;
 using AppointmentManagement.Features.AppointmentFeature.ScheduleAppointment.Event;
 using AppointmentManagement.Common.Helpers;
 using AppointmentManagement.Infrastructure.Persistence.Contexts;
-using AppointmentManagement.Common.Entities;
 
 namespace AppointmentManagement.Features.AppointmentFeature.RescheduleAppointment.Command
 {
@@ -28,26 +27,26 @@ namespace AppointmentManagement.Features.AppointmentFeature.RescheduleAppointmen
             if (!validationResult.IsValid)
                 throw new ValidationException(validationResult.Errors);
 
-            Appointment? appointment = await context.Set<Appointment>()
-                .FindAsync(request.Id, cancellationToken);
+            bool eventExists = await eventStore.EventByAggregateIdExists(request.Id, cancellationToken);
 
-            if (appointment == null)
+            if (!eventExists)
                 throw new ArgumentNullException($"Appointment #{request.Id} doesn't exist");
 
-
-            appointment.ScheduledDateTime = request.ScheduledDateTime;
-
+            AppointmentRescheduledEvent appointmentRescheduledEvent = new(request.Id, request.ScheduledDateTime)
+            {
+                AggregateId = request.Id,
+                Type = nameof(AppointmentRescheduledEvent),
+                Payload = JsonSerializer.Serialize(request),
+                Version = Utils.GetHighestVersionByType<AppointmentRescheduledEvent>((await eventStore.GetAllEventsByAggregateId(request.Id, cancellationToken)).ToList()) + 1
+            };
 
             var result = await eventStore
-                .AddEvent(
-                    typeof(AppointmentScheduledEvent).Name,
-                    JsonSerializer.Serialize(appointment),
-                    cancellationToken);
+              .AddEvent(
+                  appointmentRescheduledEvent,
+                  cancellationToken);
 
             if (!result)
                 return;
-
-            var appointmentRescheduledEvent = mapper.AppointmentToAppointmentRescheduledEvent(appointment);
 
             producer.Produce(
                 EventMapper.MapEventToRoutingKey(appointmentRescheduledEvent.GetType().Name),

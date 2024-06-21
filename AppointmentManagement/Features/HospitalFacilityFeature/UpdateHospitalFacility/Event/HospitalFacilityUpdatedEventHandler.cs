@@ -3,6 +3,9 @@ using AppointmentManagement.Infrastructure.Persistence.Contexts;
 using AppointmentManagement.Common.Entities;
 using System.Text.Json;
 using AppointmentManagement.Infrastructure.Persistence.Stores;
+using AppointmentManagement.Common.Abstractions;
+using AppointmentManagement.Features.StaffMemberFeature.UpdateStaffMember.Event;
+using AppointmentManagement.Common.Helpers;
 
 namespace AppointmentManagement.Features.HospitalFacilityFeature.UpdateHospitalFacility.Event
 {
@@ -16,37 +19,37 @@ namespace AppointmentManagement.Features.HospitalFacilityFeature.UpdateHospitalF
             CancellationToken cancellationToken)
         {
 
-            var result = await eventStore
+            List<NotificationEvent> events = (await eventStore.GetAllEventsByAggregateId(notification.Id, cancellationToken)).ToList();
+
+            int newVersion = Utils.GetHighestVersionByType<HospitalFacilityUpdatedEvent>(events) + 1;
+
+            HospitalFacilityUpdatedEvent hospitalFacilityUpdatedEvent = new(
+                notification.Id,
+                notification.Hospital,
+                notification.Street,
+                notification.Number,
+                notification.PostalCode,
+                notification.City,
+                notification.Country)
+            {
+                AggregateId = notification.Id,
+                Type = nameof(HospitalFacilityUpdatedEvent),
+                Payload = JsonSerializer.Serialize(notification),
+                Version = newVersion
+            };
+
+            bool result = await eventStore
                 .AddEvent(
-                    typeof(HospitalFacilityUpdatedEvent).Name,
-                    JsonSerializer.Serialize(notification.HospitalFacility),
+                    hospitalFacilityUpdatedEvent,
                     cancellationToken);
 
             if (!result)
                 return;
 
-            HospitalFacility? hospitalToUpdate = await context.Set<HospitalFacility>()
-                .FindAsync(notification.HospitalFacility.Id, cancellationToken);
+            HospitalFacility? hospital = await context.Set<HospitalFacility>()
+                .FindAsync(notification.Id, cancellationToken);
 
-            //hospital might not exist within appointment management context
-
-            if (hospitalToUpdate == null)
-                return;
-
-            // update through event sourcing
-
-            hospitalToUpdate!.Street = notification.HospitalFacility.Street;
-            hospitalToUpdate!.Number = notification.HospitalFacility.Number;
-            hospitalToUpdate!.PostalCode = notification.HospitalFacility.PostalCode;
-            hospitalToUpdate!.City = notification.HospitalFacility.City;
-            hospitalToUpdate!.Country = notification.HospitalFacility.Country;
-            hospitalToUpdate!.Stores = notification.HospitalFacility.Stores;
-            hospitalToUpdate!.Squares = notification.HospitalFacility.Squares;
-            hospitalToUpdate!.PhoneNumber = notification.HospitalFacility.PhoneNumber;
-            hospitalToUpdate!.Email = notification.HospitalFacility.Email;
-            hospitalToUpdate!.Website = notification.HospitalFacility.Website;
-            hospitalToUpdate!.TotalBeds = notification.HospitalFacility.TotalBeds;
-            hospitalToUpdate!.BuiltYear = notification.HospitalFacility.BuiltYear;
+            hospital!.ReplayHistory(await eventStore.GetAllEventsByAggregateId(notification.Id, cancellationToken));
 
             await context.SaveChangesAsync(cancellationToken);
         }

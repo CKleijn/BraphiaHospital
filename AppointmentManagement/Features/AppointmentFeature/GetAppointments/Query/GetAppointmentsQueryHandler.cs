@@ -14,6 +14,11 @@ namespace AppointmentManagement.Features.AppointmentFeature.GetAppointments.Quer
         {
 
             return await context.Set<Appointment>()
+                //TODO: replace patient? -> through api call
+                .Include(a => a.Patient)
+                .Include(a => a.Referral)
+                .Include(a => a.Physician)
+                .Include(a => a.HospitalFacility)
                 .ToListAsync(cancellationToken);
         }
     }

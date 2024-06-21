@@ -14,6 +14,11 @@ namespace AppointmentManagement.Features.AppointmentFeature.GetAppointment.Query
             CancellationToken cancellationToken)
         {
             var result = await context.Set<Appointment>()
+                //TODO: replace patient? -> through api call
+                .Include(a => a.Patient)
+                .Include(a => a.Referral)
+                .Include(a => a.Physician)
+                .Include(a => a.HospitalFacility)
                 .FirstOrDefaultAsync(p => p.Id == request.Id, cancellationToken);
 
             return result ?? throw new ArgumentNullException($"Appointment #{request.Id} doesn't exist"); ;

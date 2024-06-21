@@ -1,10 +1,11 @@
 ﻿using MediatR;
 using AppointmentManagement.Infrastructure.Persistence.Contexts;
 using AppointmentManagement.Common.Entities;
+using AppointmentManagement.Infrastructure.Persistence.Stores;
 
 namespace AppointmentManagement.Features.AppointmentFeature.UpdatePatientArrival.Event
 {
-    public sealed class PatientArrivalUpdatedEventHandler(ApplicationDbContext context)
+    public sealed class PatientArrivalUpdatedEventHandler(ApplicationDbContext context, IEventStore eventStore)
         : INotificationHandler<PatientArrivalUpdatedEvent>
     {
         public async Task Handle(
@@ -12,9 +13,9 @@ namespace AppointmentManagement.Features.AppointmentFeature.UpdatePatientArrival
             CancellationToken cancellationToken)
         {
             Appointment? appointmentToUpdate = await context.Set<Appointment>()
-                .FindAsync(notification.Appointment.Id, cancellationToken);
+                .FindAsync(notification.Id, cancellationToken);
 
-            appointmentToUpdate!.Status = notification.Appointment.Status;
+            appointmentToUpdate!.ReplayHistory(await eventStore.GetAllEventsByAggregateId(notification.Id, cancellationToken));
 
             await context.SaveChangesAsync(cancellationToken);
         }
