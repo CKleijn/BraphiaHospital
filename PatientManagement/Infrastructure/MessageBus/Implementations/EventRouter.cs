@@ -2,8 +2,6 @@
 using Newtonsoft.Json;
 using System.Text;
 using RabbitMQ.Client.Events;
-using Newtonsoft.Json.Linq;
-using PatientManagement.Common.Interfaces;
 using PatientManagement.Infrastructure.MessageBus.Interfaces;
 using PatientManagement.Events;
 
@@ -33,16 +31,6 @@ namespace PatientManagement.Infrastructure.MessageBus.Implementations
                     await publisher.Publish(JsonConvert.DeserializeObject<PatientRegisteredEvent>(payload)!);
                     break;
             }
-        }
-
-        private T TranslatePayload<T>(string payload)
-            where T : IEntity
-        {
-            var jsonObject = JObject.Parse(payload);
-            var entityPayload = (jsonObject[typeof(T).Name]?.ToString())
-                ?? throw new ArgumentException($"Payload does not contain an entity of type {typeof(T).Name}");
-
-            return JsonConvert.DeserializeObject<T>(entityPayload)!;
         }
     }
 }

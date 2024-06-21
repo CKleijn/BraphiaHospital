@@ -80,8 +80,8 @@ services:
       context: DossierManagement
       dockerfile: Dockerfile
     ports:
-      - "5006:5006"
-      - "5007:5007"
+      - "5010:5010"
+      - "5011:5011"
     depends_on:
       - rabbitmq
       - dossier.database 
@@ -200,7 +200,7 @@ services:
       dockerfile: Dockerfile
     ports:
       - "5008:5008"
-      - "500:5009"
+      - "5009:5009"
     environment:
       - DATABASE_HOST_READ=hospital.database
       - DATABASE_HOST_WRITE=hospital.eventstore

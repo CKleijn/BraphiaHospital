@@ -14,8 +14,8 @@ namespace DossierManagement
 
             bool databaseExists = dbContext.Database.CanConnect();
 
-            if (!databaseExists)
-                dbContext.Database.Migrate();
+            //if (!databaseExists)
+            //    dbContext.Database.Migrate();
         }
 
         public static void ApplyEventStoreMigrations(this IApplicationBuilder app)

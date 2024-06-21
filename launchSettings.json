@@ -6,7 +6,8 @@
       "serviceActions": {
         "appointment.management": "StartDebugging",
         "patient.management": "StartDebugging",
-        "consultancy": "StartDebugging"
+        "consultancy": "StartDebugging",
+        "dossier.management": "StartDebugging"
       }
     }
   }

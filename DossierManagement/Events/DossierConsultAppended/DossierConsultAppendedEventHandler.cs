@@ -25,14 +25,11 @@ namespace DossierManagement.Events.ConsultAppended
                 .AnyAsync(c => c.Id == notification.Consult.Id, cancellationToken))
                 throw new ArgumentNullException($"Consult #{notification.Consult.Id} already exist");
 
-            dossier.Consults!.Add(notification.Consult);
+            dossier.Consults ??= new List<Consult>();
+            dossier.Consults.Add(notification.Consult);
 
             context.Entry(dossier).State = EntityState.Modified;
             context.Entry(notification.Consult).State = EntityState.Added;
-
-            //context
-            //    .Set<Dossier>()
-            //    .Update(dossier);
 
             await context.SaveChangesAsync(cancellationToken);
         }
