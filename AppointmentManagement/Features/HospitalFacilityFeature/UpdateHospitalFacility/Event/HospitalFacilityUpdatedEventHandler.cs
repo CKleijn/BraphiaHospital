@@ -16,9 +16,6 @@ namespace AppointmentManagement.Features.HospitalFacilityFeature.UpdateHospitalF
             CancellationToken cancellationToken)
         {
 
-            HospitalFacility? hospitalToUpdate = await context.Set<HospitalFacility>()
-                .FindAsync(notification.HospitalFacility.Id, cancellationToken);
-
             var result = await eventStore
                 .AddEvent(
                     typeof(HospitalFacilityUpdatedEvent).Name,
@@ -27,6 +24,9 @@ namespace AppointmentManagement.Features.HospitalFacilityFeature.UpdateHospitalF
 
             if (!result)
                 return;
+
+            HospitalFacility? hospitalToUpdate = await context.Set<HospitalFacility>()
+                .FindAsync(notification.HospitalFacility.Id, cancellationToken);
 
             // update through event sourcing
 
