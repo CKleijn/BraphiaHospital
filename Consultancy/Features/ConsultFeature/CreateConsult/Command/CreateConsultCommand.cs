@@ -1,10 +1,12 @@
-﻿using Consultancy.Common.Entities;
+﻿using Consultancy.Common.Entities.DTO;
 using MediatR;
 
 namespace Consultancy.Features.ConsultFeature.CreateConsult.Command
 {
     public sealed record CreateConsultCommand(
         Guid AppointmentId,
-        Survey? Survey)
+        string SurveyTitle,
+        ICollection<QuestionDTO> Questions
+        )
         : IRequest;
 }
