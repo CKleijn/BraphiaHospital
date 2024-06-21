@@ -24,7 +24,7 @@ namespace PatientManagement.Features.Patient.RegisterPatient
             if (!validationResult.IsValid)
                 throw new ValidationException(validationResult.Errors);
 
-            if (!await eventStore.BSNExists(request.BSN, cancellationToken))
+            if (await eventStore.BSNExists(request.BSN, cancellationToken))
                 throw new DuplicateNameException($"{request.BSN} already exists");
 
             var patient = new Patient
@@ -40,7 +40,8 @@ namespace PatientManagement.Features.Patient.RegisterPatient
             {
                 AggregateId = patient.Id,
                 Type = nameof(PatientRegisteredEvent),
-                Payload = JsonSerializer.Serialize(patient)
+                Payload = JsonSerializer.Serialize(patient),
+                Version = 0
             };
 
             var result = await eventStore

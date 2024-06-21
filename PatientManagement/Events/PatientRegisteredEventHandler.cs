@@ -15,16 +15,14 @@ namespace PatientManagement.Events
             PatientRegisteredEvent notification,
             CancellationToken cancellationToken)
         {
-            // Payload deserialize naar patient
-
             if (!await eventStore.EventByAggregateIdExists(notification.AggregateId, cancellationToken))
                 throw new DuplicateNameException($"Patient #{notification.AggregateId} already exists");
 
-            //context
-            //    .Set<Patient>()
-            //    .Add(notification.Patient);
+            context
+                .Set<Patient>()
+                .Add(notification.Patient);
 
-            //await context.SaveChangesAsync(cancellationToken);
+            await context.SaveChangesAsync(cancellationToken);
         }
     }
 }
