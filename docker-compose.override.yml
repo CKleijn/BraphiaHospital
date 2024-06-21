@@ -34,3 +34,14 @@ services:
     volumes:
         - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
         - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+  dossier.management:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=5010
+      - ASPNETCORE_HTTPS_PORTS=5011
+    ports:
+      - "5010:5010"
+      - "5011:5011"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
