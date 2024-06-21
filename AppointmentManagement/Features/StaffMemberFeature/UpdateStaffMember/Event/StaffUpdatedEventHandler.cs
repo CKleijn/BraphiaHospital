@@ -28,6 +28,11 @@ namespace AppointmentManagement.Features.StaffMemberFeature.UpdateStaffMember.Ev
             StaffMember? staffToUpdate = await context.Set<StaffMember>()
                 .FindAsync(notification.StaffMember.Id, cancellationToken);
 
+            //staffmember might not exist within appointment management context
+
+            if (staffToUpdate == null)
+                return;
+
             // update through event sourcing
 
             staffToUpdate!.Name = notification.StaffMember.Name;

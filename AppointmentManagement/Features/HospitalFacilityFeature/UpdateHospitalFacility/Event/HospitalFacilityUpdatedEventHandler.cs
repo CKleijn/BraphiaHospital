@@ -28,6 +28,11 @@ namespace AppointmentManagement.Features.HospitalFacilityFeature.UpdateHospitalF
             HospitalFacility? hospitalToUpdate = await context.Set<HospitalFacility>()
                 .FindAsync(notification.HospitalFacility.Id, cancellationToken);
 
+            //hospital might not exist within appointment management context
+
+            if (hospitalToUpdate == null)
+                return;
+
             // update through event sourcing
 
             hospitalToUpdate!.Street = notification.HospitalFacility.Street;

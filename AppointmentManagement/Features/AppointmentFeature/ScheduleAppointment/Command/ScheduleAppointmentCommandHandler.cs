@@ -31,11 +31,11 @@ namespace AppointmentManagement.Features.AppointmentFeature.ScheduleAppointment.
             if (!validationResult.IsValid)
                 throw new ValidationException(validationResult.Errors);
 
-            _ = await apiClient
+            Patient? patient = await apiClient
                 .GetAsync<Patient>($"{ConfigurationHelper.GetPatientManagementServiceConnectionString()}/patient/{request.PatientId}", cancellationToken)
                 ?? throw new ArgumentNullException($"Patient #{request.PatientId} doesn't exist");
 
-            _ = await context.Set<Referral>()
+            Referral? referral = await context.Set<Referral>()
                 .FindAsync(request.ReferralId, cancellationToken) ?? throw new ArgumentNullException($"Referral #{request.ReferralId} doesn't exist");
 
             _ = await context.Set<StaffMember>()
@@ -43,6 +43,9 @@ namespace AppointmentManagement.Features.AppointmentFeature.ScheduleAppointment.
 
             _ = await context.Set<HospitalFacility>()
                 .FindAsync(request.HospitalFacilityId, cancellationToken) ?? throw new ArgumentNullException($"HospitalFacility #{request.HospitalFacilityId} doesn't exist");
+
+            if (!patient.BSN.Equals(referral.BSN))
+                throw new ArgumentException("Patient BSN doesn't match referral BSN");
             
             AppointmentScheduledEvent appointmentScheduledEvent = new AppointmentScheduledEvent(
                 Id: Guid.NewGuid(),
