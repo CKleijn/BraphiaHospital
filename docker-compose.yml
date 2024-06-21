@@ -10,6 +10,10 @@ services:
     ports:
       - "5000:5000"
       - "5001:5001"
+    depends_on:
+      - rabbitmq
+      - patient.database 
+      - patient.eventstore 
 
   patient.database:
     image: mcr.microsoft.com/mssql/server:2022-latest
@@ -42,6 +46,10 @@ services:
     ports:
       - "5002:5002"
       - "5003:5003"
+    depends_on:
+      - rabbitmq
+      - appointment.database 
+      - appointment.eventstore 
 
   appointment.database:
     image: mcr.microsoft.com/mssql/server:2022-latest
@@ -65,6 +73,42 @@ services:
     volumes:
       - "./_Server/EventStore/AppointmentManagement:/var/opt/mssql/data"
 
+  dossier.management:
+    image: ${DOCKER_REGISTRY-}dossiermanagement
+    container_name: dossier.management
+    build:
+      context: DossierManagement
+      dockerfile: Dockerfile
+    ports:
+      - "5010:5010"
+      - "5011:5011"
+    depends_on:
+      - rabbitmq
+      - dossier.database 
+      - dossier.eventstore 
+
+  dossier.database:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: dossier.database
+    ports:
+      - "14337:1433"
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=YourStrong!Passw0rd
+    volumes:
+      - "./_Server/Database/DossierManagement:/var/opt/mssql/data"
+
+  dossier.eventstore:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: dossier.eventstore
+    ports:
+      - "14338:1433"
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=YourStrong!Passw0rd
+    volumes:
+      - "./_Server/EventStore/DossierManagement:/var/opt/mssql/data"
+
   consultancy:
     image: ${DOCKER_REGISTRY-}consultancy
     container_name: consultancy
@@ -74,6 +118,10 @@ services:
     ports:
         - "5004:5004"
         - "5005:5005"
+    depends_on:
+      - rabbitmq
+      - consultancy.database 
+      - consultancy.eventstore 
 
   consultancy.database:
     image: mcr.microsoft.com/mssql/server:2022-latest
@@ -152,7 +200,7 @@ services:
       dockerfile: Dockerfile
     ports:
       - "5008:5008"
-      - "500:5009"
+      - "5009:5009"
     environment:
       - DATABASE_HOST_READ=hospital.database
       - DATABASE_HOST_WRITE=hospital.eventstore
@@ -210,3 +258,5 @@ services:
       - hospital.eventstore 
       - staff.database
       - staff.eventstore 
+      - dossier.eventstore
+      - dossier.database
