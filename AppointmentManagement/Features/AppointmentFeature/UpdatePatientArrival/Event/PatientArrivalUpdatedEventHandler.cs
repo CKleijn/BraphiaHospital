@@ -14,10 +14,8 @@ namespace AppointmentManagement.Features.AppointmentFeature.UpdatePatientArrival
             Appointment? appointmentToUpdate = await context.Set<Appointment>()
                 .FindAsync(notification.Appointment.Id, cancellationToken);
 
-            if (appointmentToUpdate == null)
-                throw new ArgumentNullException($"Appointment #{notification.Appointment.Id} doesn't exist");
+            appointmentToUpdate!.Status = notification.Appointment.Status;
 
-            appointmentToUpdate.Status = notification.Appointment.Status;
             await context.SaveChangesAsync(cancellationToken);
         }
     }
