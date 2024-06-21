@@ -30,6 +30,7 @@ namespace Consultancy
             builder.Services.AddScoped<IProducer, Producer>();
             builder.Services.AddScoped<IConsumer, Consumer>();
             builder.Services.AddScoped<IConsultMapper, ConsultMapper>();
+            builder.Services.AddScoped<IQuestionMapper, QuestionMapper>();
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
