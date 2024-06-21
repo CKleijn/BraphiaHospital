@@ -30,15 +30,15 @@ namespace AppointmentManagement.Features.StaffMemberFeature.UpdateStaffMember.Ev
 
             // update through event sourcing
 
-            staffToUpdate.Name = notification.StaffMember.Name;
-            staffToUpdate.Specialization = notification.StaffMember.Specialization;
-            staffToUpdate.Street = notification.StaffMember.Street;
-            staffToUpdate.City = notification.StaffMember.City;
-            staffToUpdate.State = notification.StaffMember.State;
-            staffToUpdate.Zip = notification.StaffMember.Zip;
-            staffToUpdate.PhoneNumber = notification.StaffMember.PhoneNumber;
-            staffToUpdate.Email = notification.StaffMember.Email;
-            staffToUpdate.EmploymentDate = notification.StaffMember.EmploymentDate;
+            staffToUpdate!.Name = notification.StaffMember.Name;
+            staffToUpdate!.Specialization = notification.StaffMember.Specialization;
+            staffToUpdate!.Street = notification.StaffMember.Street;
+            staffToUpdate!.City = notification.StaffMember.City;
+            staffToUpdate!.State = notification.StaffMember.State;
+            staffToUpdate!.Zip = notification.StaffMember.Zip;
+            staffToUpdate!.PhoneNumber = notification.StaffMember.PhoneNumber;
+            staffToUpdate!.Email = notification.StaffMember.Email;
+            staffToUpdate!.EmploymentDate = notification.StaffMember.EmploymentDate;
 
             await context.SaveChangesAsync(cancellationToken);
         }

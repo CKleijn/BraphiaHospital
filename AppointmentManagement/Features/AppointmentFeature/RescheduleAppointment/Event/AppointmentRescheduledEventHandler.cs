@@ -14,7 +14,8 @@ namespace AppointmentManagement.Features.AppointmentFeature.ScheduleAppointment.
             Appointment? appointmentToUpdate = await context.Set<Appointment>()
                 .FindAsync(notification.Appointment.Id, cancellationToken);
 
-            appointmentToUpdate.ScheduledDateTime = notification.Appointment.ScheduledDateTime;
+            appointmentToUpdate!.ScheduledDateTime = notification.Appointment.ScheduledDateTime;
+
             await context.SaveChangesAsync(cancellationToken);
         }
     }
