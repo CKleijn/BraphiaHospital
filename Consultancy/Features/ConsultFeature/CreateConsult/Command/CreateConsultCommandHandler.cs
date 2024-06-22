@@ -17,7 +17,6 @@ namespace Consultancy.Features.ConsultFeature.CreateConsult.Command
         IEventStore eventStore,
         IValidator<CreateConsultCommand> validator,
         IApiClient apiClient,
-        ApplicationDbContext context)
         IQuestionMapper mapper)
         : IRequestHandler<CreateConsultCommand>
     {
@@ -33,8 +32,8 @@ namespace Consultancy.Features.ConsultFeature.CreateConsult.Command
             if (await eventStore.AppointmentAlreadyHasConsult(request.AppointmentId, cancellationToken))
                 throw new DuplicateNameException($"{request.AppointmentId} already has a consult");
 
-            Appointment coupledAppointment = await apiClient
-                .GetAsync<Appointment>($"{ConfigurationHelper.GetAppointmentManagementServiceConnectionString()}/appointment/{request.AppointmentId}", cancellationToken)
+            dynamic coupledAppointment = await apiClient
+                .GetAsync<dynamic>($"{ConfigurationHelper.GetAppointmentManagementServiceConnectionString()}/appointment/{request.AppointmentId}", cancellationToken)
                 ?? throw new ArgumentNullException($"Appointment #{request.AppointmentId} doesn't exist");
 
             Survey survey = null!;
@@ -47,7 +46,7 @@ namespace Consultancy.Features.ConsultFeature.CreateConsult.Command
 
             Consult consult = new()
             {
-                PatientId = coupledAppointment.PatientId,
+                PatientId = coupledAppointment.Patient.Id,
                 AppointmentId = coupledAppointment.Id,
                 Survey = survey
             };

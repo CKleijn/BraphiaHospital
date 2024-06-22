@@ -40,7 +40,7 @@ namespace Consultancy.Features.ConsultFeature.UpdateNotes.Command
                 throw new InvalidOperationException($"Consult with id #{consult.Id} has already finished and therefore cannot be edited");
 
             _ = await apiClient
-               .GetAsync<Appointment>($"{ConfigurationHelper.GetAppointmentManagementServiceConnectionString()}/appointment/{consult.AppointmentId}", cancellationToken)
+               .GetAsync<dynamic>($"{ConfigurationHelper.GetAppointmentManagementServiceConnectionString()}/appointment/{consult.AppointmentId}", cancellationToken)
                ?? throw new KeyNotFoundException($"Appointment #{consult.AppointmentId} doesn't exist");
 
             consult.Notes = request.Notes;
