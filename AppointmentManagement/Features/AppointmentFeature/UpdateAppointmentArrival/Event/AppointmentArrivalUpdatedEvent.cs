@@ -4,7 +4,7 @@ using AppointmentManagement.Common.Abstractions;
 
 namespace AppointmentManagement.Features.AppointmentFeature.UpdatePatientArrival.Event
 {
-    public sealed class PatientArrivalUpdatedEvent(Guid id, ArrivalStatus status)
+    public sealed class AppointmentArrivalUpdatedEvent(Guid id, ArrivalStatus status)
         : NotificationEvent, INotification
     {
         public Guid Id { get; set; } = id;

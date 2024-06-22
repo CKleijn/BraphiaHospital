@@ -3,7 +3,7 @@ using MediatR;
 
 namespace AppointmentManagement.Features.AppointmentFeature.UpdatePatientArrival.Command
 {
-    public sealed record UpdatePatientArrivalCommand(
+    public sealed record UpdateAppointmentArrivalCommand(
         Guid Id,
         ArrivalStatus Status
     ) : IRequest

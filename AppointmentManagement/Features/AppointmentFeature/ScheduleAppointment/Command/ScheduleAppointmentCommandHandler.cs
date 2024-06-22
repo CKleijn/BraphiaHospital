@@ -38,13 +38,13 @@ namespace AppointmentManagement.Features.AppointmentFeature.ScheduleAppointment.
             //TODO: test patient when 
             var patient = new Patient();
 
-            if (await eventStore.EventByAggregateIdExists(request.ReferralId, cancellationToken))
+            if (!await eventStore.EventByAggregateIdExists(request.ReferralId, cancellationToken))
                 throw new ArgumentNullException($"Referral #{request.ReferralId} doesn't exist");
 
-            if (await eventStore.EventByAggregateIdExists(request.PhysicianId, cancellationToken))
+            if (!await eventStore.EventByAggregateIdExists(request.PhysicianId, cancellationToken))
                 throw new ArgumentNullException($"Physician #{request.PhysicianId} doesn't exist");
 
-            if (await eventStore.EventByAggregateIdExists(request.HospitalFacilityId, cancellationToken))
+            if (!await eventStore.EventByAggregateIdExists(request.HospitalFacilityId, cancellationToken))
                 throw new ArgumentNullException($"HospitalFacility #{request.HospitalFacilityId} doesn't exist");
 
             Referral referral = new() { Id = request.ReferralId };

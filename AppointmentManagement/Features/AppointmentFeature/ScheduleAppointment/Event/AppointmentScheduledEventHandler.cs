@@ -13,17 +13,19 @@ namespace AppointmentManagement.Features.AppointmentFeature.ScheduleAppointment.
             CancellationToken cancellationToken)
         {
             var referralEvents = await eventStore.GetAllEventsByAggregateId(notification.ReferralId, cancellationToken);
-            Referral referral = new() { Id = notification.ReferralId };
+            Referral referral = (await context.Set<Referral>().FindAsync(notification.ReferralId, cancellationToken))!;
             referral.ReplayHistory(referralEvents);
 
             var physicianEvents = await eventStore.GetAllEventsByAggregateId(notification.PhysicianId, cancellationToken);
-            StaffMember physician = new() { Id = notification.PhysicianId };
+            StaffMember physician = (await context.Set<StaffMember>().FindAsync(notification.PhysicianId, cancellationToken))!;
+
             physician.ReplayHistory(physicianEvents);
 
             var hospitalFacilityEvents = await eventStore.GetAllEventsByAggregateId(notification.HospitalFacilityId, cancellationToken);
-            HospitalFacility hospitalFacility = new() { Id = notification.HospitalFacilityId };
+            HospitalFacility hospitalFacility = (await context.Set<HospitalFacility>().FindAsync(notification.HospitalFacilityId, cancellationToken))!;
             hospitalFacility.ReplayHistory(hospitalFacilityEvents);
 
+            //fix patient when patient api is available
             var patient = new Patient();
 
             var appointment = new Appointment
@@ -37,8 +39,8 @@ namespace AppointmentManagement.Features.AppointmentFeature.ScheduleAppointment.
                 Status = notification.Status
             };
 
-            //context.Set<Appointment>().Add(appointment);
-           // await context.SaveChangesAsync(cancellationToken);
+            context.Set<Appointment>().Add(appointment);
+            await context.SaveChangesAsync(cancellationToken);
         }
     }
 }

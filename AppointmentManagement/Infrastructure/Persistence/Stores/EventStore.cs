@@ -114,9 +114,17 @@ namespace AppointmentManagement.Infrastructure.Persistence.Stores
                                         Version = version,
                                     });
                                 }
-                                break;
+                                break; 
                             case nameof(AppointmentScheduledEvent):
-                                events.Add(new AppointmentScheduledEvent(JsonConvert.DeserializeObject<Appointment>(payload)!)
+                                var appointmentScheduledEvent = JsonConvert.DeserializeObject<AppointmentScheduledEvent>(payload)!;
+                                events.Add(new AppointmentScheduledEvent(
+                                   appointmentScheduledEvent.Id,
+                                   appointmentScheduledEvent.PatientId,
+                                   appointmentScheduledEvent.ReferralId,
+                                   appointmentScheduledEvent.PhysicianId,
+                                   appointmentScheduledEvent.HospitalFacilityId,
+                                   appointmentScheduledEvent.ScheduledDateTime,
+                                   appointmentScheduledEvent.Status)
                                 {
                                     AggregateId = aggregateId,
                                     Type = type,
@@ -141,11 +149,11 @@ namespace AppointmentManagement.Infrastructure.Persistence.Stores
                                 }
                                 break;
 
-                            case nameof(PatientArrivalUpdatedEvent):
+                            case nameof(AppointmentArrivalUpdatedEvent):
                                 var updatedPatientArrivalEvent = JsonConvert.DeserializeObject<Appointment>(payload);
                                 if (updatedPatientArrivalEvent != null)
                                 {
-                                    events.Add(new PatientArrivalUpdatedEvent(
+                                    events.Add(new AppointmentArrivalUpdatedEvent(
                                         updatedPatientArrivalEvent.Id,
                                         updatedPatientArrivalEvent.Status)
                                     {

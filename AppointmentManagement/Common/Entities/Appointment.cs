@@ -1,9 +1,7 @@
-﻿using AppointmentManagement.Common.Abstractions;
-using AppointmentManagement.Common.Aggregates;
+﻿using AppointmentManagement.Common.Aggregates;
 using AppointmentManagement.Common.Enums;
 using AppointmentManagement.Features.AppointmentFeature.ScheduleAppointment.Event;
 using AppointmentManagement.Features.AppointmentFeature.UpdatePatientArrival.Event;
-using AppointmentManagement.Features.HospitalFacilityFeature.UpdateHospitalFacility.Event;
 
 namespace AppointmentManagement.Common.Entities
 {
@@ -19,8 +17,7 @@ namespace AppointmentManagement.Common.Entities
 
         public void Apply(AppointmentScheduledEvent @event)
         {
-
-            throw new System.NotImplementedException();
+            //TODO: implement
 
 /*            Patient = @event.Patient;
             Referral = @event.Referral;
@@ -35,7 +32,7 @@ namespace AppointmentManagement.Common.Entities
             ScheduledDateTime = @event.ScheduledDateTime;
         }
 
-        public void Apply(PatientArrivalUpdatedEvent @event)
+        public void Apply(AppointmentArrivalUpdatedEvent @event)
         {
             Status = @event.Status;
         }

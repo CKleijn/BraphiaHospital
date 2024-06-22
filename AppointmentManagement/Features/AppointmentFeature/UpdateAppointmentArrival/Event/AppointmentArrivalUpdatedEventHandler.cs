@@ -5,11 +5,11 @@ using AppointmentManagement.Infrastructure.Persistence.Stores;
 
 namespace AppointmentManagement.Features.AppointmentFeature.UpdatePatientArrival.Event
 {
-    public sealed class PatientArrivalUpdatedEventHandler(ApplicationDbContext context, IEventStore eventStore)
-        : INotificationHandler<PatientArrivalUpdatedEvent>
+    public sealed class AppointmentArrivalUpdatedEventHandler(ApplicationDbContext context, IEventStore eventStore)
+        : INotificationHandler<AppointmentArrivalUpdatedEvent>
     {
         public async Task Handle(
-            PatientArrivalUpdatedEvent notification,
+            AppointmentArrivalUpdatedEvent notification,
             CancellationToken cancellationToken)
         {
             Appointment? appointmentToUpdate = await context.Set<Appointment>()

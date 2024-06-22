@@ -10,16 +10,16 @@ using AppointmentManagement.Features.AppointmentFeature.UpdatePatientArrival.Eve
 
 namespace AppointmentManagement.Features.AppointmentFeature.UpdatePatientArrival.Command
 {
-    public sealed class UpdatePatientArrivalCommandHandler(
+    public sealed class UpdateAppointmentArrivalCommandHandler(
         IProducer producer,
         IEventStore eventStore,
-        IValidator<UpdatePatientArrivalCommand> validator,
+        IValidator<UpdateAppointmentArrivalCommand> validator,
         IAppointmentMapper mapper,
         ApplicationDbContext context)
-        : IRequestHandler<UpdatePatientArrivalCommand>
+        : IRequestHandler<UpdateAppointmentArrivalCommand>
     {
         public async Task Handle(
-            UpdatePatientArrivalCommand request,
+            UpdateAppointmentArrivalCommand request,
             CancellationToken cancellationToken)
         {
             var validationResult = await validator.ValidateAsync(request, cancellationToken);
@@ -32,12 +32,12 @@ namespace AppointmentManagement.Features.AppointmentFeature.UpdatePatientArrival
             if (!eventExists)
                 throw new ArgumentNullException($"Appointment #{request.Id} doesn't exist");
 
-            PatientArrivalUpdatedEvent patientArrivalUpdatedEvent = new(request.Id, request.Status)
+            AppointmentArrivalUpdatedEvent patientArrivalUpdatedEvent = new(request.Id, request.Status)
             {
                 AggregateId = request.Id,
-                Type = nameof(PatientArrivalUpdatedEvent),
+                Type = nameof(AppointmentArrivalUpdatedEvent),
                 Payload = JsonSerializer.Serialize(request),
-                Version = Utils.GetHighestVersionByType<PatientArrivalUpdatedEvent>((await eventStore.GetAllEventsByAggregateId(request.Id, cancellationToken)).ToList()) + 1
+                Version = Utils.GetHighestVersionByType<AppointmentArrivalUpdatedEvent>((await eventStore.GetAllEventsByAggregateId(request.Id, cancellationToken)).ToList()) + 1
             };
 
             var result = await eventStore

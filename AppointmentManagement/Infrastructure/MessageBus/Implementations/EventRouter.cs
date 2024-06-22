@@ -54,13 +54,13 @@ namespace AppointmentManagement.Infrastructure.MessageBus.Implementations
                     break;
                 //Appointment
                 case nameof(AppointmentScheduledEvent):
-                    await publisher.Publish(new AppointmentScheduledEvent(JsonConvert.DeserializeObject<Appointment>(payload)!).Appointment);
+                    await publisher.Publish(JsonConvert.DeserializeObject<AppointmentScheduledEvent>(payload)!);
                     break;
                 case nameof(AppointmentRescheduledEvent):
-                    await publisher.Publish(JsonConvert.DeserializeObject<Appointment>(payload)!);
+                    await publisher.Publish(JsonConvert.DeserializeObject<AppointmentRescheduledEvent>(payload)!);
                     break;
-                case nameof(PatientArrivalUpdatedEvent):
-                    await publisher.Publish(JsonConvert.DeserializeObject<Appointment>(payload)!);
+                case nameof(AppointmentArrivalUpdatedEvent):
+                    await publisher.Publish(JsonConvert.DeserializeObject<AppointmentArrivalUpdatedEvent>(payload)!);
                     break;
 
                 //External

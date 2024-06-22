@@ -5,7 +5,7 @@ using MediatR;
 
 namespace AppointmentManagement.Features.AppointmentFeature.UpdatePatientArrival
 {
-    public sealed class UpdatePatientArrivalEndpoint
+    public sealed class UpdateAppointmentArrivalEndpoint
         : ICarterModule
     {
         public void AddRoutes(IEndpointRouteBuilder app)
@@ -13,7 +13,7 @@ namespace AppointmentManagement.Features.AppointmentFeature.UpdatePatientArrival
             app.MapPut("appointment/arrival/{id}", async (
                 ISender sender,
                 Guid id,
-                UpdatePatientArrivalCommand command,
+                UpdateAppointmentArrivalCommand command,
                 CancellationToken cancellationToken) =>
             {
                 try
