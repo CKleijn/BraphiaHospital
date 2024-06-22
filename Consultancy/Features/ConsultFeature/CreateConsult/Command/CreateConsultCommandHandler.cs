@@ -10,6 +10,7 @@ using Consultancy.Infrastructure.Persistence.Stores;
 using Consultancy.Infrastructure.Persistence.Contexts;
 using Consultancy.Common.Entities;
 using Consultancy.Features.ConsultFeature.CreateConsult.Event;
+using Consultancy.Common.Interfaces;
 
 namespace Consultancy.Features.ConsultFeature.CreateConsult.Command
 {
@@ -18,6 +19,7 @@ namespace Consultancy.Features.ConsultFeature.CreateConsult.Command
         IEventStore eventStore,
         IValidator<CreateConsultCommand> validator,
         IApiClient apiClient,
+        IQuestionMapper mapper,
         ApplicationDbContext context)
         : IRequestHandler<CreateConsultCommand>
     {
@@ -33,17 +35,6 @@ namespace Consultancy.Features.ConsultFeature.CreateConsult.Command
             if (await context.Set<Consult>().AnyAsync(c => c.AppointmentId == request.AppointmentId, cancellationToken))
                 throw new DuplicateNameException($"{request.AppointmentId} already has a consult");
 
-            if (await context.Set<Consult>().AnyAsync(c => c.Survey != null && request.Survey != null && c.Survey.Id == request.Survey.Id, cancellationToken))
-                throw new DuplicateNameException($"Unable to create new survey with already existing survey id");
-
-            var existingQuestionIds = await context.Set<Consult>()
-                .Where(c => c.Survey != null)
-                .SelectMany(c => c.Survey.Questions.Select(q => q.Id))
-                .ToListAsync();
-
-            if (request.Survey != null && request.Survey.Questions.Any(rq => existingQuestionIds.Contains(rq.Id)))
-                throw new DuplicateNameException($"Unable to create new question with already existing question id");
-
             Appointment coupledAppointment = await apiClient
                 .GetAsync<Appointment>($"{ConfigurationHelper.GetAppointmentManagementServiceConnectionString()}/appointment/{request.AppointmentId}", cancellationToken)
                 ?? throw new ArgumentNullException($"Appointment #{request.AppointmentId} doesn't exist");
@@ -52,10 +43,12 @@ namespace Consultancy.Features.ConsultFeature.CreateConsult.Command
                 PatientId: coupledAppointment.PatientId,
                 Consult: new Consult()
                 {
-                    Id = Guid.NewGuid(),
                     AppointmentId = request.AppointmentId,
-                    Survey = request.Survey,
-                    Notes = request.Notes,
+                    Survey = new Survey()
+                    {
+                        Title = request.SurveyTitle,
+                        Questions = mapper.QuestionsDTOToQuestions(request.Questions),
+                    },
                 }
             );
 

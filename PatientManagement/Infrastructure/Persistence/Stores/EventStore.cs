@@ -1,6 +1,8 @@
-﻿using PatientManagement.Common.Abstractions;
+﻿using Newtonsoft.Json;
+using PatientManagement.Common.Abstractions;
 using PatientManagement.Common.Annotations;
-using PatientManagement.Common.Entities;
+using PatientManagement.Events;
+using PatientManagement.Features.Patient;
 using System.Data.SqlClient;
 
 namespace PatientManagement.Infrastructure.Persistence.Stores
@@ -8,13 +10,13 @@ namespace PatientManagement.Infrastructure.Persistence.Stores
     public class EventStore
         : IEventStore
     {
-        public async Task<IEnumerable<StoredEvent>> GetAllEventsByAggregateId(
+        public async Task<IEnumerable<Event>> GetAllEventsByAggregateId(
             Guid aggregateId, 
             CancellationToken cancellationToken)
         {
             try
             {
-                var events = new List<StoredEvent>();
+                var events = new List<Event>();
 
                 using SqlConnection connection = new(ConfigurationHelper.GetConnectionString());
 
@@ -33,7 +35,18 @@ namespace PatientManagement.Infrastructure.Persistence.Stores
                         var payload = reader.GetString(1);
                         var version = reader.GetInt32(2);
 
-                        events.Add(new StoredEvent(aggregateId, type, payload, version));
+                        switch (type)
+                        {
+                            case nameof(PatientRegisteredEvent):
+                                events.Add(new PatientRegisteredEvent(JsonConvert.DeserializeObject<Patient>(payload)!) 
+                                { 
+                                    AggregateId = aggregateId, 
+                                    Type = type, 
+                                    Payload = payload, 
+                                    Version = version,
+                                });
+                                break;
+                        }
                     }
                 }
 
@@ -60,15 +73,7 @@ namespace PatientManagement.Infrastructure.Persistence.Stores
                 using SqlCommand command = new(query, connection);
                 command.Parameters.AddWithValue("@AggregateId", aggregateId);
 
-                using (var reader = await command.ExecuteReaderAsync(cancellationToken))
-                {
-                    while (await reader.ReadAsync(cancellationToken))
-                    {
-                        return true;
-                    }
-                }
-
-                return false;
+                return ((int)await command.ExecuteScalarAsync(cancellationToken) > 0);
             }
             catch (Exception)
             {
@@ -86,20 +91,12 @@ namespace PatientManagement.Infrastructure.Persistence.Stores
 
                 await connection.OpenAsync(cancellationToken);
 
-                string query = "SELECT COUNT(1) FROM Events WHERE JSON_VALUE(Payload, '$.Patient.BSN') = @BSN;";
+                string query = "SELECT COUNT(1) FROM Events WHERE JSON_VALUE(Payload, '$.BSN') = @BSN;";
 
                 using SqlCommand command = new(query, connection);
                 command.Parameters.AddWithValue("@BSN", BSN);
 
-                using (var reader = await command.ExecuteReaderAsync(cancellationToken))
-                {
-                    while (await reader.ReadAsync(cancellationToken))
-                    {
-                        return true;
-                    }
-                }
-
-                return false;
+                return ((int)await command.ExecuteScalarAsync(cancellationToken) > 0);
             }
             catch (Exception)
             {
@@ -124,13 +121,7 @@ namespace PatientManagement.Infrastructure.Persistence.Stores
                 validationCommand.Parameters.AddWithValue("@Type", @event.Type);
                 validationCommand.Parameters.AddWithValue("@Version", @event.Version);
 
-                using (var reader = await validationCommand.ExecuteReaderAsync(cancellationToken))
-                {
-                    while (await reader.ReadAsync(cancellationToken))
-                    {
-                        return false;
-                    }
-                }
+                if ((int) await validationCommand.ExecuteScalarAsync(cancellationToken) > 0) return false;
 
                 string query = "INSERT INTO Events (AggregateId, Type, Payload, Version) VALUES (@AggregateId, @Type, @Payload, @Version)";
 
