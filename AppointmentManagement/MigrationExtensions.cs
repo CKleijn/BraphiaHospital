@@ -14,8 +14,8 @@ namespace AppointmentManagement
 
             bool databaseExists = dbContext.Database.CanConnect();
 
-            //if (!databaseExists)
-            //    dbContext.Database.Migrate();
+/*            if (!databaseExists)
+                dbContext.Database.Migrate();*/
         }
 
         public static void ApplyEventStoreMigrations(this IApplicationBuilder app)
@@ -39,6 +39,7 @@ namespace AppointmentManagement
                 BEGIN
                     CREATE TABLE Events (
                         ID INT PRIMARY KEY IDENTITY(1,1),
+                        AggregateId uniqueidentifier NOT NULL,
                         Type NVARCHAR(100) NOT NULL,
                         Payload NVARCHAR(MAX) NULL,
                         Version INT NULL,

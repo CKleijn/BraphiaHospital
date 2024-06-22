@@ -17,6 +17,7 @@ namespace AppointmentManagement.Infrastructure.Persistence.Contexts
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Ignore<Patient>();
         }
     }
 }

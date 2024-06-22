@@ -3,7 +3,6 @@ using AppointmentManagement.Infrastructure.Persistence.Contexts;
 using AppointmentManagement.Common.Entities;
 using AppointmentManagement.Features.HospitalFacilityFeature.CreateHospitalFacility.Event;
 using AppointmentManagement.Infrastructure.Persistence.Stores;
-using AppointmentManagement.Features.AppointmentFeature.ScheduleAppointment.Event;
 using System.Text.Json;
 
 namespace AppointmentManagement.Features.HospitalFacilityFeature.UpdateHospitalFacility.Event
@@ -17,10 +16,16 @@ namespace AppointmentManagement.Features.HospitalFacilityFeature.UpdateHospitalF
             HospitalFacilityCreatedEvent notification,
             CancellationToken cancellationToken)
         {
-            var result = await eventStore
+            HospitalFacilityCreatedEvent hospitalFacilityCreatedEvent = new(notification.HospitalFacility)
+            {
+                AggregateId = notification.HospitalFacility.Id,
+                Type = nameof(HospitalFacilityCreatedEvent),
+                Payload = JsonSerializer.Serialize(notification.HospitalFacility),
+            };
+
+            bool result = await eventStore
                 .AddEvent(
-                    typeof(HospitalFacilityCreatedEvent).Name,
-                    JsonSerializer.Serialize(notification.HospitalFacility),
+                    hospitalFacilityCreatedEvent,
                     cancellationToken);
 
             if (!result)

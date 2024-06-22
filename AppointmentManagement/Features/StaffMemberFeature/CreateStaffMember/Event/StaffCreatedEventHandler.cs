@@ -15,10 +15,16 @@ namespace AppointmentManagement.Features.StaffMemberFeature.CreateStaffMember.Ev
             StaffCreatedEvent notification,
             CancellationToken cancellationToken)
         {
-            var result = await eventStore
+            StaffCreatedEvent staffCreatedEvent = new(notification.StaffMember)
+            {
+                AggregateId = notification.StaffMember.Id,
+                Type = nameof(StaffCreatedEvent),
+                Payload = JsonSerializer.Serialize(notification.StaffMember),
+            };
+
+            bool result = await eventStore
                 .AddEvent(
-                    typeof(StaffCreatedEvent).Name,
-                    JsonSerializer.Serialize(notification.StaffMember),
+                    staffCreatedEvent,
                     cancellationToken);
 
             if (!result)

@@ -3,6 +3,7 @@ using AppointmentManagement.Infrastructure.Persistence.Contexts;
 using AppointmentManagement.Common.Entities;
 using System.Text.Json;
 using AppointmentManagement.Infrastructure.Persistence.Stores;
+using AppointmentManagement.Common.Abstractions;
 
 namespace AppointmentManagement.Features.StaffMemberFeature.UpdateStaffMember.Event
 {
@@ -15,37 +16,46 @@ namespace AppointmentManagement.Features.StaffMemberFeature.UpdateStaffMember.Ev
             StaffUpdatedEvent notification,
             CancellationToken cancellationToken)
         {
+            StaffMember? staff = await context.Set<StaffMember>()
+                .FindAsync(notification.Id, cancellationToken);
 
-            var result = await eventStore
+            StaffUpdatedEvent staffUpdatedEvent = CorrectPayload(staff!, notification);
+
+            List<NotificationEvent> events = (await eventStore.GetAllEventsByAggregateId(notification.Id, staff!.Version, cancellationToken)).ToList();
+
+            staffUpdatedEvent.AggregateId = staffUpdatedEvent.Id;
+            staffUpdatedEvent.Type = nameof(StaffUpdatedEvent);
+            staffUpdatedEvent.Payload = JsonSerializer.Serialize(staffUpdatedEvent);
+            staffUpdatedEvent.Version = events.Count != 0 ? events.Last().Version + 1 : staff!.Version + 1;
+
+            bool result = await eventStore
                 .AddEvent(
-                    typeof(StaffUpdatedEvent).Name,
-                    JsonSerializer.Serialize(notification.StaffMember),
+                    staffUpdatedEvent,
                     cancellationToken);
 
             if (!result)
                 return;
 
-            StaffMember? staffToUpdate = await context.Set<StaffMember>()
-                .FindAsync(notification.StaffMember.Id, cancellationToken);
-
-            //staffmember might not exist within appointment management context
-
-            if (staffToUpdate == null)
-                return;
-
-            // update through event sourcing
-
-            staffToUpdate!.Name = notification.StaffMember.Name;
-            staffToUpdate!.Specialization = notification.StaffMember.Specialization;
-            staffToUpdate!.Street = notification.StaffMember.Street;
-            staffToUpdate!.City = notification.StaffMember.City;
-            staffToUpdate!.State = notification.StaffMember.State;
-            staffToUpdate!.Zip = notification.StaffMember.Zip;
-            staffToUpdate!.PhoneNumber = notification.StaffMember.PhoneNumber;
-            staffToUpdate!.Email = notification.StaffMember.Email;
-            staffToUpdate!.EmploymentDate = notification.StaffMember.EmploymentDate;
+            staff!.ReplayHistory(await eventStore.GetAllEventsByAggregateId(notification.Id, staff.Version, cancellationToken));
 
             await context.SaveChangesAsync(cancellationToken);
+        }
+
+        private StaffUpdatedEvent CorrectPayload(StaffMember prevState, StaffUpdatedEvent input)
+        {
+            if (input.HospitalId == Guid.Empty)
+                input.HospitalId = prevState!.HospitalId;
+            if (string.IsNullOrEmpty(input.Name))
+                input.Name = prevState!.Name;
+            if (string.IsNullOrEmpty(input.Specialization))
+                input.Specialization = prevState!.Specialization;
+
+            return new StaffUpdatedEvent(
+                prevState.Id,
+                input.HospitalId,
+                input.Name,
+                input.Specialization
+            );
         }
     }
 }

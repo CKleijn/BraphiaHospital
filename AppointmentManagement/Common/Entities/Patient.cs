@@ -1,13 +1,11 @@
-﻿using AppointmentManagement.Common.Interfaces;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace AppointmentManagement.Common.Entities
 {
     public class Patient
-        : IEntity
     {
         [Key]
-        public Guid Id { get; init; } = Guid.NewGuid();
+        public Guid Id { get; set; } = Guid.NewGuid();
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
         public DateTime DateOfBirth { get; set; } = DateTime.Today;
