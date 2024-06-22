@@ -2,6 +2,8 @@
 using Consultancy.Infrastructure.Persistence.Contexts;
 using Consultancy.Common.Entities;
 using Consultancy.Infrastructure.Persistence.Stores;
+using Microsoft.EntityFrameworkCore;
+using Consultancy.Common.Helpers;
 
 namespace Consultancy.Features.ConsultFeature.UpdateNotes.RabbitEvent
 {
@@ -14,13 +16,15 @@ namespace Consultancy.Features.ConsultFeature.UpdateNotes.RabbitEvent
             DossierConsultAppendedEvent notification, 
             CancellationToken cancellationToken)
         {
-            Consult consult = new() { Id = notification.Consult.Id };
-            consult.ReplayHistory(await eventStore.GetAllEventsByAggregateId(notification.Consult.Id, cancellationToken));
+            Consult? consult = await context.Set<Consult>().FindAsync(notification.AggregateId, cancellationToken);
+            consult?.ReplayHistory(await eventStore.GetAllEventsByAggregateId(notification.AggregateId, cancellationToken));
 
+            consult!.Apply(notification);
             consult.Version = notification.Version++;
-            consult.Notes = notification.Consult.Notes;
 
             await context.SaveChangesAsync(cancellationToken);
+
+            ContextDetacher.DetachAllEntitiesFromContext(context);
         }
     }
 }

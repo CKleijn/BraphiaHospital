@@ -49,7 +49,7 @@ namespace Consultancy.Infrastructure.Persistence.Stores
                                 });
                                 break;
                             case nameof(DossierConsultAppendedEvent):
-                                events.Add(new DossierConsultAppendedEvent(JsonConvert.DeserializeObject<Consult>(payload)!)
+                                events.Add(new DossierConsultAppendedEvent(JsonConvert.DeserializeObject<string>(payload)!)
                                 {
                                     AggregateId = aggregateId,
                                     Type = type,
@@ -58,7 +58,7 @@ namespace Consultancy.Infrastructure.Persistence.Stores
                                 });
                                 break;
                             case nameof(ConsultSurveyFilledInEvent):
-                                events.Add(new ConsultSurveyFilledInEvent(JsonConvert.DeserializeObject<Consult>(payload)!)
+                                events.Add(new ConsultSurveyFilledInEvent(JsonConvert.DeserializeObject<ICollection<Question>>(payload)!)
                                 {
                                     AggregateId = aggregateId,
                                     Type = type,

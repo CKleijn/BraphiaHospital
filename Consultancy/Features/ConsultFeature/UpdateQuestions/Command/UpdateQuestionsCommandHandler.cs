@@ -43,21 +43,21 @@ namespace Consultancy.Features.ConsultFeature.UpdateQuestions.Command
 
             foreach (Question questionRequest in request.Questions)
             {
-                Question questionContext = consult.Survey.Questions.FirstOrDefault(c => c.Id == questionRequest.Id) 
+                Question questions = consult.Survey.Questions.FirstOrDefault(c => c.Id == questionRequest.Id) 
                     ?? throw new KeyNotFoundException($"No question present with given id #{questionRequest.Id}");
 
-                questionContext.AnswerValue = questionRequest.AnswerValue;
+                questions.AnswerValue = questionRequest.AnswerValue;
             }
 
             if (consult.Survey.Questions.Any(q => q.AnswerValue.IsNullOrEmpty()))
                 throw new InvalidOperationException("Not all questions in the survey are answered");
 
             consult.Version++;
-            ConsultSurveyFilledInEvent consultSurveyFilledInEvent = new (consult)
+            ConsultSurveyFilledInEvent consultSurveyFilledInEvent = new (consult.Survey.Questions)
             {
                 AggregateId = consult.Id,
                 Type = nameof(ConsultSurveyFilledInEvent),
-                Payload = JsonSerializer.Serialize(consult),
+                Payload = JsonSerializer.Serialize(consult.Survey.Questions),
                 Version = consult.Version
             };
 

@@ -23,18 +23,13 @@ namespace Consultancy.Common.Entities
 
         public void Apply(DossierConsultAppendedEvent @event)
         {
-            PatientId = @event.Consult.PatientId;
-            AppointmentId = @event.Consult.AppointmentId;
-            Survey = @event.Consult.Survey;
-            Notes = @event.Consult.Notes;
+            Notes = @event.Notes;
         }
 
         public void Apply(ConsultSurveyFilledInEvent @event)
         {
-            PatientId = @event.Consult.PatientId;
-            AppointmentId = @event.Consult.AppointmentId;
-            Survey = @event.Consult.Survey;
-            Notes = @event.Consult.Notes;
+            if (Survey != null)
+                Survey.Questions = @event.Questions;
         }
     }
 }

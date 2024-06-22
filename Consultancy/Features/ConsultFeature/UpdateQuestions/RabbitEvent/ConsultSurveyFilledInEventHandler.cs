@@ -2,6 +2,7 @@
 using Consultancy.Infrastructure.Persistence.Contexts;
 using Consultancy.Common.Entities;
 using Consultancy.Infrastructure.Persistence.Stores;
+using Consultancy.Common.Helpers;
 
 namespace Consultancy.Features.ConsultFeature.UpdateQuestions.RabbitEvent
 {
@@ -11,22 +12,18 @@ namespace Consultancy.Features.ConsultFeature.UpdateQuestions.RabbitEvent
         : INotificationHandler<ConsultSurveyFilledInEvent>
     {
         public async Task Handle(
-            ConsultSurveyFilledInEvent notification, 
+            ConsultSurveyFilledInEvent notification,
             CancellationToken cancellationToken)
         {
             Consult? consult = await context.Set<Consult>().FindAsync(notification.AggregateId, cancellationToken);
             consult?.ReplayHistory(await eventStore.GetAllEventsByAggregateId(notification.AggregateId, cancellationToken));
 
-            foreach (Question incomingQuestion in notification.Consult.Survey!.Questions)
-            {
-                Question existingQuestion = consult?.Survey!.Questions.FirstOrDefault(c => c.Id == incomingQuestion.Id)!;
-
-                existingQuestion.AnswerValue = incomingQuestion.AnswerValue;
-            }
-
-            consult!.Version = notification.Consult.Version++;
+            consult!.Apply(notification);
+            consult.Version = notification.Version++;
 
             await context.SaveChangesAsync(cancellationToken);
+
+            ContextDetacher.DetachAllEntitiesFromContext(context);
         }
     }
 }

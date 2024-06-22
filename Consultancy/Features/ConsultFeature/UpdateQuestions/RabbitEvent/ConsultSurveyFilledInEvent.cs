@@ -5,10 +5,10 @@ using Consultancy.Common.Abstractions;
 namespace Consultancy.Features.ConsultFeature.UpdateQuestions.RabbitEvent
 {
     public sealed class ConsultSurveyFilledInEvent(
-            Consult Consult
+            ICollection<Question> Questions
         )
         : Event, INotification
     {
-        public Consult Consult { get; set; } = Consult;
+        public ICollection<Question> Questions { get; set; } = Questions;
     }
 }

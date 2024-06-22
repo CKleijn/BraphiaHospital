@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Consultancy.Infrastructure.Persistence.Contexts;
 using Consultancy.Common.Entities;
+using Consultancy.Common.Helpers;
 
 namespace Consultancy.Features.ConsultFeature.CreateConsult.RabbitEvent
 {
@@ -14,6 +15,8 @@ namespace Consultancy.Features.ConsultFeature.CreateConsult.RabbitEvent
         {
             context.Set<Consult>().Add(notification.Consult);
             await context.SaveChangesAsync(cancellationToken);
+
+            ContextDetacher.DetachAllEntitiesFromContext(context);
         }
     }
 }

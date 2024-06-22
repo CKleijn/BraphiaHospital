@@ -1,14 +1,13 @@
 ﻿using Consultancy.Common.Abstractions;
-using Consultancy.Common.Entities;
 using MediatR;
 
 namespace Consultancy.Features.ConsultFeature.UpdateNotes.RabbitEvent
 {
     public sealed class DossierConsultAppendedEvent(
-            Consult Consult
+            string Notes
         )
         : Event, INotification
     {
-        public Consult Consult { get; set; } = Consult;
+        public string Notes { get; set; } = Notes;
     }
 }
