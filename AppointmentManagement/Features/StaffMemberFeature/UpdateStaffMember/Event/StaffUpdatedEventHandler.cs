@@ -4,7 +4,6 @@ using AppointmentManagement.Common.Entities;
 using System.Text.Json;
 using AppointmentManagement.Infrastructure.Persistence.Stores;
 using AppointmentManagement.Common.Abstractions;
-using AppointmentManagement.Common.Helpers;
 
 namespace AppointmentManagement.Features.StaffMemberFeature.UpdateStaffMember.Event
 {
@@ -17,22 +16,17 @@ namespace AppointmentManagement.Features.StaffMemberFeature.UpdateStaffMember.Ev
             StaffUpdatedEvent notification,
             CancellationToken cancellationToken)
         {
+            StaffMember? staff = await context.Set<StaffMember>()
+                .FindAsync(notification.Id, cancellationToken);
 
-            List<NotificationEvent> events = (await eventStore.GetAllEventsByAggregateId(notification.Id, cancellationToken)).ToList();
+            StaffUpdatedEvent staffUpdatedEvent = CorrectPayload(staff!, notification);
 
-            int newVersion = Utils.GetHighestVersionByType<StaffUpdatedEvent>(events) + 1;
+            List<NotificationEvent> events = (await eventStore.GetAllEventsByAggregateId(notification.Id, staff!.Version, cancellationToken)).ToList();
 
-            StaffUpdatedEvent staffUpdatedEvent = new(
-                notification.Id,
-                notification.HospitalId,
-                notification.Name,
-                notification.Specialization)
-            {
-                AggregateId = notification.Id,
-                Type = nameof(StaffUpdatedEvent),
-                Payload = JsonSerializer.Serialize(notification),
-                Version = newVersion
-            };
+            staffUpdatedEvent.AggregateId = staffUpdatedEvent.Id;
+            staffUpdatedEvent.Type = nameof(StaffUpdatedEvent);
+            staffUpdatedEvent.Payload = JsonSerializer.Serialize(staffUpdatedEvent);
+            staffUpdatedEvent.Version = events.Count != 0 ? events.Last().Version + 1 : staff!.Version + 1;
 
             bool result = await eventStore
                 .AddEvent(
@@ -42,12 +36,26 @@ namespace AppointmentManagement.Features.StaffMemberFeature.UpdateStaffMember.Ev
             if (!result)
                 return;
 
-            StaffMember? staff = await context.Set<StaffMember>()
-                .FindAsync(notification.Id, cancellationToken);
-
-            staff!.ReplayHistory(await eventStore.GetAllEventsByAggregateId(notification.Id, cancellationToken));
+            staff!.ReplayHistory(await eventStore.GetAllEventsByAggregateId(notification.Id, staff.Version, cancellationToken));
 
             await context.SaveChangesAsync(cancellationToken);
+        }
+
+        private StaffUpdatedEvent CorrectPayload(StaffMember prevState, StaffUpdatedEvent input)
+        {
+            if (input.HospitalId == Guid.Empty)
+                input.HospitalId = prevState!.HospitalId;
+            if (string.IsNullOrEmpty(input.Name))
+                input.Name = prevState!.Name;
+            if (string.IsNullOrEmpty(input.Specialization))
+                input.Specialization = prevState!.Specialization;
+
+            return new StaffUpdatedEvent(
+                prevState.Id,
+                input.HospitalId,
+                input.Name,
+                input.Specialization
+            );
         }
     }
 }

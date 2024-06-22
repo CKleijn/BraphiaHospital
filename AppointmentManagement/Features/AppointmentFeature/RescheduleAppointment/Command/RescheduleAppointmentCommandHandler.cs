@@ -37,7 +37,7 @@ namespace AppointmentManagement.Features.AppointmentFeature.RescheduleAppointmen
                 AggregateId = request.Id,
                 Type = nameof(AppointmentRescheduledEvent),
                 Payload = JsonSerializer.Serialize(request),
-                Version = Utils.GetHighestVersionByType<AppointmentRescheduledEvent>((await eventStore.GetAllEventsByAggregateId(request.Id, cancellationToken)).ToList()) + 1
+                Version = (await eventStore.GetAllEventsByAggregateId(request.Id, null, cancellationToken)).ToList().Last().Version + 1
             };
 
             var result = await eventStore

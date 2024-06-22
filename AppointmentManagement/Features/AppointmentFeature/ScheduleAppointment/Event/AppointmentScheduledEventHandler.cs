@@ -1,37 +1,40 @@
 ﻿using AppointmentManagement.Common.Entities;
 using AppointmentManagement.Infrastructure.Persistence.Contexts;
 using AppointmentManagement.Infrastructure.Persistence.Stores;
+using Azure.Core;
 using MediatR;
 
 namespace AppointmentManagement.Features.AppointmentFeature.ScheduleAppointment.Event
 { 
-    public sealed class AppointmentScheduledEventHandler(ApplicationDbContext context, IEventStore eventStore)
+    public sealed class AppointmentScheduledEventHandler(ApplicationDbContext context, IEventStore eventStore, IApiClient apiClient)
         : INotificationHandler<AppointmentScheduledEvent>
     {
         public async Task Handle(
             AppointmentScheduledEvent notification,
             CancellationToken cancellationToken)
         {
-            var referralEvents = await eventStore.GetAllEventsByAggregateId(notification.ReferralId, cancellationToken);
             Referral referral = (await context.Set<Referral>().FindAsync(notification.ReferralId, cancellationToken))!;
-            referral.ReplayHistory(referralEvents);
+            var referralEvents = await eventStore.GetAllEventsByAggregateId(referral.Id, referral.Version, cancellationToken);
 
-            var physicianEvents = await eventStore.GetAllEventsByAggregateId(notification.PhysicianId, cancellationToken);
+            if (referralEvents.Any())
+                referral.ReplayHistory(referralEvents);
+
             StaffMember physician = (await context.Set<StaffMember>().FindAsync(notification.PhysicianId, cancellationToken))!;
+            var physicianEvents = await eventStore.GetAllEventsByAggregateId(physician.Id, physician.Version, cancellationToken);
 
-            physician.ReplayHistory(physicianEvents);
+            if (physicianEvents.Any())
+                physician.ReplayHistory(physicianEvents);
 
-            var hospitalFacilityEvents = await eventStore.GetAllEventsByAggregateId(notification.HospitalFacilityId, cancellationToken);
             HospitalFacility hospitalFacility = (await context.Set<HospitalFacility>().FindAsync(notification.HospitalFacilityId, cancellationToken))!;
-            hospitalFacility.ReplayHistory(hospitalFacilityEvents);
+            var hospitalFacilityEvents = await eventStore.GetAllEventsByAggregateId(hospitalFacility.Id, hospitalFacility.Version, cancellationToken);
 
-            //fix patient when patient api is available
-            var patient = new Patient();
+            if (hospitalFacilityEvents.Any())
+                hospitalFacility.ReplayHistory(hospitalFacilityEvents);
 
             var appointment = new Appointment
             {
                 Id = notification.Id,
-                Patient = patient,
+                PatientId = notification.PatientId,
                 Referral = referral,
                 Physician = physician,
                 HospitalFacility = hospitalFacility,

@@ -15,7 +15,10 @@ namespace AppointmentManagement.Features.AppointmentFeature.UpdatePatientArrival
             Appointment? appointmentToUpdate = await context.Set<Appointment>()
                 .FindAsync(notification.Id, cancellationToken);
 
-            appointmentToUpdate!.ReplayHistory(await eventStore.GetAllEventsByAggregateId(notification.Id, cancellationToken));
+            var appointmentEvents = await eventStore.GetAllEventsByAggregateId(notification.Id, appointmentToUpdate!.Version, cancellationToken);
+            
+            if (appointmentEvents.Any())
+                appointmentToUpdate!.ReplayHistory(appointmentEvents);
 
             await context.SaveChangesAsync(cancellationToken);
         }

@@ -18,6 +18,7 @@ namespace AppointmentManagement.Infrastructure.Persistence.Stores
     {
         public async Task<IEnumerable<NotificationEvent>> GetAllEventsByAggregateId(
                    Guid aggregateId,
+                   int? fromVersion,
                    CancellationToken cancellationToken)
         {
             try
@@ -28,10 +29,19 @@ namespace AppointmentManagement.Infrastructure.Persistence.Stores
 
                 await connection.OpenAsync(cancellationToken);
 
-                string query = "SELECT Type, Payload, Version FROM Events WHERE AggregateId = @AggregateId ORDER BY Version ASC";
+                // Base query
+                string query = "SELECT Type, Payload, Version FROM Events WHERE AggregateId = @AggregateId";
+
+                if (fromVersion.HasValue)
+                    query += " AND Version > @FromVersion";
+
+                query += " ORDER BY Version ASC";
 
                 using SqlCommand command = new(query, connection);
                 command.Parameters.AddWithValue("@AggregateId", aggregateId);
+
+                if (fromVersion.HasValue)
+                    command.Parameters.AddWithValue("@FromVersion", fromVersion.Value);
 
                 using (var reader = await command.ExecuteReaderAsync(cancellationToken))
                 {
@@ -189,6 +199,31 @@ namespace AppointmentManagement.Infrastructure.Persistence.Stores
                 string query = "SELECT COUNT(1) FROM Events WHERE AggregateId = @AggregateId";
 
                 using SqlCommand command = new(query, connection);
+                command.Parameters.AddWithValue("@AggregateId", aggregateId);
+
+                return ((int)await command.ExecuteScalarAsync(cancellationToken) > 0);
+            }
+            catch (Exception)
+            {
+                throw new Exception(Errors.SQL_READ_ERROR);
+            }
+        }
+
+        public async Task<bool> PatientBSNMatchesReferral(
+        string bsn,
+        Guid aggregateId,
+        CancellationToken cancellationToken)
+        {
+            try
+            {
+                using SqlConnection connection = new(ConfigurationHelper.GetConnectionString());
+
+                await connection.OpenAsync(cancellationToken);
+
+                string query = "SELECT COUNT(1) FROM Events WHERE AggregateId = @AggregateId AND JSON_VALUE(Payload, '$.BSN') = @BSN;";
+
+                using SqlCommand command = new(query, connection);
+                command.Parameters.AddWithValue("@BSN", bsn);
                 command.Parameters.AddWithValue("@AggregateId", aggregateId);
 
                 return ((int)await command.ExecuteScalarAsync(cancellationToken) > 0);

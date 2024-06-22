@@ -21,6 +21,5 @@ namespace AppointmentManagement.Features.AppointmentFeature.ScheduleAppointment.
         public Guid HospitalFacilityId { get; set; } = hospitalFacilityId;
         public DateTime ScheduledDateTime { get; set; } = scheduledDateTime;
         public ArrivalStatus Status { get; set; } = status;
-        public DateTime ScheduledDateTime2 { get; set; } = scheduledDateTime;
     }
 }

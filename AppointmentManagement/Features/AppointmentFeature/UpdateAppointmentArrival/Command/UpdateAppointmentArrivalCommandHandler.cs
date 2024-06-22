@@ -37,7 +37,7 @@ namespace AppointmentManagement.Features.AppointmentFeature.UpdatePatientArrival
                 AggregateId = request.Id,
                 Type = nameof(AppointmentArrivalUpdatedEvent),
                 Payload = JsonSerializer.Serialize(request),
-                Version = Utils.GetHighestVersionByType<AppointmentArrivalUpdatedEvent>((await eventStore.GetAllEventsByAggregateId(request.Id, cancellationToken)).ToList()) + 1
+                Version = (await eventStore.GetAllEventsByAggregateId(request.Id, null, cancellationToken)).ToList().Last().Version + 1
             };
 
             var result = await eventStore

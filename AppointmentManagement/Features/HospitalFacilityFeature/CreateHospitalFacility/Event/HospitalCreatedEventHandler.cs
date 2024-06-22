@@ -16,7 +16,6 @@ namespace AppointmentManagement.Features.HospitalFacilityFeature.UpdateHospitalF
             HospitalFacilityCreatedEvent notification,
             CancellationToken cancellationToken)
         {
-
             HospitalFacilityCreatedEvent hospitalFacilityCreatedEvent = new(notification.HospitalFacility)
             {
                 AggregateId = notification.HospitalFacility.Id,

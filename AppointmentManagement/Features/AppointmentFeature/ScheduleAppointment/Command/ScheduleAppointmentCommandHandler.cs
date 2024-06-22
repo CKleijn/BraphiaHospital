@@ -31,12 +31,9 @@ namespace AppointmentManagement.Features.AppointmentFeature.ScheduleAppointment.
             if (!validationResult.IsValid)
                 throw new ValidationException(validationResult.Errors);
 
-            /*            Patient? patient = await apiClient
-                            .GetAsync<Patient>($"{ConfigurationHelper.GetPatientManagementServiceConnectionString()}/patient/{request.PatientId}", cancellationToken)
-                            ?? throw new ArgumentNullException($"Patient #{request.PatientId} doesn't exist");*/
-
-            //TODO: test patient when 
-            var patient = new Patient();
+            Patient? patient = await apiClient
+                .GetAsync<Patient>($"{ConfigurationHelper.GetPatientManagementServiceConnectionString()}/patient/{request.PatientId}", cancellationToken)
+                ?? throw new ArgumentNullException($"Patient #{request.PatientId} doesn't exist");
 
             if (!await eventStore.EventByAggregateIdExists(request.ReferralId, cancellationToken))
                 throw new ArgumentNullException($"Referral #{request.ReferralId} doesn't exist");
@@ -46,6 +43,9 @@ namespace AppointmentManagement.Features.AppointmentFeature.ScheduleAppointment.
 
             if (!await eventStore.EventByAggregateIdExists(request.HospitalFacilityId, cancellationToken))
                 throw new ArgumentNullException($"HospitalFacility #{request.HospitalFacilityId} doesn't exist");
+
+            if(!await eventStore.PatientBSNMatchesReferral(patient.BSN, request.ReferralId, cancellationToken))
+                throw new ArgumentNullException($"Patient's BSN doesn't equal the BSN assigned to the referral");
 
             Referral referral = new() { Id = request.ReferralId };
             StaffMember physician = new() { Id = request.PhysicianId };
