@@ -2,7 +2,7 @@
 
 namespace Consultancy.Common.Helpers
 {
-    public static class EventMapper
+    public static class EventHelper
     {
         public static string MapEventToRoutingKey(string eventName)
         {

@@ -1,10 +1,12 @@
 ﻿using MediatR;
 using Consultancy.Infrastructure.Persistence.Contexts;
 using Consultancy.Common.Entities;
+using Consultancy.Common.Helpers;
 
-namespace Consultancy.Features.ConsultFeature.CreateConsult.Event
+namespace Consultancy.Features.ConsultFeature.CreateConsult.RabbitEvent
 {
-    public sealed class ConsultCreatedEventHandler(ApplicationDbContext context)
+    public sealed class ConsultCreatedEventHandler(
+        ApplicationDbContext context)
         : INotificationHandler<ConsultCreatedEvent>
     {
         public async Task Handle(
@@ -13,6 +15,8 @@ namespace Consultancy.Features.ConsultFeature.CreateConsult.Event
         {
             context.Set<Consult>().Add(notification.Consult);
             await context.SaveChangesAsync(cancellationToken);
+
+            ContextDetacher.DetachAllEntitiesFromContext(context);
         }
     }
 }

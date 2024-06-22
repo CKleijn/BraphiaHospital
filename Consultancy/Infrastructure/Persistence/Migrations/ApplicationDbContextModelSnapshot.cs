@@ -34,8 +34,14 @@ namespace Consultancy.Migrations
                     b.Property<string>("Notes")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid>("PatientId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid?>("SurveyId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Version")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 

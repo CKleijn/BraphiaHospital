@@ -1,25 +1,21 @@
 ﻿using FluentValidation;
 using MediatR;
-using Consultancy.Common.Helpers;
 
 using System.Text.Json;
 using Consultancy.Infrastructure.MessageBus.Interfaces;
 using Consultancy.Infrastructure.Persistence.Stores;
 using Consultancy.Common.Entities;
-using Consultancy.Infrastructure.Persistence.Contexts;
-using Consultancy.Common.Interfaces;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Consultancy.Features.ConsultFeature.UpdateQuestions.Event;
+using Consultancy.Common.Abstractions;
+using Consultancy.Features.ConsultFeature.UpdateQuestions.RabbitEvent;
+using Consultancy.Common.Helpers;
 
 namespace Consultancy.Features.ConsultFeature.UpdateQuestions.Command
 {
     public sealed class UpdateQuestionsCommandHandler(
         IProducer producer,
         IEventStore eventStore,
-        IValidator<UpdateQuestionsCommmand> validator,
-        IConsultMapper mapper,
-        ApplicationDbContext context)
+        IValidator<UpdateQuestionsCommmand> validator)
         : IRequestHandler<UpdateQuestionsCommmand>
     {
         public async Task Handle(
@@ -31,46 +27,52 @@ namespace Consultancy.Features.ConsultFeature.UpdateQuestions.Command
             if (!validationResult.IsValid)
                 throw new ValidationException(validationResult.Errors);
 
-            Consult consult = await context.Set<Consult>()
-                .Include(c => c.Survey)
-                .FirstOrDefaultAsync(c => c.Id == request.Id, cancellationToken) ?? throw new KeyNotFoundException($"No consult present with id #{request.Id}");
+            IEnumerable<Event> aggregateEvents = await eventStore.GetAllEventsByAggregateId(request.Id, cancellationToken);
+            
+            if (aggregateEvents.IsNullOrEmpty())
+                throw new KeyNotFoundException($"No consult present with id #{request.Id}");
+
+            Consult consult = new() { Id = request.Id };
+            consult.ReplayHistory(aggregateEvents);
+
+            if (!consult.Notes.IsNullOrEmpty())
+                throw new InvalidOperationException($"Consult with id #{consult.Id} has already finished and therefore cannot be edited");
 
             if (consult.Survey == null)
                 throw new KeyNotFoundException($"No survey present within consult with id #{request.Id}");
 
-            if (!consult.Notes.IsNullOrEmpty())
-                throw new InvalidOperationException($"Consult with id #{request.Id} has already finished and therefore cannot be edited");
-
-            await context.Entry(consult.Survey)
-                .Collection(s => s.Questions)
-                .LoadAsync(cancellationToken);
-
             foreach (Question questionRequest in request.Questions)
             {
-                Question questionContext = consult.Survey.Questions.FirstOrDefault(c => c.Id == questionRequest.Id) 
+                Question questions = consult.Survey.Questions.FirstOrDefault(c => c.Id == questionRequest.Id) 
                     ?? throw new KeyNotFoundException($"No question present with given id #{questionRequest.Id}");
 
-                questionContext.AnswerValue = questionRequest.AnswerValue;
+                questions.AnswerValue = questionRequest.AnswerValue;
             }
 
             if (consult.Survey.Questions.Any(q => q.AnswerValue.IsNullOrEmpty()))
                 throw new InvalidOperationException("Not all questions in the survey are answered");
 
+            consult.Version++;
+            ConsultSurveyFilledInEvent consultSurveyFilledInEvent = new (consult.Survey.Questions)
+            {
+                AggregateId = consult.Id,
+                Type = nameof(ConsultSurveyFilledInEvent),
+                Payload = JsonSerializer.Serialize(consult.Survey.Questions),
+                Version = consult.Version
+            };
+
             var result = await eventStore
                 .AddEvent(
-                    typeof(ConsultSurveyFilledInEvent).Name,
-                    JsonSerializer.Serialize(consult),
+                    consultSurveyFilledInEvent,
                     cancellationToken);
 
-            if (result)
-            {
-                var surveyFilledInEvent = mapper.ConsultToConsultSurveyFilledInEvent(consult);
+            if (!result)
+                return;
 
-                producer.Produce(
-                    EventMapper.MapEventToRoutingKey(surveyFilledInEvent.GetType().Name),
-                    surveyFilledInEvent.GetType().Name,
-                    JsonSerializer.Serialize(surveyFilledInEvent));
-            }
+            producer.Produce(
+                EventHelper.MapEventToRoutingKey(consultSurveyFilledInEvent.GetType().Name),
+                consultSurveyFilledInEvent.GetType().Name,
+                JsonSerializer.Serialize(consultSurveyFilledInEvent));
         }
     }
 }

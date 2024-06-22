@@ -28,9 +28,11 @@ namespace Consultancy.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    PatientId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     AppointmentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     SurveyId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    Notes = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Notes = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Version = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {

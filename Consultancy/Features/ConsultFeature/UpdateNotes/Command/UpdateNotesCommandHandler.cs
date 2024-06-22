@@ -1,15 +1,14 @@
 ﻿using FluentValidation;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using Consultancy.Common.Helpers;
 
 using System.Text.Json;
 using Consultancy.Infrastructure.MessageBus.Interfaces;
 using Consultancy.Infrastructure.Persistence.Stores;
-using Consultancy.Infrastructure.Persistence.Contexts;
 using Consultancy.Common.Entities;
-using Consultancy.Features.ConsultFeature.UpdateNotes.Event;
 using Microsoft.IdentityModel.Tokens;
+using Consultancy.Features.ConsultFeature.UpdateNotes.RabbitEvent;
+using Consultancy.Common.Abstractions;
 
 namespace Consultancy.Features.ConsultFeature.UpdateNotes.Command
 {
@@ -17,8 +16,7 @@ namespace Consultancy.Features.ConsultFeature.UpdateNotes.Command
         IProducer producer,
         IEventStore eventStore,
         IValidator<UpdateNotesCommand> validator,
-        IApiClient apiClient,
-        ApplicationDbContext context)
+        IApiClient apiClient)
         : IRequestHandler<UpdateNotesCommand>
     {
         public async Task Handle(
@@ -30,40 +28,41 @@ namespace Consultancy.Features.ConsultFeature.UpdateNotes.Command
             if (!validationResult.IsValid)
                 throw new ValidationException(validationResult.Errors);
 
-            if (!await context.Set<Consult>().AnyAsync(c => c.Id == request.Id, cancellationToken))
+            IEnumerable<Event> aggregateEvents = await eventStore.GetAllEventsByAggregateId(request.Id, cancellationToken);
+
+            if (aggregateEvents.IsNullOrEmpty())
                 throw new KeyNotFoundException($"No consult present with id #{request.Id}");
 
-            List<Consult> consults = await context.Set<Consult>()
-                .Where(c => c.Id == request.Id)
-                .ToListAsync(cancellationToken);
+            Consult consult = new() { Id = request.Id };
+            consult.ReplayHistory(aggregateEvents);
 
-            if (consults.Any(c => !c.Notes.IsNullOrEmpty()))
-                throw new InvalidOperationException($"Consult with id #{request.Id} has already finished and therefore cannot be edited");
+            if (!consult.Notes.IsNullOrEmpty())
+                throw new InvalidOperationException($"Consult with id #{consult.Id} has already finished and therefore cannot be edited");
 
-            Consult consult = await context.FindAsync<Consult>(request.Id) ?? throw new KeyNotFoundException($"No consult present with id #{request.Id}");
-
-            Appointment coupledAppointment = await apiClient
+            _ = await apiClient
                .GetAsync<Appointment>($"{ConfigurationHelper.GetAppointmentManagementServiceConnectionString()}/appointment/{consult.AppointmentId}", cancellationToken)
                ?? throw new KeyNotFoundException($"Appointment #{consult.AppointmentId} doesn't exist");
 
             consult.Notes = request.Notes;
-
-            DossierConsultAppendedEvent dossierConsultAppendedEvent = new DossierConsultAppendedEvent(
-                PatientId: coupledAppointment.PatientId,
-                Consult: consult
-            );
+            consult.Version++;
+            DossierConsultAppendedEvent dossierConsultAppendedEvent = new (consult)
+            {
+                AggregateId = request.Id,
+                Type = nameof(DossierConsultAppendedEvent),
+                Payload = JsonSerializer.Serialize(consult),
+                Version = consult.Version
+            };
 
             var result = await eventStore
                 .AddEvent(
-                    typeof(DossierConsultAppendedEvent).Name,
-                    JsonSerializer.Serialize(dossierConsultAppendedEvent),
+                    dossierConsultAppendedEvent,
                     cancellationToken);
 
             if (!result)
                 return;
 
             producer.Produce(
-                EventMapper.MapEventToRoutingKey(dossierConsultAppendedEvent.GetType().Name),
+                EventHelper.MapEventToRoutingKey(dossierConsultAppendedEvent.GetType().Name),
                 dossierConsultAppendedEvent.GetType().Name,
                 JsonSerializer.Serialize(dossierConsultAppendedEvent));
         }

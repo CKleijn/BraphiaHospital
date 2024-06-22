@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Consultancy.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240619135052_InitialCreate")]
+    [Migration("20240621182213_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -37,8 +37,14 @@ namespace Consultancy.Migrations
                     b.Property<string>("Notes")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid>("PatientId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid?>("SurveyId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Version")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
