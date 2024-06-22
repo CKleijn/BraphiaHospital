@@ -10,6 +10,10 @@ namespace DossierManagement.Features.Dossier.CreateDossier
             RuleFor(dossier => dossier.PatientId)
                 .NotEmpty()
                 .WithMessage("PatientId is required!");
+
+            RuleFor(dossier => dossier.Patient)
+                .NotEmpty()
+                .WithMessage("Patient is required!");
         }
     }
 }

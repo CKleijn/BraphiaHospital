@@ -1,12 +1,9 @@
 ﻿using DossierManagement.Common.Helpers;
 using DossierManagement.Events.MedicationPrescribed;
 using DossierManagement.Infrastructure.MessageBus.Interfaces;
-using DossierManagement.Infrastructure.Persistence.Contexts;
 using DossierManagement.Infrastructure.Persistence.Stores;
 using FluentValidation;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
-using System.Data;
 using System.Text.Json;
 
 namespace DossierManagement.Features.Dossier.PrescribeMedication
@@ -14,7 +11,6 @@ namespace DossierManagement.Features.Dossier.PrescribeMedication
     public sealed class PrescribeMedicationCommandHandler(
         IEventStore eventStore,
         IProducer producer,
-        ApplicationDbContext context,
         IValidator<PrescribeMedicationCommand> validator)
         : IRequestHandler<PrescribeMedicationCommand>
     {
@@ -27,30 +23,33 @@ namespace DossierManagement.Features.Dossier.PrescribeMedication
             if (!validationResult.IsValid)
                 throw new ValidationException(validationResult.Errors);
 
-            if (!await context
-                .Set<Dossier>()
-                .AnyAsync(d => d.Patient.Id == request.PatientId, cancellationToken))
-                throw new ArgumentNullException($"Dossier doesn't exist for patient #{request.PatientId}");
+            var dossierAggregateId = await eventStore.GetDossierAggregateIdByPatientId(request.PatientId, cancellationToken);
 
-            var medicationPrescribedEvent = new DossierMedicationPrescribedEvent
-            (
-                PatientId: request.PatientId,
-                Medications: request.Medications
-            );
+            if (dossierAggregateId == Guid.Empty)
+                throw new ArgumentNullException($"Dossier with patient #{request.PatientId} doesn't exists");
+
+            var latestVersion = await eventStore.GetLatestVersionOfEventByAggregateId(dossierAggregateId, nameof(DossierMedicationPrescribedEvent), cancellationToken);
+            latestVersion++;
+
+            var medicationPrescribedEvent = new DossierMedicationPrescribedEvent(request.PatientId, request.Medications)
+            {
+                AggregateId = dossierAggregateId,
+                Type = nameof(DossierMedicationPrescribedEvent),
+                Payload = JsonSerializer.Serialize(request),
+                Version = latestVersion,
+            };
 
             var result = await eventStore
                 .AddEvent(
-                    medicationPrescribedEvent.GetType().Name,
-                    JsonSerializer.Serialize(medicationPrescribedEvent),
+                    medicationPrescribedEvent,
                     cancellationToken);
 
-            if (result)
-            {
-                producer.Produce(
-                    EventMapper.MapEventToRoutingKey(medicationPrescribedEvent.GetType().Name),
-                    medicationPrescribedEvent.GetType().Name,
-                    JsonSerializer.Serialize(medicationPrescribedEvent));
-            }
+            if (!result) return;
+
+            producer.Produce(
+                EventHelper.MapEventToRoutingKey(medicationPrescribedEvent.GetType().Name),
+                medicationPrescribedEvent.GetType().Name,
+                JsonSerializer.Serialize(medicationPrescribedEvent));
         }
     }
 }

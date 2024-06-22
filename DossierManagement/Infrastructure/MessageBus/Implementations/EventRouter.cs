@@ -27,9 +27,7 @@ namespace DossierManagement.Infrastructure.MessageBus.Implementations
             }
         }
 
-        private async Task HandlePublishEvent(
-            string eventName, 
-            string payload)
+        private async Task HandlePublishEvent(string eventName, string payload)
         {
             switch (eventName)
             {
@@ -46,15 +44,6 @@ namespace DossierManagement.Infrastructure.MessageBus.Implementations
                     await publisher.Publish(JsonConvert.DeserializeObject<PatientRegisteredEvent>(payload)!);
                     break;
             }
-        }
-
-        private T TranslatePayload<T>(string payload)
-        {
-            var jsonObject = JObject.Parse(payload);
-            var entityPayload = (jsonObject[typeof(T).Name]?.ToString())
-                ?? throw new ArgumentException($"Payload does not contain an entity of type {typeof(T).Name}");
-
-            return JsonConvert.DeserializeObject<T>(entityPayload)!;
         }
     }
 }
