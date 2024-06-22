@@ -19,8 +19,7 @@ namespace Consultancy.Features.ConsultFeature.UpdateNotes.RabbitEvent
             Consult? consult = await context.Set<Consult>().FindAsync(notification.AggregateId, cancellationToken);
             consult?.ReplayHistory(await eventStore.GetAllEventsByAggregateId(notification.AggregateId, cancellationToken));
 
-            consult!.Apply(notification);
-            consult.Version = notification.Version++;
+            consult!.Version = notification.Version++;
 
             await context.SaveChangesAsync(cancellationToken);
 

@@ -23,7 +23,7 @@ namespace Consultancy.Common.Entities
 
         public void Apply(DossierConsultAppendedEvent @event)
         {
-            Notes = @event.Notes;
+            Notes = @event.Consult.Notes;
         }
 
         public void Apply(ConsultSurveyFilledInEvent @event)

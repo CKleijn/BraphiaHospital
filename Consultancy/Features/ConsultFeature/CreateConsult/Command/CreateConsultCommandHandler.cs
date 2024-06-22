@@ -36,15 +36,19 @@ namespace Consultancy.Features.ConsultFeature.CreateConsult.Command
                 .GetAsync<Appointment>($"{ConfigurationHelper.GetAppointmentManagementServiceConnectionString()}/appointment/{request.AppointmentId}", cancellationToken)
                 ?? throw new ArgumentNullException($"Appointment #{request.AppointmentId} doesn't exist");
 
+            Survey survey = null!;
+            if (request.SurveyTitle != null)
+                survey = new()
+                {
+                    Title = request.SurveyTitle,
+                    Questions = mapper.QuestionsDTOToQuestions(request.Questions),
+                };
+
             Consult consult = new()
             {
                 PatientId = coupledAppointment.PatientId,
                 AppointmentId = coupledAppointment.Id,
-                Survey = new Survey()
-                {
-                    Title = request.SurveyTitle,
-                    Questions = mapper.QuestionsDTOToQuestions(request.Questions),
-                },
+                Survey = survey
             };
 
             ConsultCreatedEvent consultCreatedEvent = new (consult)

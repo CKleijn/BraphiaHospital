@@ -43,12 +43,13 @@ namespace Consultancy.Features.ConsultFeature.UpdateNotes.Command
                .GetAsync<Appointment>($"{ConfigurationHelper.GetAppointmentManagementServiceConnectionString()}/appointment/{consult.AppointmentId}", cancellationToken)
                ?? throw new KeyNotFoundException($"Appointment #{consult.AppointmentId} doesn't exist");
 
+            consult.Notes = request.Notes;
             consult.Version++;
-            DossierConsultAppendedEvent dossierConsultAppendedEvent = new (request.Notes)
+            DossierConsultAppendedEvent dossierConsultAppendedEvent = new (consult)
             {
                 AggregateId = request.Id,
                 Type = nameof(DossierConsultAppendedEvent),
-                Payload = JsonSerializer.Serialize(request.Notes),
+                Payload = JsonSerializer.Serialize(consult),
                 Version = consult.Version
             };
 

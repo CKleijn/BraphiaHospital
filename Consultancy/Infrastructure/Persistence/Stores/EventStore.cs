@@ -49,7 +49,7 @@ namespace Consultancy.Infrastructure.Persistence.Stores
                                 });
                                 break;
                             case nameof(DossierConsultAppendedEvent):
-                                events.Add(new DossierConsultAppendedEvent(JsonConvert.DeserializeObject<string>(payload)!)
+                                events.Add(new DossierConsultAppendedEvent(JsonConvert.DeserializeObject<Consult>(payload)!)
                                 {
                                     AggregateId = aggregateId,
                                     Type = type,
