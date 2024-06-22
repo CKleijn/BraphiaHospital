@@ -46,7 +46,7 @@ namespace Consultancy.Features.ConsultFeature.CreateConsult.Command
 
             Consult consult = new()
             {
-                PatientId = coupledAppointment.PatientId!,
+                PatientId = coupledAppointment.Patient.Id,
                 AppointmentId = coupledAppointment.Id,
                 Survey = survey
             };
