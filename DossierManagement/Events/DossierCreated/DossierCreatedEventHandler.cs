@@ -1,7 +1,6 @@
 ﻿using DossierManagement.Features.Dossier;
 using DossierManagement.Infrastructure.Persistence.Contexts;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace DossierManagement.Events.DossierCreated
 {
@@ -12,20 +11,9 @@ namespace DossierManagement.Events.DossierCreated
             DossierCreatedEvent notification,
             CancellationToken cancellationToken)
         {
-            if(!await context
-                .Set<Patient>()
-                .AnyAsync(p => p.Id == notification.PatientId, cancellationToken))
-                throw new ArgumentNullException($"Patient #{notification.PatientId} doesn't exist");
-
-            var dossier = new Dossier
-            {
-                Id = notification.Id,
-                PatientId = notification.PatientId
-            };
-
             context
                 .Set<Dossier>()
-                .Add(dossier);
+                .Add(notification.Dossier);
 
             await context.SaveChangesAsync(cancellationToken);
         }

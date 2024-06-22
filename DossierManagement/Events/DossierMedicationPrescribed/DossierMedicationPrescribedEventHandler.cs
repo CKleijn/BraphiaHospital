@@ -1,28 +1,30 @@
 ﻿using DossierManagement.Features.Dossier;
 using DossierManagement.Infrastructure.Persistence.Contexts;
+using DossierManagement.Infrastructure.Persistence.Stores;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace DossierManagement.Events.MedicationPrescribed
 {
-    public sealed class DossierMedicationPrescribedEventHandler(ApplicationDbContext context)
+    public sealed class DossierMedicationPrescribedEventHandler(
+        IEventStore eventStore,
+        ApplicationDbContext context)
         : INotificationHandler<DossierMedicationPrescribedEvent>
     {
         public async Task Handle(
             DossierMedicationPrescribedEvent notification,
             CancellationToken cancellationToken)
         {
-            var dossier = await context
-                .Set<Dossier>()
-                .FirstOrDefaultAsync(d => d.PatientId == notification.PatientId, cancellationToken)
-                ?? throw new ArgumentNullException($"Dossier doesn't exist for patient #{notification.PatientId}");
+            if (!await eventStore.DossierWithPatientExists(notification.PatientId, cancellationToken))
+                throw new ArgumentNullException($"Dossier with patient #{notification.PatientId} doesn't exists");
 
-            dossier.Medications ??= new List<string>();
-            notification.Medications.ForEach(m => dossier.Medications.Add(m));
+            var aggregateEvents = await eventStore.GetAllEventsByAggregateId(notification.AggregateId, cancellationToken);
+            var dossierState = new Dossier();
+            dossierState.ReplayHistory(aggregateEvents);
+            dossierState.Version++;
 
             context
                 .Set<Dossier>()
-                .Update(dossier);
+                .Update(dossierState);
 
             await context.SaveChangesAsync(cancellationToken);
         }

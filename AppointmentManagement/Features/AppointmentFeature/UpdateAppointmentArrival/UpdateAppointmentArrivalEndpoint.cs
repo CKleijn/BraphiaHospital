@@ -1,21 +1,24 @@
-﻿using Carter;
-using DossierManagement.Common.Annotations;
+﻿using AppointmentManagement.Common.Annotations;
+using AppointmentManagement.Features.AppointmentFeature.UpdatePatientArrival.Command;
+using Carter;
 using MediatR;
 
-namespace DossierManagement.Features.Dossier.CreateDossier
+namespace AppointmentManagement.Features.AppointmentFeature.UpdatePatientArrival
 {
-    public sealed class CreateDossierEndpoint
+    public sealed class UpdateAppointmentArrivalEndpoint
         : ICarterModule
     {
         public void AddRoutes(IEndpointRouteBuilder app)
         {
-            app.MapPost("dossier", async (
+            app.MapPut("appointment/arrival/{id}", async (
                 ISender sender,
-                CreateDossierCommand command,
+                Guid id,
+                UpdateAppointmentArrivalCommand command,
                 CancellationToken cancellationToken) =>
             {
                 try
                 {
+                    command.Id = id;
                     await sender.Send(command, cancellationToken);
 
                     return Results.Created();
@@ -25,7 +28,7 @@ namespace DossierManagement.Features.Dossier.CreateDossier
                     return Results.Problem(e.Message);
                 }
             })
-            .WithTags(Tags.DOSSIER_TAG);
+            .WithTags(Tags.APPOINTMENT_TAG);
         }
     }
 }

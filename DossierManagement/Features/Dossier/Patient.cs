@@ -1,10 +1,8 @@
-﻿using DossierManagement.Common.Interfaces;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace DossierManagement.Features.Dossier
 {
-    public sealed record Patient
-        : IEntity
+    public sealed class Patient
     {
         [Key]
         public Guid Id { get; init; } = Guid.NewGuid();

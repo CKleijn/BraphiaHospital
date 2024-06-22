@@ -1,4 +1,4 @@
-﻿using FluentValidation;
+using FluentValidation;
 using MediatR;
 using Consultancy.Common.Helpers;
 
@@ -17,6 +17,7 @@ namespace Consultancy.Features.ConsultFeature.CreateConsult.Command
         IEventStore eventStore,
         IValidator<CreateConsultCommand> validator,
         IApiClient apiClient,
+        ApplicationDbContext context)
         IQuestionMapper mapper)
         : IRequestHandler<CreateConsultCommand>
     {

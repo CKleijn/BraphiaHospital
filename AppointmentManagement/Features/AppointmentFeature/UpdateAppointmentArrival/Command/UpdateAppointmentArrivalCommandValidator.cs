@@ -2,10 +2,10 @@
 
 namespace AppointmentManagement.Features.AppointmentFeature.UpdatePatientArrival.Command
 {
-    public sealed class UpdatePatientArrivalCommandValidator
-    : AbstractValidator<UpdatePatientArrivalCommand>
+    public sealed class UpdateAppointmentArrivalCommandValidator
+    : AbstractValidator<UpdateAppointmentArrivalCommand>
     {
-        public UpdatePatientArrivalCommandValidator()
+        public UpdateAppointmentArrivalCommandValidator()
         {
             RuleFor(x => x.Id)
                 .NotEmpty()

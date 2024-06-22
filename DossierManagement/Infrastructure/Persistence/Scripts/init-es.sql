@@ -1,19 +1,20 @@
-﻿IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = 'BraphiaHospitalPatientManagementEventStore')
+﻿IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = 'BraphiaHospitalDossierManagementEventStore')
 BEGIN
-  CREATE DATABASE BraphiaHospitalPatientManagementEventStore;
+  CREATE DATABASE BraphiaHospitalDossierManagementEventStore;
 END;
 GO
 
-USE BraphiaHospitalPatientManagementEventStore
+USE BraphiaHospitalDossierManagementEventStore
 GO
 
 IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Events')
 BEGIN
   CREATE TABLE Events (
     ID INT PRIMARY KEY identity(1,1),
+    AggregateId UNIQUEIDENTIFIER NOT NULL,
     Type NVARCHAR(100) NOT NULL,
     Payload NVARCHAR(MAX) NULL,
-    Version INT NULL,
+    Version INT NOT NULL,
     CreatedAt DATETIME DEFAULT GETDATE()
   )
 END

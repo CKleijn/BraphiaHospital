@@ -12,7 +12,7 @@ namespace AppointmentManagement.Common.Interfaces
         Appointment RescheduleAppointmentCommandToAppointment(RescheduleAppointmentCommand command);
         AppointmentRescheduledEvent AppointmentToAppointmentRescheduledEvent(Appointment appointment);
 
-        Appointment UpdatePatientArrivalCommandToAppointment(UpdatePatientArrivalCommand command);
-        PatientArrivalUpdatedEvent AppointmentToPatientArrivalUpdatedEvent(Appointment appointment);
+        Appointment UpdatePatientArrivalCommandToAppointment(UpdateAppointmentArrivalCommand command);
+        AppointmentArrivalUpdatedEvent AppointmentToPatientArrivalUpdatedEvent(Appointment appointment);
     }
 }
