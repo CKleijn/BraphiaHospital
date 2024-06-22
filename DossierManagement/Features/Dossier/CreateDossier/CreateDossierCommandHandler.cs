@@ -1,11 +1,9 @@
 ﻿using DossierManagement.Common.Helpers;
 using DossierManagement.Events.DossierCreated;
 using DossierManagement.Infrastructure.MessageBus.Interfaces;
-using DossierManagement.Infrastructure.Persistence.Contexts;
 using DossierManagement.Infrastructure.Persistence.Stores;
 using FluentValidation;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using System.Data;
 using System.Text.Json;
 
@@ -14,11 +12,10 @@ namespace DossierManagement.Features.Dossier.CreateDossier
     public sealed class CreateDossierCommandHandler(
         IEventStore eventStore,
         IProducer producer,
-        ApplicationDbContext context,
         IValidator<CreateDossierCommand> validator)
-        : IRequestHandler<CreateDossierCommand>
+        : IRequestHandler<CreateDossierCommand, Dossier>
     {
-        public async Task Handle(
+        public async Task<Dossier> Handle(
             CreateDossierCommand request,
             CancellationToken cancellationToken)
         {
@@ -27,36 +24,37 @@ namespace DossierManagement.Features.Dossier.CreateDossier
             if (!validationResult.IsValid)
                 throw new ValidationException(validationResult.Errors);
 
-           if (!await context
-                .Set<Patient>()
-                .AnyAsync(p => p.Id == request.PatientId, cancellationToken))
-                throw new ArgumentNullException($"Patient #{request.PatientId} doesn't exist");
+            if (await eventStore.DossierWithPatientExists(request.PatientId, cancellationToken))
+                throw new DuplicateNameException($"Dossier with patient #{request.PatientId} already exists");
 
-            if (await context
-                .Set<Dossier>()
-                .Include(d => d.Patient)
-                .AnyAsync(d => d.Patient.Id == request.PatientId, cancellationToken))
-                throw new DuplicateNameException($"Dossier with patient #{request.PatientId} already exist");
-
-            var dossierCreatedEvent = new DossierCreatedEvent
-            (
-                Id: Guid.NewGuid(),
-                PatientId: request.PatientId
-            );
+            var dossier = new Dossier
+            {
+                PatientId = request.PatientId,
+                Patient = request.Patient
+            };
+            
+            var dossierCreatedEvent = new DossierCreatedEvent(dossier)
+            {
+                AggregateId = dossier.Id,
+                Type = nameof(DossierCreatedEvent),
+                Payload = JsonSerializer.Serialize(dossier),
+                Version = 0
+            };
 
             var result = await eventStore
                 .AddEvent(
-                    dossierCreatedEvent.GetType().Name,
-                    JsonSerializer.Serialize(dossierCreatedEvent),
+                    dossierCreatedEvent,
                     cancellationToken);
 
             if (result)
             {
                 producer.Produce(
-                    EventMapper.MapEventToRoutingKey(dossierCreatedEvent.GetType().Name),
-                    dossierCreatedEvent.GetType().Name,
-                    JsonSerializer.Serialize(dossierCreatedEvent));
+                EventHelper.MapEventToRoutingKey(dossierCreatedEvent.GetType().Name),
+                dossierCreatedEvent.GetType().Name,
+                JsonSerializer.Serialize(dossierCreatedEvent));
             }
+
+            return dossier;
         }
     }
 }

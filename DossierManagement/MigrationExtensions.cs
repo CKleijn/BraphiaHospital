@@ -39,9 +39,10 @@ namespace DossierManagement
                 BEGIN
                     CREATE TABLE Events (
                         ID INT PRIMARY KEY IDENTITY(1,1),
+                        AggregateId UNIQUEIDENTIFIER NOT NULL,
                         Type NVARCHAR(100) NOT NULL,
                         Payload NVARCHAR(MAX) NULL,
-                        Version INT NULL,
+                        Version INT NOT NULL,
                         CreatedAt DATETIME DEFAULT GETDATE()
                     );
                 END;";

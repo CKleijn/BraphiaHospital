@@ -1,10 +1,12 @@
-﻿using DossierManagement.Features.Dossier;
+﻿using DossierManagement.Common.Abstractions;
+using DossierManagement.Features.Dossier;
 using MediatR;
 
 namespace DossierManagement.Events.ConsultAppended
 {
-    public sealed record DossierConsultAppendedEvent(
-        Guid PatientId,
-        Consult Consult)
-        : INotification;
+    public sealed class DossierConsultAppendedEvent(Consult consult)
+       : Event, INotification
+    {
+        public Consult Consult { get; set; } = consult;
+    }
 }

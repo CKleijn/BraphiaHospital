@@ -1,9 +1,12 @@
-﻿using MediatR;
+﻿using DossierManagement.Common.Abstractions;
+using DossierManagement.Features.Dossier;
+using MediatR;
 
 namespace DossierManagement.Events.DossierCreated
 {
-    public sealed record DossierCreatedEvent(
-        Guid Id,
-        Guid PatientId)
-        : INotification;
+    public sealed class DossierCreatedEvent(Dossier dossier)
+        : Event, INotification
+    {
+        public Dossier Dossier { get; set; } = dossier;
+    }
 }
