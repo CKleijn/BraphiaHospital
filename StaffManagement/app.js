@@ -4,14 +4,15 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const { connectRabbitMQ } = require('./connections/connectRabbitMQ');
-const startStaffQueueConsumer  = require('./rabbitMQ/consumers/staffQueue.consumer');
-const startHospitalQueueConsumer = require('./rabbitMQ/consumers/hospitalQueue.consumer');
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./utils/swagger/swagger_output.json');
-
+const {getStaffAdHoc} = require('./AdHoc/adHocReceiver');
 var staffRouter = require('./routes/staff');
 var hospitalRoute = require('./routes/hospital');
 const { setupRabbitMQ } = require('./rabbitMQ/setupRabbitMQ');
+const cron = require('node-cron');
+const { startStaffQueueConsumer }  = require('./rabbitMQ/consumers/staffQueue.consumer');
+const { startHospitalQueueConsumer } = require('./rabbitMQ/consumers/hospitalQueue.consumer');
 
 var app = express();
 
@@ -33,12 +34,20 @@ const PORT = process.env.PORT || 5006;
 const startServer = async () => {
   try {
     await connectRabbitMQ();
-    
     await setupRabbitMQ();
 
     // Initialize the consumers
-    // await startStaffQueueConsumer();
-    // await startHospitalQueueConsumer();
+    await startStaffQueueConsumer();
+    await startHospitalQueueConsumer();
+
+    console.log(new Date().toString());
+
+    console.log('Setting up cron job');
+    cron.schedule('05 15 * * *', async () => {
+      console.log('Running daily staff members update cron job');
+      await getStaffAdHoc();
+    });
+    await getStaffAdHoc();
 
     app.listen(PORT, () => {
       console.log(`Server listening on port ${PORT}`);

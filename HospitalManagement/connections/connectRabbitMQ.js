@@ -25,7 +25,7 @@ const setupConsumer = async (queueName, routingKeyPattern, onMessage) => {
         }
         
         // assert Exchange
-        assertExchange(process.env.EXCHANGE_RMC, 'topic', { durable: true });
+        await channel.assertExchange(process.env.EXCHANGE_RMC, 'topic', { durable: true });
 
         // Assert the queue to ensure it exists
         await channel.assertQueue(queueName, { durable: true });

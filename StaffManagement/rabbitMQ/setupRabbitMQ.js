@@ -24,7 +24,7 @@ async function setupRabbitMQ() {
 
 async function setupQueue(queueName, exchangeName, routingKeyPattern) {
     try {
-        const channel = getChannel();
+        const channel = await getChannel();
 
         // Assert the exchange (create if not exists)
         await channel.assertExchange(exchangeName, 'topic', { durable: true });
