@@ -4,7 +4,7 @@ using MediatR;
 
 namespace AppointmentManagement.Features.StaffMemberFeature.CreateStaffMember.Event
 {
-    public sealed class StaffCreatedEvent(StaffMember staffMember)
+    public sealed class StaffMemberCreatedEvent(StaffMember staffMember)
         : NotificationEvent, INotification
     {
         public StaffMember StaffMember { get; set; } = staffMember;

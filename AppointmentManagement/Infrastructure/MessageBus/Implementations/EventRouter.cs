@@ -64,11 +64,11 @@ namespace AppointmentManagement.Infrastructure.MessageBus.Implementations
                     break;
 
                 //External
-                case nameof(StaffCreatedEvent):
-                    await publisher.Publish(new StaffCreatedEvent(JsonConvert.DeserializeObject<StaffMember>(payload)!));
+                case nameof(StaffMemberCreatedEvent):
+                    await publisher.Publish(new StaffMemberCreatedEvent(JsonConvert.DeserializeObject<StaffMember>(payload)!));
                     break;
-                case nameof(StaffUpdatedEvent):
-                    await publisher.Publish(JsonConvert.DeserializeObject<StaffUpdatedEvent>(payload)!);
+                case nameof(StaffMemberUpdatedEvent):
+                    await publisher.Publish(JsonConvert.DeserializeObject<StaffMemberUpdatedEvent>(payload)!);
                     break;
                 case nameof(HospitalFacilityCreatedEvent):
                     await publisher.Publish(new HospitalFacilityCreatedEvent(JsonConvert.DeserializeObject<HospitalFacility>(payload)!));
