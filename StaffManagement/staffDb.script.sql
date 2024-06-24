@@ -1,6 +1,3 @@
--- DROP TABLE IF EXISTS staff;
--- DROP TABLE IF EXISTS hospital;
-
 CREATE TABLE hospital (
     hospitalId UUID PRIMARY KEY,
     name VARCHAR(255) UNIQUE NOT NULL

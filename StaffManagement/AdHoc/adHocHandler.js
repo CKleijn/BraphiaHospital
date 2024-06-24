@@ -11,22 +11,20 @@ const handleDatabaseError = (err) => {
 
 const adHocHandler = async (staffMembers) => {
     try {
-        let count = 0;
         for (const staffMember of staffMembers) {
-            if (count > 1) break;
             const staffRecord = await readPool.query(findStaff, [staffMember.name]);
             if (staffRecord.rows.length > 0) {
                 if (staffIsChanged(staffMember, staffRecord)) {
-                    console.log('Staff is changed');
+                    // staff is changed so update
                     const updatedStaffMember = addDefaultStaffProperties({ ...staffMember });
                     await adHocUpdateHandler({ id: staffRecord.rows[0].id, ...updatedStaffMember });
                 }   
+                // staff is not changed so do nothing
             } else {
-                console.log('Staff does not exist yet');
+                // staff does not exist yet so create
                 const newStaffMember = addDefaultStaffProperties({ ...staffMember });
                 await adHocCreateHandler({ id: uuidv4(), ...newStaffMember });
             }
-            count++;
         }
     } catch (error) {
         console.error('Error fetching and processing staff members:', error);
@@ -64,7 +62,6 @@ const staffIsChanged = (staffMember, staffRecord) => {
             return true;
         }
     }
-    console.log('Staff is not changed');
     return false;
 }
 

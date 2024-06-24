@@ -9,7 +9,7 @@ const doc = {
     description: 'A simple Express API application with Swagger documentation',
     version: '1.0.0',
   },
-  host: 'localhost:3002', // Update with your host and port
+  host: 'localhost:5006', // Update with your host and port
   basePath: '/',
 };
 
