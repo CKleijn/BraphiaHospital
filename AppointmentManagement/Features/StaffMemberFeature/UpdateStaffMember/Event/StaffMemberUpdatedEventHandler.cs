@@ -7,24 +7,24 @@ using AppointmentManagement.Common.Abstractions;
 
 namespace AppointmentManagement.Features.StaffMemberFeature.UpdateStaffMember.Event
 {
-    public sealed class StaffUpdatedEventHandler(
+    public sealed class StaffMemberUpdatedEventHandler(
         ApplicationDbContext context,
         IEventStore eventStore)
-        : INotificationHandler<StaffUpdatedEvent>
+        : INotificationHandler<StaffMemberUpdatedEvent>
     {
         public async Task Handle(
-            StaffUpdatedEvent notification,
+            StaffMemberUpdatedEvent notification,
             CancellationToken cancellationToken)
         {
             StaffMember? staff = await context.Set<StaffMember>()
                 .FindAsync(notification.Id, cancellationToken);
 
-            StaffUpdatedEvent staffUpdatedEvent = CorrectPayload(staff!, notification);
+            StaffMemberUpdatedEvent staffUpdatedEvent = CorrectPayload(staff!, notification);
 
             List<NotificationEvent> events = (await eventStore.GetAllEventsByAggregateId(notification.Id, staff!.Version, cancellationToken)).ToList();
 
             staffUpdatedEvent.AggregateId = staffUpdatedEvent.Id;
-            staffUpdatedEvent.Type = nameof(StaffUpdatedEvent);
+            staffUpdatedEvent.Type = nameof(StaffMemberUpdatedEvent);
             staffUpdatedEvent.Payload = JsonSerializer.Serialize(staffUpdatedEvent);
             staffUpdatedEvent.Version = events.Count != 0 ? events.Last().Version + 1 : staff!.Version + 1;
 
@@ -41,7 +41,7 @@ namespace AppointmentManagement.Features.StaffMemberFeature.UpdateStaffMember.Ev
             await context.SaveChangesAsync(cancellationToken);
         }
 
-        private StaffUpdatedEvent CorrectPayload(StaffMember prevState, StaffUpdatedEvent input)
+        private StaffMemberUpdatedEvent CorrectPayload(StaffMember prevState, StaffMemberUpdatedEvent input)
         {
             if (input.HospitalId == Guid.Empty)
                 input.HospitalId = prevState!.HospitalId;
@@ -50,7 +50,7 @@ namespace AppointmentManagement.Features.StaffMemberFeature.UpdateStaffMember.Ev
             if (string.IsNullOrEmpty(input.Specialization))
                 input.Specialization = prevState!.Specialization;
 
-            return new StaffUpdatedEvent(
+            return new StaffMemberUpdatedEvent(
                 prevState.Id,
                 input.HospitalId,
                 input.Name,

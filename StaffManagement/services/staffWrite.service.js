@@ -3,6 +3,7 @@ const { json } = require('express');
 const { writePool } = require('../connections/connectPostgreDB');
 const { sendMessageToExchange } = require('../connections/connectRabbitMQ');
 const { v4: uuidv4 } = require('uuid');
+const { getStaffByName } = require('./staffRead.service');
 
 const postEventQuery = `INSERT INTO eventStore (type, payload) VALUES ($1, $2) RETURNING *;`;
 
@@ -11,18 +12,17 @@ const handleDatabaseError = (res, err) => {
     res.status(500).json({ error: 'Internal server error' });
 };
 
-const handleValidationErrors = (res, message) => { 
-    res.status(400).json({ error: message });
-};
-
 const createEvent = async (req, res) => {
-    // Construct the payload object to be inserted
-    const payloadToInsert = {
-        id: uuidv4(),
-        ...req.body
-    };
-
     try {
+        if (await getStaffByName(req.body.name)) {
+            return res.status(400).json({ error: 'Staff member already exists with this name!' });
+        }
+    
+        // Construct the payload object to be inserted
+        const payloadToInsert = {
+            id: uuidv4(),
+            ...req.body
+        };
         // Convert updatedPayload to a string for storage and message sending
         const payloadString = JSON.stringify(payloadToInsert);
 
@@ -36,7 +36,7 @@ const createEvent = async (req, res) => {
     } catch (err) {
         handleDatabaseError(res, err);
         return;
-    }
+    } 
 };
 
  const updateEvent = async (req, res) => { 

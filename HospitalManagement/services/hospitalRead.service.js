@@ -1,5 +1,4 @@
 require('dotenv').config();
-const { validateCreateHospitalDTO } = require('../utils/dtos/validator/hospital.validate.js');
 const { readPool }  = require('../connections/connectPostgreDB.js'); 
 
 const getHospitalQuery = `SELECT * FROM hospital;`;
@@ -17,12 +16,8 @@ const handleDatabaseError = (res, err) => {
     res.status(500).json({ error: 'Internal server error' });
 };
 
-const handleValidationErrors = (res, message) => { 
-    res.status(400).json({ error: message });
-};
-
 const createHospital = async (data) => {
-    console.log('Creating hospital:', data);
+    console.log('Creating hospital!');
 
     const queryValues = [
         data.id,
@@ -43,7 +38,7 @@ const createHospital = async (data) => {
 
     try {
         const result = await readPool.query(createHospitalQuery, queryValues);
-        console.log(`Hospital record inserted successfully:`, result.rows[0]);
+        console.log(`Hospital record inserted successfully! ${data.id}`);
     } catch (err) {
         handleDatabaseError(res, err);
         return;
@@ -66,7 +61,7 @@ const getHospitalById = async (req, res) => {
         const result = await readPool.query(getHospitalByIdQuery, [id]);
         const hospital = result.rows[0];
         if (!hospital) {
-            res.status(404).json({error: 'Hospital not found'});
+            res.status(404).json({error: `Hospital ${id} not found` });
             return;
         }
         res.status(200).json(hospital);

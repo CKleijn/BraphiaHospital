@@ -3,6 +3,7 @@ using DossierManagement.Events.ConsultAppended;
 using DossierManagement.Events.DossierCreated;
 using DossierManagement.Events.MedicationPrescribed;
 using DossierManagement.Events.PatientRegistered;
+using System.Data;
 
 namespace DossierManagement.Features.Dossier
 {
@@ -32,6 +33,10 @@ namespace DossierManagement.Features.Dossier
         public void Apply(DossierConsultAppendedEvent @event)
         {
             Consults ??= new List<Consult>();
+
+            if (Consults.Any(c => c.Id == @event.Consult.Id && c.PatientId == @event.Consult.PatientId))
+                throw new DuplicateNameException($"Consult #{@event.Consult.Id} already exists");
+
             Consults.Add(@event.Consult);
         }
 

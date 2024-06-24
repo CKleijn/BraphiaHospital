@@ -6,19 +6,19 @@ using System.Text.Json;
 
 namespace AppointmentManagement.Features.StaffMemberFeature.CreateStaffMember.Event
 {
-    public sealed class StaffCreatedEventHandler(
+    public sealed class StaffMemberCreatedEventHandler(
         ApplicationDbContext context,
         IEventStore eventStore)
-        : INotificationHandler<StaffCreatedEvent>
+        : INotificationHandler<StaffMemberCreatedEvent>
     {
         public async Task Handle(
-            StaffCreatedEvent notification,
+            StaffMemberCreatedEvent notification,
             CancellationToken cancellationToken)
         {
-            StaffCreatedEvent staffCreatedEvent = new(notification.StaffMember)
+            StaffMemberCreatedEvent staffCreatedEvent = new(notification.StaffMember)
             {
                 AggregateId = notification.StaffMember.Id,
-                Type = nameof(StaffCreatedEvent),
+                Type = nameof(StaffMemberCreatedEvent),
                 Payload = JsonSerializer.Serialize(notification.StaffMember),
             };
 

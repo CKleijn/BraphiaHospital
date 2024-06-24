@@ -10,10 +10,6 @@ const handleDatabaseError = (res, err) => {
     res.status(500).json({ error: 'Internal server error' });
 };
 
-const handleValidationErrors = (res, message) => { 
-    res.status(400).json({ error: message });
-};
-
 const createEvent = async (req, res) => {
     // Construct the payload object to be inserted
     const payloadToInsert = {

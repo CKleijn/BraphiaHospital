@@ -3,15 +3,18 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-const { connectRabbitMQ } = require('./connections/connectRabbitMQ');
-const startStaffQueueConsumer  = require('./rabbitMQ/consumers/staffQueue.consumer');
-const startHospitalQueueConsumer = require('./rabbitMQ/consumers/hospitalQueue.consumer');
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./utils/swagger/swagger_output.json');
+const schedule = require('node-schedule');
 
-var staffRouter = require('./routes/staff');
-var hospitalRoute = require('./routes/hospital');
+const { connectRabbitMQ } = require('./connections/connectRabbitMQ');
+const { getStaffAdHoc } = require('./AdHoc/adHocReceiver');
 const { setupRabbitMQ } = require('./rabbitMQ/setupRabbitMQ');
+const startStaffQueueConsumer = require('./rabbitMQ/consumers/staffQueue.consumer');
+const startHospitalQueueConsumer = require('./rabbitMQ/consumers/hospitalQueue.consumer');
+
+var hospitalRoute = require('./routes/hospital');
+var staffRouter = require('./routes/staff');
 
 var app = express();
 
@@ -33,19 +36,22 @@ const PORT = process.env.PORT || 5006;
 const startServer = async () => {
   try {
     await connectRabbitMQ();
-    
     await setupRabbitMQ();
+    await startStaffQueueConsumer();
+    await startHospitalQueueConsumer();
 
-    // Initialize the consumers
-    // await startStaffQueueConsumer();
-    // await startHospitalQueueConsumer();
+    schedule.scheduleJob('00 4 * * *', async () => {
+      console.log('Running daily staff members update at 4:00 AM');
+      getStaffAdHoc();
+    });
+    await getStaffAdHoc();
 
     app.listen(PORT, () => {
       console.log(`Server listening on port ${PORT}`);
     });
   } catch (error) {
     console.error('Error starting server:', error);
-    process.exit(1); // Exit the process if an error occurs during startup
+    process.exit(1);
   }
 };
 startServer();

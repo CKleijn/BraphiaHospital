@@ -58,43 +58,20 @@ namespace PatientManagement.Infrastructure.Persistence.Stores
             }
         }
 
-        public async Task<bool> EventByAggregateIdExists(
-            Guid aggregateId, 
+        public async Task<bool> PropertyExists(
+            string propertyName,
+            string propertyValue,
             CancellationToken cancellationToken)
         {
             try
             {
                 using SqlConnection connection = new(ConfigurationHelper.GetConnectionString());
-
                 await connection.OpenAsync(cancellationToken);
 
-                string query = "SELECT COUNT(1) FROM Events WHERE AggregateId = @AggregateId";
+                string query = $"SELECT COUNT(1) FROM Events WHERE JSON_VALUE(Payload, '$.{propertyName}') = @PropertyValue;";
 
                 using SqlCommand command = new(query, connection);
-                command.Parameters.AddWithValue("@AggregateId", aggregateId);
-
-                return ((int)await command.ExecuteScalarAsync(cancellationToken) > 0);
-            }
-            catch (Exception)
-            {
-                throw new Exception(Errors.SQL_READ_ERROR);
-            }
-        }
-
-        public async Task<bool> BSNExists(
-            string BSN,
-            CancellationToken cancellationToken)
-        {
-            try
-            {
-                using SqlConnection connection = new(ConfigurationHelper.GetConnectionString());
-
-                await connection.OpenAsync(cancellationToken);
-
-                string query = "SELECT COUNT(1) FROM Events WHERE JSON_VALUE(Payload, '$.BSN') = @BSN;";
-
-                using SqlCommand command = new(query, connection);
-                command.Parameters.AddWithValue("@BSN", BSN);
+                command.Parameters.AddWithValue("@PropertyValue", propertyValue);
 
                 return ((int)await command.ExecuteScalarAsync(cancellationToken) > 0);
             }

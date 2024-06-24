@@ -4,13 +4,23 @@ require('dotenv').config();
 let channel, connection;
 
 const connectRabbitMQ = async () => {
-    try {
-        const connectionString = `amqp://${process.env.USER_RMC}:${process.env.PWD_RMC}@${process.env.HOST_RMC}:${process.env.PORT_RMC}${process.env.VHOST_RMC}`;
+    const connectionString = `amqp://${process.env.USER_RMC}:${process.env.PWD_RMC}@${process.env.HOST_RMC}:${process.env.PORT_RMC}${process.env.VHOST_RMC}`;
+    const retryDelay = 5000; // Delay between retries in milliseconds
+    let attempt = 1; // Initialize attempt counter
+
+    while (true) {
+        try {
         connection = await amqp.connect(connectionString);
         channel = await connection.createChannel();
         console.log('Connected to RabbitMQ');
-    } catch (err) {
-        console.error('Error connecting to RabbitMQ:', err);
+        return; // Exit the function if connection is successful
+        } catch (err) {
+        console.error(`Error connecting to RabbitMQ (Attempt ${attempt}):`);
+        attempt++; // Increment attempt counter
+
+        console.log(`Retrying in ${retryDelay / 1000} seconds...`);
+        await new Promise(resolve => setTimeout(resolve, retryDelay)); // Wait before retrying
+        }
     }
 };
 
@@ -25,7 +35,7 @@ const setupConsumer = async (queueName, routingKeyPattern, onMessage) => {
         }
         
         // assert Exchange
-        assertExchange(process.env.EXCHANGE_RMC, 'topic', { durable: true });
+        await channel.assertExchange(process.env.EXCHANGE_RMC, 'topic', { durable: true });
 
         // Assert the queue to ensure it exists
         await channel.assertQueue(queueName, { durable: true });

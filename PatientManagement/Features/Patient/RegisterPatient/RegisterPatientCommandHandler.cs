@@ -24,8 +24,8 @@ namespace PatientManagement.Features.Patient.RegisterPatient
             if (!validationResult.IsValid)
                 throw new ValidationException(validationResult.Errors);
 
-            if (await eventStore.BSNExists(request.BSN, cancellationToken))
-                throw new DuplicateNameException($"{request.BSN} already exists");
+            if (await eventStore.PropertyExists("BSN", request.BSN, cancellationToken))
+                throw new DuplicateNameException($"Patient with BSN {request.BSN} already exists");
 
             var patient = new Patient
             {

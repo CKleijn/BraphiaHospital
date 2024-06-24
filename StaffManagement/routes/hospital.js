@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-const { getHospital,getHospitalById } = require('../services/hospitalRead.service')
+const { getHospital, getHospitalById } = require('../services/hospitalRead.service')
 
 
 /* GET staffs listing. */

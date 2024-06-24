@@ -3,7 +3,7 @@ using MediatR;
 
 namespace AppointmentManagement.Features.StaffMemberFeature.UpdateStaffMember.Event
 {
-    public sealed class StaffUpdatedEvent(Guid id, Guid hospitalId, string name, string specialization)
+    public sealed class StaffMemberUpdatedEvent(Guid id, Guid hospitalId, string name, string specialization)
         : NotificationEvent, INotification
     {
         public Guid Id { get; set; } = id;

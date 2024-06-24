@@ -95,11 +95,11 @@ namespace AppointmentManagement.Infrastructure.Persistence.Stores
                                     });
                                 }
                                 break;
-                            case nameof(StaffCreatedEvent):
+                            case nameof(StaffMemberCreatedEvent):
                                 var createdStaffMember = JsonConvert.DeserializeObject<StaffMember>(payload);
                                 if (createdStaffMember != null)
                                 {
-                                    events.Add(new StaffCreatedEvent(createdStaffMember)
+                                    events.Add(new StaffMemberCreatedEvent(createdStaffMember)
                                     {
                                         AggregateId = aggregateId,
                                         Type = type,
@@ -108,11 +108,11 @@ namespace AppointmentManagement.Infrastructure.Persistence.Stores
                                     });
                                 }
                                 break;
-                            case nameof(StaffUpdatedEvent):
+                            case nameof(StaffMemberUpdatedEvent):
                                 var updatedStaffMember = JsonConvert.DeserializeObject<StaffMember>(payload);
                                 if (updatedStaffMember != null)
                                 {
-                                    events.Add(new StaffUpdatedEvent(
+                                    events.Add(new StaffMemberUpdatedEvent(
                                         updatedStaffMember.Id,
                                         updatedStaffMember.HospitalId,
                                         updatedStaffMember.Name,

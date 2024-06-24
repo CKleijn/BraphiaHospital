@@ -1,25 +1,23 @@
 require('dotenv').config();
 const { readPool } = require('../connections/connectPostgreDB');
 
-const createHospitalQuery = `INSERT INTO hospital (hospital_id, name) VALUES ($1, $2);`;
-const updateHospitalQuery = `UPDATE hospital SET name = $1 WHERE hospital_id = $2;`;
+const createHospitalQuery = `INSERT INTO hospital (hospitalId, name) VALUES ($1, $2);`;
+const updateHospitalQuery = `UPDATE hospital SET name = $1 WHERE hospitalId = $2;`;
 const getHospitalQuery = `SELECT * FROM hospital;`;
 const getHospitalByIdQuery = 'SELECT * FROM hospital WHERE hospitalId = $1;';
 
-const handleDatabaseError = (res, err) => { 
-    console.error(err);
-    res.status(500).json({error: 'Internal server error'});
+const handleDatabaseError = (err) => { 
+    console.error('Database Error: ', err);
 };
 
-const createHospital = async (data) => {
+const createHospital = async (data,) => {
     const queryValues = [ data.hospital, data.id];
 
     try {
         await readPool.query(createHospitalQuery, queryValues);
-        
-        console.log(`Hospital record inserted successfully: ${data.hospital}`);
+        console.log(`Hospital record inserted successfully: ${data.hospital.id}`);
     } catch (error) {
-        handleDatabaseError(res, error);
+        handleDatabaseError( error);
         return;
     }
 };
@@ -28,20 +26,19 @@ const updateHospital = async (data) => {
     const queryValues = [ data.hospital, data.id];
     try {
         await readPool.query(updateHospitalQuery, queryValues);
-       
-        console.log(`Hospital record updated successfully: ${data.hospital}`);
+        console.log(`Hospital record updated successfully! ${data.id}`);
     } catch (error) {
-        handleDatabaseError(res, error);
+        handleDatabaseError( error);
         return;
     }
 };
 
-const getHospital = async (req, res) => {   
+const getHospital = async (res) => {   
     try {
         const result = await readPool.query(getHospitalQuery);
         res.status(200).json({count: result.rows.length, result: result.rows});
     } catch (err) {
-        handleDatabaseError(res, err);
+        handleDatabaseError(err);
         return;
     }   
 };
@@ -52,7 +49,7 @@ const getHospitalById = async (req, res) => {
         const result = await readPool.query(getHospitalByIdQuery, [id]);
         const hospital = result.rows[0];
         if (!hospital) {
-            res.status(404).json({error: 'Hospital not found'});
+            res.status(404).json({error: `Hospital not found! ${id}`});
             return;
         }
         res.status(200).json(hospital);
