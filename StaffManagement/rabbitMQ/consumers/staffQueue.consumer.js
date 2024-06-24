@@ -12,18 +12,18 @@ const staffEventHandler = async (msg, key) => {
         switch (key) { // Switch statement to handle different routing keys 
             case process.env.STAFF_CREATED_RMC_KEY:
                 console.log('Handling staff created event');
-                result = await createStaff(JsonParse(msg,key));
+                await createStaff(JsonParse(msg,key));
                 break;
-                case process.env.STAFF_UPDATED_RMC_KEY:
-                    console.log('Handling staff updated event');
-                    result = await updateStaff(JsonParse(msg,key)); 
+            case process.env.STAFF_UPDATED_RMC_KEY:
+                console.log('Handling staff updated event');
+                await updateStaff(JsonParse(msg,key)); 
                 break;
             default:
                 console.log('Unknown routing key');
                 break;  
         }
-        console.log(`${key} succesfully handled:`, result);
 
+        console.log(`${key} succesfully handled:`);
         const channel = getChannel();
         channel.ack(msg); // Acknowledge message after successful processing
     } catch (error) {
@@ -41,4 +41,4 @@ const JsonParse = (msg, key) => {
 }
 
 
-module.exports = { startStaffQueueConsumer };
+module.exports = startStaffQueueConsumer ;

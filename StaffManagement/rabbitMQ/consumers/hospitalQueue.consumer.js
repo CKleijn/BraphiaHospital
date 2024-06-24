@@ -12,18 +12,18 @@ const hospitalEventHandler = async (msg, key) => {
         switch (key) {
             case process.env.HOSPITAL_CREATED_RMC_KEY:
                 console.log('Handling hospital created event');
-                result = await createHospital(JsonParse(msg,key));
+                await createHospital(JsonParse(msg,key));
                 break;
             case process.env.HOSPITAL_UPDATED_RMC_KEY:
                 console.log('Handling hospital updated event');
-                result = await updateHospital(JsonParse(msg,key)); 
+                await updateHospital(JsonParse(msg,key)); 
                 break;
             default:
                 console.log('Unknown routing key');
                 break;
         }
         
-        console.log(`${key} succesfully handled:`, result);
+        console.log(`${key} succesfully handled!`);
         const channel = getChannel();
         channel.ack(msg);
     } catch (error) {
@@ -39,4 +39,4 @@ const JsonParse = (msg, key) => {
     return JSON.parse(messageContent);
 }
 
-module.exports = { startHospitalQueueConsumer };
+module.exports = startHospitalQueueConsumer ;
