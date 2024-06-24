@@ -2,6 +2,7 @@
 using Carter;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using PatientManagement.Infrastructure.ExternalServices;
 using PatientManagement.Infrastructure.MessageBus.Implementations;
 using PatientManagement.Infrastructure.MessageBus.Interfaces;
 using PatientManagement.Infrastructure.Persistence.Contexts;
@@ -19,6 +20,9 @@ namespace PatientManagement
 
             builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(Assembly.GetExecutingAssembly()));
             builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+
+            builder.Services.AddSingleton<HttpClient>();
+            builder.Services.AddScoped<IApiClient, ApiClient>();
 
             builder.Services.AddCarter();
             builder.Services.AddScoped<IEventStore, EventStore>();
