@@ -14,6 +14,7 @@ namespace PatientManagement.Features.Patient
 
         private void Apply(PatientRegisteredEvent @event)
         {
+            Id = @event.Patient.Id;
             FirstName = @event.Patient.FirstName;
             LastName = @event.Patient.LastName;
             DateOfBirth = @event.Patient.DateOfBirth;

@@ -1,18 +1,17 @@
 ﻿using Carter;
-using FluentValidation;
 using MediatR;
 using PatientManagement.Common.Annotations;
 
-namespace PatientManagement.Features.Patient.RegisterPatient
+namespace PatientManagement.Features.Patient.SyncPatients
 {
     public sealed class SyncPatientsEndpoint
         : ICarterModule
     {
         public void AddRoutes(IEndpointRouteBuilder app)
         {
-            app.MapPost("patient", async (
+            app.MapPost("patients/sync", async (
                 ISender sender,
-                RegisterPatientCommand command,
+                SyncPatientsCommand command,
                 CancellationToken cancellationToken) =>
             {
                 try

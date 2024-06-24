@@ -20,17 +20,6 @@ namespace DossierManagement.Events.ConsultAppended
             if (dossierAggregateId == Guid.Empty)
                 throw new ArgumentNullException($"Dossier with patient #{notification.Consult.PatientId} doesn't exists");
 
-            var aggregateEvents = await eventStore.GetAllEventsByAggregateId(dossierAggregateId, cancellationToken);
-            var dossierState = new Dossier();
-            dossierState.ReplayHistory(aggregateEvents);
-            dossierState.Version++;
-
-            dossierState.Consults ??= new List<Consult>();
-            if (dossierState.Consults.Any(c => c.Id == notification.Consult.Id && c.PatientId == notification.Consult.PatientId))
-                throw new DuplicateNameException($"Consult #{notification.Consult.Id} already exists");
-
-            dossierState.Consults.Add(notification.Consult);
-
             notification.AggregateId = dossierAggregateId;
 
             var result = await eventStore
@@ -39,6 +28,11 @@ namespace DossierManagement.Events.ConsultAppended
                        cancellationToken);
 
             if (!result) return;
+
+            var aggregateEvents = await eventStore.GetAllEventsByAggregateId(dossierAggregateId, cancellationToken);
+            var dossierState = new Dossier();
+            dossierState.ReplayHistory(aggregateEvents);
+            dossierState.Version++;
 
             context
                 .Set<Dossier>()
