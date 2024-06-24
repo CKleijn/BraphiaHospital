@@ -9,6 +9,7 @@ using Consultancy.Common.Entities;
 using Microsoft.IdentityModel.Tokens;
 using Consultancy.Features.ConsultFeature.UpdateNotes.RabbitEvent;
 using Consultancy.Common.Abstractions;
+using Consultancy.Common.Entities.DTO;
 
 namespace Consultancy.Features.ConsultFeature.UpdateNotes.Command
 {
@@ -40,7 +41,7 @@ namespace Consultancy.Features.ConsultFeature.UpdateNotes.Command
                 throw new InvalidOperationException($"Consult with id #{consult.Id} has already finished and therefore cannot be edited");
 
             _ = await apiClient
-               .GetAsync<dynamic>($"{ConfigurationHelper.GetAppointmentManagementServiceConnectionString()}/appointment/{consult.AppointmentId}", cancellationToken)
+               .GetAsync<AppointmentDTO>($"{ConfigurationHelper.GetAppointmentManagementServiceConnectionString()}/appointment/{consult.AppointmentId}", cancellationToken)
                ?? throw new KeyNotFoundException($"Appointment #{consult.AppointmentId} doesn't exist");
 
             consult.Notes = request.Notes;
