@@ -5,7 +5,7 @@
     "description": "A simple Express API application with Swagger documentation",
     "version": "1.0.0"
   },
-  "host": "localhost:3001",
+  "host": "localhost:5008",
   "basePath": "/",
   "schemes": [
     "http"

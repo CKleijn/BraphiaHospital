@@ -3,6 +3,7 @@ const { createHospital, updateHospital } = require('../../services/hospitalRead.
 
 const startHospitalQueueConsumer = async () => {
         await setupConsumer(process.env.HOSPITAL_QUEUE_RMC, process.env.HOSPITAL_CREATED_RMC_KEY, hospitalEventHandler);
+        console.log('HospitalQueueConsumer listening to key: ' + process.env.HOSPITAL_CREATED_RMC_KEY);
 };
 
 const hospitalEventHandler = async (msg, key) => {
@@ -32,8 +33,6 @@ const hospitalEventHandler = async (msg, key) => {
         channel.nack(msg); // Requeue message for processing if there's an error
     }
 };
-
-
 
 const JsonParse = (msg, key) => {  
     const messageContent = msg.content.toString();

@@ -1,4 +1,3 @@
--- DROP TABLE IF EXISTS hospital;
 CREATE TABLE hospital (
     id UUID PRIMARY KEY,
     hospital VARCHAR(100) NOT NULL,
