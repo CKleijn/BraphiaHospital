@@ -3,12 +3,14 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-const { connectRabbitMQ} = require('./connections/connectRabbitMQ');
-const startHospitalQueueConsumer = require('./rabbitMQ/consumers/hospitalQueue.consumer');
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./utils/swagger/swagger_output.json');
-var hospitalRouter = require('./routes/hospital');
+
+const { connectRabbitMQ} = require('./connections/connectRabbitMQ');
 const { setupRabbitMQ } = require('./rabbitMQ/setupRabbitMQ');
+const startHospitalQueueConsumer = require('./rabbitMQ/consumers/hospitalQueue.consumer');
+
+var hospitalRouter = require('./routes/hospital');
 
 var app = express();
 
@@ -30,18 +32,15 @@ const PORT = process.env.PORT || 5008;
 const startServer = async () => {
   try {
     await connectRabbitMQ();
-    
     await setupRabbitMQ();
-
-    // // Initialize the consumers
-    // await startHospitalQueueConsumer();
+    await startHospitalQueueConsumer();
 
     app.listen(PORT, () => {
       console.log(`Server listening on port ${PORT}`);
     });
   } catch (error) {
     console.error('Error starting server:', error);
-    process.exit(1); // Exit the process if an error occurs during startup
+    process.exit(1);
   }
 };
 startServer();
