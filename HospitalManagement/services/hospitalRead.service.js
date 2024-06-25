@@ -2,9 +2,8 @@ require('dotenv').config();
 const { readPool }  = require('../connections/connectPostgreDB.js'); 
 
 const getHospitalQuery = `SELECT * FROM hospital;`;
-
 const getHospitalByIdQuery = 'SELECT * FROM hospital WHERE id = $1;';
-
+const getHospitalByNameQuery = `SELECT * FROM hospital WHERE hospital = $1;`;
 const createHospitalQuery = `INSERT INTO hospital (id, hospital, street, number, postalCode, city, country, stores, squares, phoneNumber, email, website, totalBeds, builtYear) 
                              VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) RETURNING *;`;
 
@@ -86,5 +85,8 @@ const updateHospital = async (data) => {
         return;
     }
 }
+
+
+
 
 module.exports = { createHospital, getHospital, getHospitalById, updateHospital };

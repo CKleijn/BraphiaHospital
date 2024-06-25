@@ -11,7 +11,7 @@ const handleDatabaseError = (err) => {
 };
 
 const createHospital = async (data,) => {
-    const queryValues = [ data.hospital, data.id];
+    const queryValues = [ data.id,data.hospital ];
 
     try {
         await readPool.query(createHospitalQuery, queryValues);
@@ -33,7 +33,7 @@ const updateHospital = async (data) => {
     }
 };
 
-const getHospital = async (res) => {   
+const getHospital = async (req,res) => {   
     try {
         const result = await readPool.query(getHospitalQuery);
         res.status(200).json({count: result.rows.length, result: result.rows});

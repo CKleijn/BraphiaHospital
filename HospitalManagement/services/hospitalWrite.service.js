@@ -11,13 +11,12 @@ const handleDatabaseError = (res, err) => {
 };
 
 const createEvent = async (req, res) => {
-    // Construct the payload object to be inserted
-    const payloadToInsert = {
-        id: uuidv4(),
-        ...req.body
-    };
-
     try {
+        // Construct the payload object to be inserted
+        const payloadToInsert = {
+            id: uuidv4(),
+            ...req.body
+        };
         // Convert updatedPayload to a string for storage and message sending
         const payloadString = JSON.stringify(payloadToInsert);
 
