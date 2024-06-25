@@ -78,7 +78,7 @@ const getStaffById = async (req,res) => {
 const getStaffByName = async (name) => { 
     try {
         const result = await readPool.query(getStaffByNameQuery, [name]);
-        return result.rows[0] > 0;
+        return result.rows.length > 0;
     } catch (error) {
         handleDatabaseError(error);
         return;
