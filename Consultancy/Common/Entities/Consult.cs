@@ -2,12 +2,15 @@
 using Consultancy.Features.ConsultFeature.CreateConsult.RabbitEvent;
 using Consultancy.Features.ConsultFeature.UpdateNotes.RabbitEvent;
 using Consultancy.Features.ConsultFeature.UpdateQuestions.RabbitEvent;
+using System.ComponentModel.DataAnnotations;
 
 namespace Consultancy.Common.Entities
 {
     public sealed class Consult
         : AggregateRoot
     {
+        [Key]
+        public Guid Id { get; set; } = Guid.NewGuid();
         public Guid PatientId { get; set; } = Guid.Empty;
         public Guid AppointmentId { get; set; } = Guid.Empty;
         public Survey? Survey { get; set; } = null;
@@ -15,6 +18,7 @@ namespace Consultancy.Common.Entities
 
         public void Apply(ConsultCreatedEvent @event)
         {
+            Id = @event.Consult.Id;
             PatientId = @event.Consult.PatientId;
             AppointmentId = @event.Consult.AppointmentId;
             Survey = @event.Consult.Survey;
