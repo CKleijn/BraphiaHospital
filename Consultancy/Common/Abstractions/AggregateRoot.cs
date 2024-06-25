@@ -1,9 +1,12 @@
 ﻿using Consultancy.Common.Abstractions;
+using System.ComponentModel.DataAnnotations;
 
 namespace Consultancy.Common.Aggregates
 {
     public abstract class AggregateRoot
     {
+        [Key]
+        public Guid Id { get; set; } = Guid.NewGuid();
         public int Version { get; set; } = 0;
 
         public void ApplyChange<TEvent>(TEvent @event) where TEvent : Event
