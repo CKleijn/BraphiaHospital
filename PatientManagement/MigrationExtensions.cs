@@ -18,8 +18,8 @@ namespace PatientManagement
                 .Exists() && dbContext.GetService<IRelationalDatabaseCreator>()
                 .HasTables();
 
-            if (!anyTablesExist)
-                dbContext.Database.Migrate();
+/*            if (!anyTablesExist)
+                dbContext.Database.Migrate();*/
         }
 
         public static void ApplyEventStoreMigrations(this IApplicationBuilder app)

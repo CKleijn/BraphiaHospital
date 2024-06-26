@@ -4,6 +4,7 @@ using AppointmentManagement.Common.Entities;
 using System.Text.Json;
 using AppointmentManagement.Infrastructure.Persistence.Stores;
 using AppointmentManagement.Common.Abstractions;
+using Azure.Core;
 
 namespace AppointmentManagement.Features.StaffMemberFeature.UpdateStaffMember.Event
 {
@@ -18,6 +19,9 @@ namespace AppointmentManagement.Features.StaffMemberFeature.UpdateStaffMember.Ev
         {
             StaffMember? staff = await context.Set<StaffMember>()
                 .FindAsync(notification.Id, cancellationToken);
+
+            if (staff == null)
+                return;
 
             StaffMemberUpdatedEvent staffUpdatedEvent = CorrectPayload(staff!, notification);
 
