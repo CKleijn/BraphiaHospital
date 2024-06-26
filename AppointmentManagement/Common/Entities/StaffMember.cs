@@ -1,22 +1,28 @@
-﻿using AppointmentManagement.Common.Interfaces;
-using System.ComponentModel.DataAnnotations;
+﻿using AppointmentManagement.Common.Aggregates;
+using AppointmentManagement.Features.StaffMemberFeature.CreateStaffMember.Event;
+using AppointmentManagement.Features.StaffMemberFeature.UpdateStaffMember.Event;
 
 namespace AppointmentManagement.Common.Entities
 {
-    public sealed record StaffMember
-        : IEntity
+    public class StaffMember
+        : AggregateRoot
     {
-        [Key]
-        public Guid Id { get; init; } = Guid.NewGuid();
-        public Guid HospitalFacilityId { get; set; }
+        public Guid HospitalId { get; set; }
         public string Name { get; set; } = string.Empty;
         public string Specialization { get; set; } = string.Empty;
-        public string Street { get; set; } = string.Empty;
-        public string City { get; set; } = string.Empty;
-        public string State { get; set; } = string.Empty;
-        public string Zip { get; set; } = string.Empty;
-        public string PhoneNumber { get; set; } = string.Empty;
-        public string Email { get; set; } = string.Empty;
-        public string EmploymentDate { get; set; } = string.Empty;
+
+        public void Apply(StaffMemberCreatedEvent @event)
+        {
+            HospitalId = @event.StaffMember.HospitalId;
+            Name = @event.StaffMember.Name;
+            Specialization = @event.StaffMember.Specialization;
+        }
+
+        public void Apply(StaffMemberUpdatedEvent @event)
+        {
+            HospitalId = @event.HospitalId;
+            Name = @event.Name;
+            Specialization = @event.Specialization;
+        }
     }
 }

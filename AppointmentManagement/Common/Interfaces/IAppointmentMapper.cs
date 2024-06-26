@@ -1,6 +1,18 @@
-﻿namespace AppointmentManagement.Common.Interfaces
+﻿using AppointmentManagement.Common.Entities;
+using AppointmentManagement.Features.AppointmentFeature.RescheduleAppointment.Command;
+using AppointmentManagement.Features.AppointmentFeature.ScheduleAppointment.Command;
+using AppointmentManagement.Features.AppointmentFeature.ScheduleAppointment.Event;
+using AppointmentManagement.Features.AppointmentFeature.UpdatePatientArrival.Command;
+using AppointmentManagement.Features.AppointmentFeature.UpdatePatientArrival.Event;
+
+namespace AppointmentManagement.Common.Interfaces
 {
     public interface IAppointmentMapper
     {
+        Appointment RescheduleAppointmentCommandToAppointment(RescheduleAppointmentCommand command);
+        AppointmentRescheduledEvent AppointmentToAppointmentRescheduledEvent(Appointment appointment);
+
+        Appointment UpdatePatientArrivalCommandToAppointment(UpdateAppointmentArrivalCommand command);
+        AppointmentArrivalUpdatedEvent AppointmentToPatientArrivalUpdatedEvent(Appointment appointment);
     }
 }

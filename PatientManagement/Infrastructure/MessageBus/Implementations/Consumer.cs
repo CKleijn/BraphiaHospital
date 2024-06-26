@@ -15,9 +15,9 @@ namespace PatientManagement.Infrastructure.MessageBus.Implementations
 
             channel.ExchangeDeclare(Keys.EVENTS_EXCHANGE, ExchangeType.Topic, true, false, null);
 
-            channel.QueueDeclare(Keys.PATIENT_QUEUE, true, false, false, null);
+            channel.QueueDeclare(Keys.PATIENT_QUEUE_PATIENTMANAGEMENT, true, false, false, null);
 
-            channel.QueueBind(Keys.PATIENT_QUEUE, Keys.EVENTS_EXCHANGE, Keys.PATIENT_ROUTING_KEY);
+            channel.QueueBind(Keys.PATIENT_QUEUE_PATIENTMANAGEMENT, Keys.EVENTS_EXCHANGE, Keys.PATIENT_ROUTING_KEY);
 
             channel.BasicQos(0, 1, false);
 
@@ -31,7 +31,7 @@ namespace PatientManagement.Infrastructure.MessageBus.Implementations
                 channel.BasicAck(eventArgs.DeliveryTag, false);
             };
 
-            channel.BasicConsume(Keys.PATIENT_QUEUE, false, consumer);
+            channel.BasicConsume(Keys.PATIENT_QUEUE_PATIENTMANAGEMENT, false, consumer);
 
             Console.ReadLine();
         }

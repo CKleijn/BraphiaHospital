@@ -6,6 +6,7 @@ using AppointmentManagement.Common.Interfaces;
 using AppointmentManagement.Infrastructure.MessageBus.Interfaces;
 using AppointmentManagement.Infrastructure.Persistence.Stores;
 using AppointmentManagement.Features.ReferralFeature.CreateReferral.Event;
+using AppointmentManagement.Common.Entities;
 
 
 namespace AppointmentManagement.Features.ReferralFeature.CreateReferral.Command
@@ -26,18 +27,30 @@ namespace AppointmentManagement.Features.ReferralFeature.CreateReferral.Command
             if (!validationResult.IsValid)
                 throw new ValidationException(validationResult.Errors);
 
-            var referral = mapper.CreatedReferralCommandToReferral(request);
+            if (!await eventStore.EventByAggregateIdExists(request.HospitalFacilityId, cancellationToken))
+                throw new ArgumentNullException($"Hospital #{request.HospitalFacilityId} doesn't exist");
 
-            var result = await eventStore
+            Referral referral = new Referral
+            {
+                Diagnosis = request.Diagnosis,
+                BSN = request.BSN,
+                HospitalFacilityId = request.HospitalFacilityId,
+            };
+
+            ReferralCreatedEvent referralCreatedEvent = new(referral)
+            {
+                AggregateId = referral.Id,
+                Type = nameof(ReferralCreatedEvent),
+                Payload = JsonSerializer.Serialize(referral),
+            };
+
+            bool result = await eventStore
                 .AddEvent(
-                typeof(ReferralCreatedEvent).Name,
-                JsonSerializer.Serialize(referral),
+                referralCreatedEvent,
                 cancellationToken);
 
             if (result)
             {
-                var referralCreatedEvent = mapper.ReferralToReferralCreatedEvent(referral);
-
                 producer.Produce(
                     EventMapper.MapEventToRoutingKey(referralCreatedEvent.GetType().Name),
                     referralCreatedEvent.GetType().Name,

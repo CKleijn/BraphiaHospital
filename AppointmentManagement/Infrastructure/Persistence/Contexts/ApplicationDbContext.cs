@@ -12,12 +12,12 @@ namespace AppointmentManagement.Infrastructure.Persistence.Contexts
 
         public DbSet<Appointment> Appointments { get; set; }
         public DbSet<HospitalFacility> HospitalFacilities { get; set; }
-        public DbSet<Patient> Patients { get; set; }
         public DbSet<Referral> Referrals { get; set; }
         public DbSet<StaffMember> StaffMembers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Ignore<Patient>();
         }
     }
 }

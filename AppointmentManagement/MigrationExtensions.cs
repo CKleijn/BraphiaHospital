@@ -1,6 +1,8 @@
 ﻿using System.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using AppointmentManagement.Infrastructure.Persistence.Contexts;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace AppointmentManagement
 {
@@ -12,10 +14,12 @@ namespace AppointmentManagement
 
             using ApplicationDbContext dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-            bool databaseExists = dbContext.Database.CanConnect();
+            var anyTablesExist = dbContext.Database.GetService<IRelationalDatabaseCreator>()
+                .Exists() && dbContext.GetService<IRelationalDatabaseCreator>()
+                .HasTables();
 
-            if(!databaseExists)
-                dbContext.Database.Migrate();
+/*            if (!anyTablesExist)
+                dbContext.Database.Migrate();*/
         }
 
         public static void ApplyEventStoreMigrations(this IApplicationBuilder app)
@@ -39,6 +43,7 @@ namespace AppointmentManagement
                 BEGIN
                     CREATE TABLE Events (
                         ID INT PRIMARY KEY IDENTITY(1,1),
+                        AggregateId uniqueidentifier NOT NULL,
                         Type NVARCHAR(100) NOT NULL,
                         Payload NVARCHAR(MAX) NULL,
                         Version INT NULL,

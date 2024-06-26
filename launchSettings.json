@@ -4,8 +4,10 @@
       "commandName": "DockerCompose",
       "commandVersion": "1.0",
       "serviceActions": {
-        "appointmentmanagement": "StartDebugging",
-        "patientmanagement": "StartDebugging"
+        "appointment.management": "StartDebugging",
+        "patient.management": "StartDebugging",
+        "consultancy": "StartDebugging",
+        "dossier.management": "StartDebugging"
       }
     }
   }

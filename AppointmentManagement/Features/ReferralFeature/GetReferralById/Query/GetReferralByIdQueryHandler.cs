@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using AppointmentManagement.Infrastructure.Persistence.Contexts;
 using AppointmentManagement.Common.Entities;
 
-namespace AppointmentManagement.Features.ReferralFeature.GetReferral.Query
+namespace AppointmentManagement.Features.ReferralFeature.GetReferralById.Query
 {
     public class GetReferralByIdQueryHandler(ApplicationDbContext context)
         : IRequestHandler<GetReferralByIdQuery, Referral>
@@ -12,12 +12,9 @@ namespace AppointmentManagement.Features.ReferralFeature.GetReferral.Query
             GetReferralByIdQuery request,
             CancellationToken cancellationToken)
         {
-            var referral = await context.Set<Referral>().FirstOrDefaultAsync(p => p.Id == request.Id, cancellationToken);
+            var result = await context.Set<Referral>().FirstOrDefaultAsync(p => p.Id == request.Id, cancellationToken);
 
-            if (referral == null)
-                throw new ArgumentNullException($"Referral #{request.Id} doesn't exist");
-
-            return referral;
+            return result == null ? throw new ArgumentNullException($"Referral #{request.Id} doesn't exist") : result;
         }
     }
 }

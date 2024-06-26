@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
 using PatientManagement.Infrastructure.Persistence.Contexts;
 using System.Data.SqlClient;
 
@@ -12,10 +14,12 @@ namespace PatientManagement
 
             using ApplicationDbContext dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-            bool databaseExists = dbContext.Database.CanConnect();
+            var anyTablesExist = dbContext.Database.GetService<IRelationalDatabaseCreator>()
+                .Exists() && dbContext.GetService<IRelationalDatabaseCreator>()
+                .HasTables();
 
-            if (!databaseExists)
-                dbContext.Database.Migrate();
+/*            if (!anyTablesExist)
+                dbContext.Database.Migrate();*/
         }
 
         public static void ApplyEventStoreMigrations(this IApplicationBuilder app)
@@ -39,9 +43,10 @@ namespace PatientManagement
                 BEGIN
                     CREATE TABLE Events (
                         ID INT PRIMARY KEY IDENTITY(1,1),
+                        AggregateId UNIQUEIDENTIFIER NOT NULL,
                         Type NVARCHAR(100) NOT NULL,
                         Payload NVARCHAR(MAX) NULL,
-                        Version INT NULL,
+                        Version INT NOT NULL,
                         CreatedAt DATETIME DEFAULT GETDATE()
                     );
                 END;";

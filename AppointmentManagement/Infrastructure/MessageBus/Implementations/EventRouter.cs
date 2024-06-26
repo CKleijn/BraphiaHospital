@@ -7,6 +7,13 @@ using AppointmentManagement.Common.Interfaces;
 using AppointmentManagement.Infrastructure.MessageBus.Interfaces;
 using AppointmentManagement.Common.Entities;
 using AppointmentManagement.Features.ReferralFeature.CreateReferral.Event;
+using AppointmentManagement.Features.AppointmentFeature.ScheduleAppointment.Event;
+using AppointmentManagement.Features.AppointmentFeature.UpdatePatientArrival.Event;
+using AppointmentManagement.Features.StaffMemberFeature.CreateStaffMember.Event;
+using AppointmentManagement.Features.StaffMemberFeature.UpdateStaffMember.Event;
+using AppointmentManagement.Features.HospitalFacilityFeature.CreateHospitalFacility.Event;
+using AppointmentManagement.Features.HospitalFacilityFeature.UpdateHospitalFacility.Event;
+using AppointmentManagement.Common.Aggregates;
 
 namespace AppointmentManagement.Infrastructure.MessageBus.Implementations
 {
@@ -18,33 +25,58 @@ namespace AppointmentManagement.Infrastructure.MessageBus.Implementations
             var body = eventArgs.Body.ToArray();
             var payload = Encoding.UTF8.GetString(body);
 
-            if (eventArgs.BasicProperties.Headers.TryGetValue("EventName", out var eventObj))
-            {
-                var eventName = Encoding.UTF8.GetString((byte[])eventObj);
+            string eventName = "";
 
-                await HandlePublishEvent(eventName, payload);
+            if (eventArgs.BasicProperties.Headers?.TryGetValue("EventName", out var eventObj) == true)
+            {
+                eventName = Encoding.UTF8.GetString((byte[])eventObj);
             }
+            else
+            {
+                var routingKeyParts = eventArgs.RoutingKey.Split('.');
+                if (routingKeyParts.Length >= 2)
+                {
+                    eventName = $"{routingKeyParts[0]}{routingKeyParts[1]}Event";
+                }
+            }
+
+            if (!string.IsNullOrEmpty(eventName))
+                await HandlePublishEvent(eventName, payload);
         }
 
         private async Task HandlePublishEvent(string eventName, string payload)
         {
             switch (eventName)
             {
+                //Referral
                 case nameof(ReferralCreatedEvent):
-                    await publisher.Publish(new ReferralCreatedEvent(TranslatePayload<Referral>(payload)));
+                    await publisher.Publish(JsonConvert.DeserializeObject<ReferralCreatedEvent>(payload)!);
+                    break;
+                //Appointment
+                case nameof(AppointmentScheduledEvent):
+                    await publisher.Publish(JsonConvert.DeserializeObject<AppointmentScheduledEvent>(payload)!);
+                    break;
+                case nameof(AppointmentRescheduledEvent):
+                    await publisher.Publish(JsonConvert.DeserializeObject<AppointmentRescheduledEvent>(payload)!);
+                    break;
+                case nameof(AppointmentArrivalUpdatedEvent):
+                    await publisher.Publish(JsonConvert.DeserializeObject<AppointmentArrivalUpdatedEvent>(payload)!);
                     break;
 
+                //External
+                case nameof(StaffMemberCreatedEvent):
+                    await publisher.Publish(new StaffMemberCreatedEvent(JsonConvert.DeserializeObject<StaffMember>(payload)!));
+                    break;
+                case nameof(StaffMemberUpdatedEvent):
+                    await publisher.Publish(JsonConvert.DeserializeObject<StaffMemberUpdatedEvent>(payload)!);
+                    break;
+                case nameof(HospitalFacilityCreatedEvent):
+                    await publisher.Publish(new HospitalFacilityCreatedEvent(JsonConvert.DeserializeObject<HospitalFacility>(payload)!));
+                    break;
+                case nameof(HospitalFacilityUpdatedEvent):
+                    await publisher.Publish(JsonConvert.DeserializeObject<HospitalFacilityUpdatedEvent>(payload)!);
+                    break;
             }
-        }
-
-        private T TranslatePayload<T>(string payload)
-            where T : IEntity
-        {
-            var jsonObject = JObject.Parse(payload);
-            var entityPayload = (jsonObject[typeof(T).Name]?.ToString())
-                ?? throw new ArgumentException($"Payload does not contain an entity of type {typeof(T).Name}");
-
-            return JsonConvert.DeserializeObject<T>(entityPayload)!;
         }
     }
 }

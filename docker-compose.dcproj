@@ -6,7 +6,6 @@
     <DockerPublishLocally>False</DockerPublishLocally>
     <ProjectGuid>a46406fe-808a-4dad-86da-49fa3f43e60c</ProjectGuid>
     <DockerLaunchAction>LaunchBrowser</DockerLaunchAction>
-    <DockerServiceUrl>{Scheme}://localhost:{ServicePort}/swagger</DockerServiceUrl>
     <DockerServiceName>patientmanagement</DockerServiceName>
   </PropertyGroup>
   <ItemGroup>

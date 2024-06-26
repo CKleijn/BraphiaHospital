@@ -2,11 +2,10 @@
 using FluentValidation;
 using MediatR;
 using PatientManagement.Common.Annotations;
-using PatientManagement.Features.Patient.RegisterPatient.Command;
 
 namespace PatientManagement.Features.Patient.RegisterPatient
 {
-    public sealed class RegisterPatientEndpoint
+    public sealed class SyncPatientsEndpoint
         : ICarterModule
     {
         public void AddRoutes(IEndpointRouteBuilder app)
