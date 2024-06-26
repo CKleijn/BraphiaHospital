@@ -9,6 +9,7 @@ using Consultancy.Infrastructure.Persistence.Stores;
 using Consultancy.Common.Entities;
 using Consultancy.Common.Interfaces;
 using Consultancy.Features.ConsultFeature.CreateConsult.RabbitEvent;
+using Consultancy.Common.Entities.DTO;
 
 namespace Consultancy.Features.ConsultFeature.CreateConsult.Command
 {
@@ -32,8 +33,8 @@ namespace Consultancy.Features.ConsultFeature.CreateConsult.Command
             if (await eventStore.AppointmentAlreadyHasConsult(request.AppointmentId, cancellationToken))
                 throw new DuplicateNameException($"{request.AppointmentId} already has a consult");
 
-            dynamic coupledAppointment = await apiClient
-                .GetAsync<dynamic>($"{ConfigurationHelper.GetAppointmentManagementServiceConnectionString()}/appointment/{request.AppointmentId}", cancellationToken)
+            AppointmentDTO coupledAppointment = await apiClient
+                .GetAsync<AppointmentDTO>($"{ConfigurationHelper.GetAppointmentManagementServiceConnectionString()}/appointment/{request.AppointmentId}", cancellationToken)
                 ?? throw new ArgumentNullException($"Appointment #{request.AppointmentId} doesn't exist");
 
             Survey survey = null!;

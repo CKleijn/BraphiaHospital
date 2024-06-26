@@ -15,6 +15,7 @@ namespace Consultancy.Common.Entities
 
         public void Apply(ConsultCreatedEvent @event)
         {
+            Id = @event.Consult.Id;
             PatientId = @event.Consult.PatientId;
             AppointmentId = @event.Consult.AppointmentId;
             Survey = @event.Consult.Survey;
