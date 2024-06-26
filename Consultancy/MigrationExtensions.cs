@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Consultancy.Infrastructure.Persistence.Contexts;
 using System.Data.SqlClient;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Consultancy
 {
@@ -12,7 +14,12 @@ namespace Consultancy
 
             using ApplicationDbContext dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-            dbContext.Database.Migrate();
+            var anyTablesExist = dbContext.Database.GetService<IRelationalDatabaseCreator>()
+                .Exists() && dbContext.GetService<IRelationalDatabaseCreator>()
+                .HasTables();
+
+            if (!anyTablesExist)
+                dbContext.Database.Migrate();
         }
 
         public static void ApplyEventStoreMigrations(this IApplicationBuilder app)

@@ -1,6 +1,8 @@
 ﻿using System.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using AppointmentManagement.Infrastructure.Persistence.Contexts;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace AppointmentManagement
 {
@@ -12,7 +14,12 @@ namespace AppointmentManagement
 
             using ApplicationDbContext dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-            dbContext.Database.Migrate();
+            var anyTablesExist = dbContext.Database.GetService<IRelationalDatabaseCreator>()
+                .Exists() && dbContext.GetService<IRelationalDatabaseCreator>()
+                .HasTables();
+
+            if (!anyTablesExist)
+                dbContext.Database.Migrate();
         }
 
         public static void ApplyEventStoreMigrations(this IApplicationBuilder app)

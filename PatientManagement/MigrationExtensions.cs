@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
 using PatientManagement.Infrastructure.Persistence.Contexts;
 using System.Data.SqlClient;
 
@@ -12,7 +14,12 @@ namespace PatientManagement
 
             using ApplicationDbContext dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-            dbContext.Database.Migrate();
+            var anyTablesExist = dbContext.Database.GetService<IRelationalDatabaseCreator>()
+                .Exists() && dbContext.GetService<IRelationalDatabaseCreator>()
+                .HasTables();
+
+            if (!anyTablesExist)
+                dbContext.Database.Migrate();
         }
 
         public static void ApplyEventStoreMigrations(this IApplicationBuilder app)
