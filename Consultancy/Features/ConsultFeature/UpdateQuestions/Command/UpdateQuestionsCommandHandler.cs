@@ -46,7 +46,6 @@ namespace Consultancy.Features.ConsultFeature.UpdateQuestions.Command
                 Question questions = consult.Survey.Questions.FirstOrDefault(c => c.Id == questionRequest.Id) 
                     ?? throw new KeyNotFoundException($"No question present with given id #{questionRequest.Id}");
 
-                questions.QuestionValue = questionRequest.QuestionValue;
                 questions.AnswerValue = questionRequest.AnswerValue;
             }
 
