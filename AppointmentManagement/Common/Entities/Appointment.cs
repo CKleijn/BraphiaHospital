@@ -23,6 +23,7 @@ namespace AppointmentManagement.Common.Entities
 
         public void Apply(AppointmentScheduledEvent @event)
         {
+            Id = @event.Id;
             PatientId = @event.PatientId;
             ReferralId = @event.ReferralId;
             PhysicianId = @event.PhysicianId;

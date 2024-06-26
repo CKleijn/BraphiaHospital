@@ -14,6 +14,7 @@ namespace AppointmentManagement.Common.Entities
 
         public void Apply(ReferralCreatedEvent @event)
         {
+            Id = @event.Referral.Id;
             HospitalFacilityId = @event.Referral.HospitalFacilityId;
             ReferralCode = @event.Referral.ReferralCode;
             BSN = @event.Referral.BSN;

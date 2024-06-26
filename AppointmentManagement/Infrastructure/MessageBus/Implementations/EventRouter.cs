@@ -50,7 +50,7 @@ namespace AppointmentManagement.Infrastructure.MessageBus.Implementations
             {
                 //Referral
                 case nameof(ReferralCreatedEvent):
-                    await publisher.Publish(new ReferralCreatedEvent(TranslatePayloadToEntity<Referral>(payload)));
+                    await publisher.Publish(JsonConvert.DeserializeObject<ReferralCreatedEvent>(payload)!);
                     break;
                 //Appointment
                 case nameof(AppointmentScheduledEvent):
@@ -77,16 +77,6 @@ namespace AppointmentManagement.Infrastructure.MessageBus.Implementations
                     await publisher.Publish(JsonConvert.DeserializeObject<HospitalFacilityUpdatedEvent>(payload)!);
                     break;
             }
-        }
-
-        private T TranslatePayloadToEntity<T>(string payload)
-            where T : AggregateRoot
-        {
-            var jsonObject = JObject.Parse(payload);
-            var entityPayload = (jsonObject[typeof(T).Name]?.ToString())
-                ?? throw new ArgumentException($"Payload does not contain an entity of type {typeof(T).Name}");
-
-            return JsonConvert.DeserializeObject<T>(entityPayload)!;
         }
     }
 }

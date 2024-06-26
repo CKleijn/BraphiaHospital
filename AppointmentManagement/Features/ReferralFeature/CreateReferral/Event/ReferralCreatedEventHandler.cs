@@ -14,7 +14,10 @@ namespace AppointmentManagement.Features.ReferralFeature.CreateReferral.Event
             ReferralCreatedEvent notification,
             CancellationToken cancellationToken)
         {
-            context.Set<Referral>().Add(notification.Referral);
+            Referral referral = new();
+            referral.ReplayHistory(await eventStore.GetAllEventsByAggregateId(notification.AggregateId, null, cancellationToken));
+
+            context.Set<Referral>().Add(referral);
             await context.SaveChangesAsync(cancellationToken);
         }
     }

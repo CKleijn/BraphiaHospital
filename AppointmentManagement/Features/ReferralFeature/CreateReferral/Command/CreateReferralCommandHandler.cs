@@ -27,6 +27,9 @@ namespace AppointmentManagement.Features.ReferralFeature.CreateReferral.Command
             if (!validationResult.IsValid)
                 throw new ValidationException(validationResult.Errors);
 
+            if (!await eventStore.EventByAggregateIdExists(request.HospitalFacilityId, cancellationToken))
+                throw new ArgumentNullException($"Hospital #{request.HospitalFacilityId} doesn't exist");
+
             Referral referral = new Referral
             {
                 Diagnosis = request.Diagnosis,
