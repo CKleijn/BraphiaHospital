@@ -1,12 +1,12 @@
 ﻿using MediatR;
-using Microsoft.EntityFrameworkCore;
 using PatientManagement.Features.Patient;
 using PatientManagement.Infrastructure.Persistence.Contexts;
-using System.Data;
+using PatientManagement.Infrastructure.Persistence.Stores;
 
 namespace PatientManagement.Events
 {
     public sealed class PatientRegisteredEventHandler(
+        IEventStore eventStore,
         ApplicationDbContext context)
         : INotificationHandler<PatientRegisteredEvent>
     {
@@ -14,12 +14,17 @@ namespace PatientManagement.Events
             PatientRegisteredEvent notification,
             CancellationToken cancellationToken)
         {
-            if (await context.Set<Patient>().AnyAsync(p => p.Id == notification.Patient.Id, cancellationToken))
-                throw new DuplicateNameException($"Patient #{notification.Patient.Id} already exists");
+            var aggregateEvents = await eventStore.GetAllEventsByAggregateId(notification.AggregateId, cancellationToken);
+
+            if (!aggregateEvents.Any())
+                throw new ArgumentNullException($"Patient #{notification.Patient.Id} doesn't exists");
+
+            var patientState = new Patient();
+            patientState.ReplayHistory(aggregateEvents);
 
             context
                 .Set<Patient>()
-                .Add(notification.Patient);
+                .Add(patientState);
 
             await context.SaveChangesAsync(cancellationToken);
         }

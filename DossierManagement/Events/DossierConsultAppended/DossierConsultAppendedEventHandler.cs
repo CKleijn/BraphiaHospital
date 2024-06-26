@@ -1,8 +1,9 @@
-﻿using DossierManagement.Features.Dossier;
+﻿using DossierManagement.Common.Helpers;
+using DossierManagement.Features.Dossier;
 using DossierManagement.Infrastructure.Persistence.Contexts;
 using DossierManagement.Infrastructure.Persistence.Stores;
 using MediatR;
-using System.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace DossierManagement.Events.ConsultAppended
 {
@@ -20,7 +21,11 @@ namespace DossierManagement.Events.ConsultAppended
             if (dossierAggregateId == Guid.Empty)
                 throw new ArgumentNullException($"Dossier with patient #{notification.Consult.PatientId} doesn't exists");
 
+            var latestVersion = await eventStore.GetLatestVersionOfEventByAggregateId(dossierAggregateId, nameof(DossierConsultAppendedEvent), cancellationToken);
+
             notification.AggregateId = dossierAggregateId;
+            notification.Consult.DossierId = dossierAggregateId;
+            notification.Version = latestVersion + 1;
 
             var result = await eventStore
                    .AddEvent(
@@ -34,11 +39,12 @@ namespace DossierManagement.Events.ConsultAppended
             dossierState.ReplayHistory(aggregateEvents);
             dossierState.Version++;
 
-            context
-                .Set<Dossier>()
-                .Update(dossierState);
+            context.Entry(dossierState).State = EntityState.Modified;
+            context.Entry(notification.Consult).State = EntityState.Added;
 
             await context.SaveChangesAsync(cancellationToken);
+
+            ContextDetacher.DetachAllEntitiesFromContext(context);
         }
     }
 }

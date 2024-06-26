@@ -2,7 +2,6 @@
 using Newtonsoft.Json;
 using System.Text;
 using RabbitMQ.Client.Events;
-using Newtonsoft.Json.Linq;
 using DossierManagement.Infrastructure.MessageBus.Interfaces;
 using DossierManagement.Events.ConsultAppended;
 using DossierManagement.Events.DossierCreated;

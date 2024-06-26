@@ -19,7 +19,8 @@ namespace DossierManagement.Infrastructure.Persistence.Contexts
 
             modelBuilder.Entity<Dossier>()
                 .HasMany(d => d.Consults)
-                .WithOne();
+                .WithOne()
+                .HasForeignKey(c => c.DossierId);
         }
     }
 }

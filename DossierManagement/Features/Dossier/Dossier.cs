@@ -20,8 +20,6 @@ namespace DossierManagement.Features.Dossier
             Id = @event.Dossier.Id;
             PatientId = @event.Dossier.PatientId;
             Patient = @event.Dossier.Patient;
-            Consults = @event.Dossier.Consults;
-            Medications = @event.Dossier.Medications;
         }
 
         public void Apply(PatientRegisteredEvent @event)

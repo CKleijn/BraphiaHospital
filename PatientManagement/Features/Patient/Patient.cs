@@ -12,7 +12,7 @@ namespace PatientManagement.Features.Patient
         public string BSN { get; set; } = string.Empty;
         public string Address {  get; set; } = string.Empty;
 
-        private void Apply(PatientRegisteredEvent @event)
+        public void Apply(PatientRegisteredEvent @event)
         {
             Id = @event.Patient.Id;
             FirstName = @event.Patient.FirstName;

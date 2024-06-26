@@ -1,4 +1,5 @@
-﻿using DossierManagement.Features.Dossier;
+﻿using DossierManagement.Common.Helpers;
+using DossierManagement.Features.Dossier;
 using DossierManagement.Infrastructure.Persistence.Contexts;
 using DossierManagement.Infrastructure.Persistence.Stores;
 using MediatR;
@@ -27,6 +28,8 @@ namespace DossierManagement.Events.MedicationPrescribed
                 .Update(dossierState);
 
             await context.SaveChangesAsync(cancellationToken);
+
+            ContextDetacher.DetachAllEntitiesFromContext(context);
         }
     }
 }
